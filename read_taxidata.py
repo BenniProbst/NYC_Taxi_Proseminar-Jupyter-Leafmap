@@ -37,9 +37,16 @@ class TaxiData:
         return taxi_color_types_filter
 
     def load_available(self, available: Dict[str, List[datetime]]) -> None:
-        
+        for taxi_color, time in available:
+            with open(self.base_folder+taxi_color+'_tripdata_'+time.year+'-'+time.month+'.csv',
+                      'r') as read_obj:
+                # pass the file object to reader() to get the reader object
+                csv_reader = reader(read_obj)
+                # Get all rows of csv from csv_reader object as list of tuples
+                # list_of_tuples = list(map(tuple, csv_reader))
+                list_of_tuples_load = list(map(tuple, csv_reader))
 
-    def __init__(self,base: str):
+    def __init__(self, base: str):
         self.base_folder: str = base
         self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
                               float, float, float, float, float, float, float, float]] = []
@@ -48,12 +55,3 @@ class TaxiData:
         # read available month to be read instantly
         self.taxi_color_types_times: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
                                                             'green': list_taxi_month(self.taxi_files, 'green')}
-
-        """
-        with open('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/yellow_tripdata_2021-07.csv', 'r') as read_obj:
-            # pass the file object to reader() to get the reader object
-            csv_reader = reader(read_obj)
-            # Get all rows of csv from csv_reader object as list of tuples
-            # list_of_tuples = list(map(tuple, csv_reader))
-            list_of_tuples_load = list(map(tuple, csv_reader))
-        """
