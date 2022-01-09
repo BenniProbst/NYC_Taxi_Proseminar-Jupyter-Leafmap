@@ -41,8 +41,8 @@ class TaxiData:
             if taxi_color_request in self.taxi_color_types_times.keys():
                 if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
                     for time in times_request:
-                        with open(self.base_folder + taxi_color_request + '_tripdata_' + time.year + '-' + time.month + '.csv',
-                                  'r') as read_obj:
+                        with open(self.base_folder + taxi_color_request + '_tripdata_' + time.year + '-' + time.month +
+                                  '.csv', 'r') as read_obj:
                             # pass the file object to reader() to get the reader object
                             csv_reader = reader(read_obj)
                             # Get all rows of csv from csv_reader object as list of tuples
