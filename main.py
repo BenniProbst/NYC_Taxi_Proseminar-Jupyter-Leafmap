@@ -8,6 +8,7 @@ import read_taxidata
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print('Starting first leafmap test...')
+    td = read_taxidata.TaxiData('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
 
     # center to New York at 41 degrees north and 74 degrees west
     #m = leafmap.Map(google_map="HYBRID", center=[40.702557, -74.012318], zoom=12, height="450px",width="800px",max_zoom="20")  # center=[lat, lon]

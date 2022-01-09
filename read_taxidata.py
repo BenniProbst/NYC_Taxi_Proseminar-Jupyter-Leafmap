@@ -30,7 +30,7 @@ class TaxiData:
 
     def get_date_files(self, year: int, month: int) -> Dict[str, List[datetime]]:
         taxi_color_types_filter: Dict[str, List[datetime]] = {}
-        for taxi_colors, taxi_times in self.taxi_color_types:
+        for taxi_colors, taxi_times in self.taxi_color_types_times:
             for taxi_color_times in taxi_times:
                 if datetime(year, month, 0) == taxi_color_times:
                     taxi_color_types_filter[taxi_colors].append(taxi_color_times)
@@ -39,13 +39,14 @@ class TaxiData:
     def load_available(self, available: Dict[str, List[datetime]]) -> None:
         
 
-    def __init__(self):
+    def __init__(self,base: str):
+        self.base_folder: str = base
         self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
                               float, float, float, float, float, float, float, float]] = []
         # get available files
-        self.taxi_files: List[str] = list_taxi_files('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
+        self.taxi_files: List[str] = list_taxi_files(self.base_folder)
         # read available month to be read instantly
-        self.taxi_color_types: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
+        self.taxi_color_types_times: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
                                                             'green': list_taxi_month(self.taxi_files, 'green')}
 
         """
