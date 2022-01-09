@@ -36,15 +36,23 @@ class TaxiData:
                     taxi_color_types_filter[taxi_colors].append(taxi_color_times)
         return taxi_color_types_filter
 
-    def load_available(self, available: Dict[str, List[datetime]]) -> None:
-        for taxi_color, time in available:
-            with open(self.base_folder+taxi_color+'_tripdata_'+time.year+'-'+time.month+'.csv',
-                      'r') as read_obj:
-                # pass the file object to reader() to get the reader object
-                csv_reader = reader(read_obj)
-                # Get all rows of csv from csv_reader object as list of tuples
-                # list_of_tuples = list(map(tuple, csv_reader))
-                list_of_tuples_load = list(map(tuple, csv_reader))
+    def load_available(self, available: Dict[str, List[datetime]]) -> bool:
+        for taxi_color_request, times_request in available:
+            if taxi_color_request in self.taxi_color_types_times.keys():
+                if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
+                    for time in times_request:
+                        with open(self.base_folder + taxi_color_request + '_tripdata_' + time.year + '-' + time.month + '.csv',
+                                  'r') as read_obj:
+                            # pass the file object to reader() to get the reader object
+                            csv_reader = reader(read_obj)
+                            # Get all rows of csv from csv_reader object as list of tuples
+                            # list_of_tuples = list(map(tuple, csv_reader))
+                            list_of_tuples_load = list(map(tuple, csv_reader))
+                else:
+                    return False
+            else:
+                return False
+        return True
 
     def __init__(self, base: str):
         self.base_folder: str = base
@@ -54,4 +62,4 @@ class TaxiData:
         self.taxi_files: List[str] = list_taxi_files(self.base_folder)
         # read available month to be read instantly
         self.taxi_color_types_times: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
-                                                            'green': list_taxi_month(self.taxi_files, 'green')}
+                                                                  'green': list_taxi_month(self.taxi_files, 'green')}
