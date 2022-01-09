@@ -48,6 +48,29 @@ class TaxiData:
                             # Get all rows of csv from csv_reader object as list of tuples
                             # list_of_tuples = list(map(tuple, csv_reader))
                             list_of_tuples_load = list(map(tuple, csv_reader))
+                            list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int,
+                                                                  int, int, float, float, float, float, float, float,
+                                                                  float, float]] = []
+                            for tup in list_of_tuples_load:
+                                list_of_tuples_load_typed.append((int(tup[0]),
+                                                                  datetime.strptime(tup[1], "%Y-%m-%d %H:%M:%S"),
+                                                                  datetime.strptime(tup[2], "%Y-%m-%d %H:%M:%S"),
+                                                                  int(tup[3]),
+                                                                  float(tup[4]),
+                                                                  int(tup[5]),
+                                                                  str(tup[6]),
+                                                                  int(tup[7]),
+                                                                  int(tup[8]),
+                                                                  int(tup[9]),
+                                                                  float(tup[10]),
+                                                                  float(tup[11]),
+                                                                  float(tup[12]),
+                                                                  float(tup[13]),
+                                                                  float(tup[14]),
+                                                                  float(tup[15]),
+                                                                  float(tup[16]),
+                                                                  float(tup[17]),))
+
                 else:
                     return False
             else:
