@@ -52,7 +52,8 @@ class TaxiData:
                         build_month: str = str(times.month)
                         while len(build_month) <= 1:
                             build_month = str(0) + build_month
-                        build_file_name: str = self.base_folder + taxi_color_request + '_tripdata_' + str(times.year) + str('-') + build_month + '.csv'
+                        build_file_name: str = self.base_folder + taxi_color_request + '_tripdata_' + str(
+                            times.year) + str('-') + build_month + '.csv'
                         with open(build_file_name, 'r') as read_obj:
                             # pass the file object to reader() to get the reader object
                             csv_reader = reader(read_obj)
@@ -66,28 +67,70 @@ class TaxiData:
                             count: int = 0
                             for tup in list_of_tuples_load:
                                 if count == 0:
-                                    output_tup: Tuple[str, str, str, str, str, str, str, str, str, str, str, str, str,
-                                                      str, str, str, str, str] = (str(tup[0]),
-                                                                                  str(tup[1]),
-                                                                                  str(tup[2]),
-                                                                                  str(tup[3]),
-                                                                                  str(tup[4]),
-                                                                                  str(tup[5]),
-                                                                                  str(tup[6]),
-                                                                                  str(tup[7]),
-                                                                                  str(tup[8]),
-                                                                                  str(tup[9]),
-                                                                                  str(tup[10]),
-                                                                                  str(tup[11]),
-                                                                                  str(tup[12]),
-                                                                                  str(tup[13]),
-                                                                                  str(tup[14]),
-                                                                                  str(tup[15]),
-                                                                                  str(tup[16]),
-                                                                                  str(tup[17]),
-                                                                                  )
-                                    self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str, str,
-                                                       str, str, str, str, str] = output_tup
+                                    output_tup: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
+                                                      str, str, str, str, str, str]
+                                    if taxi_color_request == 'yellow':
+                                        """
+                                        VendorID
+                                        tpep_pickup_datetime
+                                        tpep_dropoff_datetime
+                                        passenger_count
+                                        trip_distance
+                                        RatecodeID
+                                        store_and_fwd_flag
+                                        PULocation
+                                        DOLocation
+                                        payment_type
+                                        fare_amount
+                                        extra
+                                        mta_tax
+                                        tip_amount
+                                        tolls_amount
+                                        improvement_surcharge
+                                        total_amount
+                                        congestion_surcharge
+                                        """
+                                        output_tup = (str(tup[0]),
+                                                      str(tup[1]),
+                                                      str(tup[2]),
+                                                      str(tup[3]),
+                                                      str(tup[4]),
+                                                      str(tup[5]),
+                                                      str(tup[6]),
+                                                      str(tup[7]),
+                                                      str(tup[8]),
+                                                      str(tup[9]),
+                                                      str(tup[10]),
+                                                      str(tup[11]),
+                                                      str(tup[12]),
+                                                      str(tup[13]),
+                                                      str(tup[14]),
+                                                      str(tup[15]),
+                                                      str(tup[16]),
+                                                      str(tup[17]),
+                                                      )
+                                    else:
+                                        output_tup = (str(tup[0]),
+                                                      str(tup[1]),
+                                                      str(tup[2]),
+                                                      str(tup[7]),
+                                                      str(tup[8]),
+                                                      str(tup[4]),
+                                                      str(tup[3]),
+                                                      str(tup[5]),
+                                                      str(tup[6]),
+                                                      str(tup[17]),
+                                                      str(tup[9]),
+                                                      str(tup[10]),
+                                                      str(tup[11]),
+                                                      str(tup[12]),
+                                                      str(tup[13]),
+                                                      str(tup[15]),
+                                                      str(tup[16]),
+                                                      str(tup[19]),
+                                                      )
+                                    self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
+                                                       str, str, str, str, str, str] = output_tup
                                 else:
                                     vendor_fix: int = 0
                                     if len(tup[0]) != 0:
