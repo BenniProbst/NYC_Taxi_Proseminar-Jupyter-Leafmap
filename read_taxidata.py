@@ -65,32 +65,52 @@ class TaxiData:
 
                             count: int = 0
                             for tup in list_of_tuples_load:
-                                output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
-                                                  int, int, float, float, float, float, float, float,
-                                                  float, float] = (int(tup[0]),
-                                                                   datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S"),
-                                                                   datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
-                                                                   int(tup[3]),
-                                                                   float(tup[4]),
-                                                                   int(tup[5]),
-                                                                   str(tup[6]),
-                                                                   int(tup[7]),
-                                                                   int(tup[8]),
-                                                                   int(tup[9]),
-                                                                   float(tup[10]),
-                                                                   float(tup[11]),
-                                                                   float(tup[12]),
-                                                                   float(tup[13]),
-                                                                   float(tup[14]),
-                                                                   float(tup[15]),
-                                                                   float(tup[16]),
-                                                                   float(tup[17]))
-
                                 if count == 0:
-                                    self.header: Tuple[int, datetime, datetime, int, float, int, str, int,
-                                                       int, int, float, float, float, float, float, float,
-                                                       float, float] = output_tup
+                                    output_tup: Tuple[str, str, str, str, str, str, str, str, str, str, str, str, str,
+                                                      str, str, str, str, str] = (str(tup[0]),
+                                                                                  str(tup[1]),
+                                                                                  str(tup[2]),
+                                                                                  str(tup[3]),
+                                                                                  str(tup[4]),
+                                                                                  str(tup[5]),
+                                                                                  str(tup[6]),
+                                                                                  str(tup[7]),
+                                                                                  str(tup[8]),
+                                                                                  str(tup[9]),
+                                                                                  str(tup[10]),
+                                                                                  str(tup[11]),
+                                                                                  str(tup[12]),
+                                                                                  str(tup[13]),
+                                                                                  str(tup[14]),
+                                                                                  str(tup[15]),
+                                                                                  str(tup[16]),
+                                                                                  str(tup[17]),
+                                                                                  )
+                                    self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str, str,
+                                                       str, str, str, str, str] = output_tup
                                 else:
+                                    output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
+                                                      int, int, float, float, float, float, float, float,
+                                                      float, float] = (int(tup[0]),
+                                                                       datetime.strptime(str(tup[1]),
+                                                                                         "%Y-%m-%d %H:%M:%S"),
+                                                                       datetime.strptime(str(tup[2]),
+                                                                                         "%Y-%m-%d %H:%M:%S"),
+                                                                       int(tup[3]),
+                                                                       float(tup[4]),
+                                                                       int(tup[5]),
+                                                                       str(tup[6]),
+                                                                       int(tup[7]),
+                                                                       int(tup[8]),
+                                                                       int(tup[9]),
+                                                                       float(tup[10]),
+                                                                       float(tup[11]),
+                                                                       float(tup[12]),
+                                                                       float(tup[13]),
+                                                                       float(tup[14]),
+                                                                       float(tup[15]),
+                                                                       float(tup[16]),
+                                                                       float(tup[17]))
                                     list_of_tuples_load_typed.append(output_tup)
                                 count += 1
                             # sort to pickup time
