@@ -21,11 +21,20 @@ def list_taxi_month(files: List[str], taxi_type: str) -> List[datetime]:
     taxi_type_month: List[datetime] = []
     for file in files:
         if file.startswith(taxi_type):
-            taxi_type_month.append(datetime.strptime(file.split('_')[2], "%Y-%m"))
+            output_datetime: datetime = datetime.strptime(file.split('_')[2], "%Y-%m")
+            taxi_type_month.append(output_datetime)
     return taxi_type_month
 
 
 class TaxiData:
+
+    def get_date_files(self, year: int, month: int, day: int = 1) -> Dict[str, List[datetime]]:
+        taxi_color_types_filter: Dict[str, List[datetime]] = {}
+        for taxi_colors, taxi_times in self.taxi_color_types:
+            for taxi_color_times in taxi_times:
+                if datetime(year, month, day) == taxi_color_times:
+                    taxi_color_types_filter[taxi_colors].append(taxi_color_times)
+        return taxi_color_types_filter
 
     def __init__(self):
         self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
@@ -33,8 +42,8 @@ class TaxiData:
         # get available files
         self.taxi_files: List[str] = list_taxi_files('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
         # read available month to be read instantly
-        self.trip_types: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
-                                                      'green': list_taxi_month(self.taxi_files, 'green')}
+        self.taxi_color_types: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
+                                                            'green': list_taxi_month(self.taxi_files, 'green')}
 
         """
         with open('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/yellow_tripdata_2021-07.csv', 'r') as read_obj:
