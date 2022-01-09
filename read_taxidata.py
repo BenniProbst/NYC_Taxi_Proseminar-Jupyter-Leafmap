@@ -6,6 +6,7 @@ from typing import Dict
 from datetime import datetime
 import os
 import os.path
+import operator
 
 
 def list_taxi_files(folder: str) -> List[str]:
@@ -69,8 +70,9 @@ class TaxiData:
                                                                   float(tup[14]),
                                                                   float(tup[15]),
                                                                   float(tup[16]),
-                                                                  float(tup[17]),))
-
+                                                                  float(tup[17])))
+                            # sort to pickup time
+                            list_of_tuples_load_typed.sort(key=operator.itemgetter(1))
                 else:
                     return False
             else:
