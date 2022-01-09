@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 import os.path
 import operator
+from heapq import merge
 
 
 def list_taxi_files(folder: str) -> List[str]:
@@ -38,6 +39,7 @@ class TaxiData:
         return taxi_color_types_filter
 
     def load_available(self, available: Dict[str, List[datetime]]) -> bool:
+        self.data = []
         for taxi_color_request, times_request in available:
             if taxi_color_request in self.taxi_color_types_times.keys():
                 if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
@@ -72,7 +74,8 @@ class TaxiData:
                                                                   float(tup[16]),
                                                                   float(tup[17])))
                             # sort to pickup time
-                            list_of_tuples_load_typed.sort(key=operator.itemgetter(1))
+                            list_of_tuples_load_typed = sorted(list_of_tuples_load_typed, key=operator.itemgetter(1))
+                            self.data = list(merge(self.data, list_of_tuples_load_typed, key=operator.itemgetter(1)))
                 else:
                     return False
             else:
