@@ -3,7 +3,7 @@ from csv import reader
 from typing import Tuple
 from typing import List
 from typing import Dict
-from datetime import datetime
+from datetime import *
 import os
 import os.path
 import operator
@@ -34,7 +34,7 @@ class TaxiData:
 
     def get_date_files(self, year: int, month: int) -> Dict[str, List[datetime]]:
         taxi_color_types_filter: Dict[str, List[datetime]] = {}
-        request_datetime: datetime = datetime(year, month, 0)
+        request_datetime: datetime = datetime(year, month, 1)
         for taxi_colors, taxi_times in self.taxi_color_types_times.items():
             if request_datetime in taxi_times:
                 taxi_color_types_filter[taxi_colors].append(request_datetime)
