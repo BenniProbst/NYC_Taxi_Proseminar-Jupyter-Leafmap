@@ -37,18 +37,23 @@ class TaxiData:
         request_datetime: datetime = datetime(year, month, 1)
         for taxi_colors, taxi_times in self.taxi_color_types_times.items():
             if request_datetime in taxi_times:
+                if not (taxi_colors in taxi_color_types_filter.keys()):
+                    taxi_color_types_filter[taxi_colors] = []
                 taxi_color_types_filter[taxi_colors].append(request_datetime)
 
         return taxi_color_types_filter
 
     def load_available(self, available: Dict[str, List[datetime]]) -> bool:
         self.data = []
-        for taxi_color_request, times_request in available:
+        for taxi_color_request, times_request in available.items():
             if taxi_color_request in self.taxi_color_types_times.keys():
                 if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
-                    for time in times_request:
-                        with open(self.base_folder + taxi_color_request + '_tripdata_' + time.year + '-' + time.month +
-                                  '.csv', 'r') as read_obj:
+                    for times in times_request:
+                        build_month: str = str(times.month)
+                        while len(build_month) <= 1:
+                            build_month = str(0) + build_month
+                        build_file_name: str = self.base_folder + taxi_color_request + '_tripdata_' + str(times.year) + str('-') + build_month + '.csv'
+                        with open(build_file_name, 'r') as read_obj:
                             # pass the file object to reader() to get the reader object
                             csv_reader = reader(read_obj)
                             # Get all rows of csv from csv_reader object as list of tuples
@@ -57,25 +62,37 @@ class TaxiData:
                             list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int,
                                                                   int, int, float, float, float, float, float, float,
                                                                   float, float]] = []
+
+                            count: int = 0
                             for tup in list_of_tuples_load:
-                                list_of_tuples_load_typed.append((int(tup[0]),
-                                                                  datetime.strptime(tup[1], "%Y-%m-%d %H:%M:%S"),
-                                                                  datetime.strptime(tup[2], "%Y-%m-%d %H:%M:%S"),
-                                                                  int(tup[3]),
-                                                                  float(tup[4]),
-                                                                  int(tup[5]),
-                                                                  str(tup[6]),
-                                                                  int(tup[7]),
-                                                                  int(tup[8]),
-                                                                  int(tup[9]),
-                                                                  float(tup[10]),
-                                                                  float(tup[11]),
-                                                                  float(tup[12]),
-                                                                  float(tup[13]),
-                                                                  float(tup[14]),
-                                                                  float(tup[15]),
-                                                                  float(tup[16]),
-                                                                  float(tup[17])))
+                                output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
+                                                  int, int, float, float, float, float, float, float,
+                                                  float, float] = (int(tup[0]),
+                                                                   datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S"),
+                                                                   datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
+                                                                   int(tup[3]),
+                                                                   float(tup[4]),
+                                                                   int(tup[5]),
+                                                                   str(tup[6]),
+                                                                   int(tup[7]),
+                                                                   int(tup[8]),
+                                                                   int(tup[9]),
+                                                                   float(tup[10]),
+                                                                   float(tup[11]),
+                                                                   float(tup[12]),
+                                                                   float(tup[13]),
+                                                                   float(tup[14]),
+                                                                   float(tup[15]),
+                                                                   float(tup[16]),
+                                                                   float(tup[17]))
+
+                                if count == 0:
+                                    self.header: Tuple[int, datetime, datetime, int, float, int, str, int,
+                                                       int, int, float, float, float, float, float, float,
+                                                       float, float] = output_tup
+                                else:
+                                    list_of_tuples_load_typed.append(output_tup)
+                                count += 1
                             # sort to pickup time
                             list_of_tuples_load_typed = sorted(list_of_tuples_load_typed, key=operator.itemgetter(1))
                             self.data = list(merge(self.data, list_of_tuples_load_typed, key=operator.itemgetter(1)))
@@ -86,6 +103,7 @@ class TaxiData:
         return True
 
     def __init__(self, base: str):
+        self.header = None
         self.base_folder: str = base
         self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
                               float, float, float, float, float, float, float, float]] = []
