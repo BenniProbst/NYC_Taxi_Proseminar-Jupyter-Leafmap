@@ -1,18 +1,28 @@
 # open file in read mode
 from csv import reader
-from typing import Tuple
 from typing import NewType
 from typing import Tuple
+from typing import List
 from datetime import datetime
+import os
+import os.path
 
 
 # TODO create loading class with type hints
 
 
 class TaxiData:
+    def list_taxi_files(self, folder: str) -> List[str]:
+        taxi_files_raw: List[str] = os.listdir(folder)
+        taxi_files: List[str] = []
+        for file_name in taxi_files_raw:
+            if 'tripdata' in os.path.basename(file_name):
+                taxi_files.append(file_name)
+        return taxi_files
+
     def __init__(self):
-        self.data = NewType('taxi_data', Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float,
-                                               float, float, float, float, float, float, float])
+        self.data = NewType('taxi_data', List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
+                                                    float, float, float, float, float, float, float, float]])
         # open file in read mode
         with open('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/yellow_tripdata_2021-07.csv', 'r') as read_obj:
             # pass the file object to reader() to get the reader object
