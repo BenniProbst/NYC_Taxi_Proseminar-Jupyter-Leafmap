@@ -1,8 +1,8 @@
 # open file in read mode
 from csv import reader
-from typing import NewType
 from typing import Tuple
 from typing import List
+from typing import Dict
 from datetime import datetime
 import os
 import os.path
@@ -17,6 +17,14 @@ def list_taxi_files(folder: str) -> List[str]:
     return taxi_files
 
 
+def list_taxi_month(files: List[str], taxi_type: str) -> List[datetime]:
+    taxi_type_month: List[datetime] = []
+    for file in files:
+        if file.startswith(taxi_type):
+            taxi_type_month.append(datetime.strptime(file.split('_')[2], "%Y-%m"))
+    return taxi_type_month
+
+
 class TaxiData:
 
     def __init__(self):
@@ -25,7 +33,9 @@ class TaxiData:
         # get available files
         self.taxi_files: List[str] = list_taxi_files('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
         # read available month to be read instantly
-        
+        self.trip_types: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
+                                                      'green': list_taxi_month(self.taxi_files, 'green')}
+
         """
         with open('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/yellow_tripdata_2021-07.csv', 'r') as read_obj:
             # pass the file object to reader() to get the reader object
@@ -34,4 +44,3 @@ class TaxiData:
             # list_of_tuples = list(map(tuple, csv_reader))
             list_of_tuples_load = list(map(tuple, csv_reader))
         """
-
