@@ -36,6 +36,9 @@ class TaxiData:
                     taxi_color_types_filter[taxi_colors].append(taxi_color_times)
         return taxi_color_types_filter
 
+    def load_available(self, available: Dict[str, List[datetime]]) -> None:
+        
+
     def __init__(self):
         self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
                               float, float, float, float, float, float, float, float]] = []
