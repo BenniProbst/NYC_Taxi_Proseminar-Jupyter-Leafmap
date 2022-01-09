@@ -28,11 +28,11 @@ def list_taxi_month(files: List[str], taxi_type: str) -> List[datetime]:
 
 class TaxiData:
 
-    def get_date_files(self, year: int, month: int, day: int = 1) -> Dict[str, List[datetime]]:
+    def get_date_files(self, year: int, month: int) -> Dict[str, List[datetime]]:
         taxi_color_types_filter: Dict[str, List[datetime]] = {}
         for taxi_colors, taxi_times in self.taxi_color_types:
             for taxi_color_times in taxi_times:
-                if datetime(year, month, day) == taxi_color_times:
+                if datetime(year, month, 0) == taxi_color_times:
                     taxi_color_types_filter[taxi_colors].append(taxi_color_times)
         return taxi_color_types_filter
 
