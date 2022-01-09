@@ -14,7 +14,7 @@ def list_taxi_files(folder: str) -> List[str]:
     taxi_files_raw: List[str] = os.listdir(folder)
     taxi_files: List[str] = []
     for file_name in taxi_files_raw:
-        if 'tripdata' in os.path.basename(file_name):
+        if 'tripdata' in os.path.basename(file_name).split('.')[0]:
             taxi_files.append(file_name)
     return taxi_files
 
@@ -23,7 +23,9 @@ def list_taxi_month(files: List[str], taxi_type: str) -> List[datetime]:
     taxi_type_month: List[datetime] = []
     for file in files:
         if file.startswith(taxi_type):
-            output_datetime: datetime = datetime.strptime(file.split('_')[2], "%Y-%m")
+            datestring_csv: str = file.split('_')[2]
+            datestring: str = datestring_csv.split('.')[0]
+            output_datetime: datetime = datetime.strptime(datestring, "%Y-%m")
             taxi_type_month.append(output_datetime)
     return taxi_type_month
 
