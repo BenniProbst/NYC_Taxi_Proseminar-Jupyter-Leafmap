@@ -34,10 +34,11 @@ class TaxiData:
 
     def get_date_files(self, year: int, month: int) -> Dict[str, List[datetime]]:
         taxi_color_types_filter: Dict[str, List[datetime]] = {}
+        request_datetime: datetime = datetime(year, month, 0)
         for taxi_colors, taxi_times in self.taxi_color_types_times.items():
-            for taxi_color_times in taxi_times:
-                if datetime(year, month, 0) == taxi_color_times:
-                    taxi_color_types_filter[taxi_colors].append(taxi_color_times)
+            if request_datetime in taxi_times:
+                taxi_color_types_filter[taxi_colors].append(request_datetime)
+
         return taxi_color_types_filter
 
     def load_available(self, available: Dict[str, List[datetime]]) -> bool:
