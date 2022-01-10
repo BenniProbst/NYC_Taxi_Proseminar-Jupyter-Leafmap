@@ -205,7 +205,7 @@ class TaxiData:
                                                       float(tup[15]),
                                                       float(tup[16]),
                                                       congestion_surcharge_fix)
-                                list_of_tuples_load_typed.append(output_tup)
+                                    list_of_tuples_load_typed.append(output_tup)
                                 count += 1
                             # sort to pickup time
                             list_of_tuples_load_typed = sorted(list_of_tuples_load_typed, key=operator.itemgetter(1))
