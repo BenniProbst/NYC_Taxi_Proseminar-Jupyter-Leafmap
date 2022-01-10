@@ -212,6 +212,9 @@ class TaxiData:
             if taxi_color_request in self.taxi_color_types_times.keys():
                 if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
                     for times in times_request:
+                        if (taxi_color_request in self.already_loaded.keys()) and \
+                                (times in self.already_loaded[taxi_color_request]):
+                            continue
                         build_month: str = str(times.month)
                         while len(build_month) <= 1:
                             build_month = str(0) + build_month
@@ -234,6 +237,10 @@ class TaxiData:
                         self.threadlist.append(Process(target=self.__load_csv_multithread,
                                                        args=(build_file_name, taxi_color_request)))
                         self.threadlist[-1].start()
+                        if not (taxi_color_request in self.already_loaded.keys()):
+                            self.already_loaded[taxi_color_request]=[times]
+                        else:
+                            self.already_loaded[taxi_color_request].append(times)
                 else:
                     return False
             else:
@@ -245,7 +252,8 @@ class TaxiData:
 
     def load_available(self, available: Dict[str, List[datetime]]) -> bool:
         self.data = []
-        self.load_add_available(available)
+        self.already_loaded = {}
+        return self.load_add_available(available)
 
     def get_minimum_available_time(self, taxi_color: str = ''):
 
@@ -266,3 +274,4 @@ class TaxiData:
         # read available month to be read instantly
         self.taxi_color_types_times: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
                                                                   'green': list_taxi_month(self.taxi_files, 'green')}
+        self.already_loaded: Dict[str, List[datetime]] = {}
