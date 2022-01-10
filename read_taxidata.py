@@ -9,7 +9,6 @@ import os
 import os.path
 import operator
 from heapq import merge
-import multiprocessing
 from multiprocessing import Process, Lock
 
 
@@ -227,7 +226,7 @@ class TaxiData:
                             # Get all rows of csv from csv_reader object as list of tuples
                             list_of_tuples_load = list(map(tuple, csv_reader))
                             self.threadlist.append(Process(target=self.__load_csv_multithread,
-                                                          args=(list_of_tuples_load, taxi_color_request)))
+                                                           args=(list_of_tuples_load, taxi_color_request)))
                             self.threadlist[-1].start()
                 else:
                     return False
