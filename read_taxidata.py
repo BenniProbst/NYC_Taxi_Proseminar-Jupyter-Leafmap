@@ -216,6 +216,8 @@ class TaxiData:
                         build_file_name: str = self.base_folder + taxi_color_request + '_tripdata_' + str(
                             times.year) + str('-') + build_month + '.csv'
                         with open(build_file_name, 'r') as read_obj:
+                            # create maximum number of threads with one master and rest workers
+                            # don't reserve master thread for more speed
                             while True:
                                 for t in self.threadlist:
                                     if not t.is_alive():
@@ -229,6 +231,7 @@ class TaxiData:
                     return False
             else:
                 return False
+        # join all threads
         while True:
             for t in self.threadlist:
                 if not t.is_alive():
