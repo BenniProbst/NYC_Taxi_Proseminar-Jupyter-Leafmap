@@ -91,8 +91,8 @@ class TaxiData:
                                         congestion_surcharge
                                         """
                                         output_tup1 = (str(tup[0]),
-                                                       str(tup[1]),
-                                                       str(tup[2]),
+                                                       str(tup[1])[5:],
+                                                       str(tup[2])[5:],
                                                        str(tup[3]),
                                                        str(tup[4]),
                                                        str(tup[5]),
@@ -110,10 +110,9 @@ class TaxiData:
                                                        str(tup[17]),
                                                        )
                                     else:
-                                        # TODO: fix to yellow headers
                                         output_tup1 = (str(tup[0]),
-                                                       str(tup[1]),
-                                                       str(tup[2]),
+                                                       str(tup[1])[5:],
+                                                       str(tup[2])[5:],
                                                        str(tup[7]),
                                                        str(tup[8]),
                                                        str(tup[4]),
