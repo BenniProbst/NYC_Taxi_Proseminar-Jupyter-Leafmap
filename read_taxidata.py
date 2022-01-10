@@ -1,5 +1,4 @@
 # open file in read mode
-import multiprocessing
 from csv import reader
 from typing import Tuple
 from typing import List
