@@ -10,6 +10,7 @@ import os.path
 import operator
 from heapq import merge
 from multiprocessing import Process, Lock
+import time
 
 
 def list_taxi_files(folder: str) -> List[str]:
@@ -228,6 +229,8 @@ class TaxiData:
                             self.threadlist = newthreadlist
                             if len(self.threadlist) < multiprocessing.cpu_count():
                                 break
+                            else:
+                                time.sleep(0.2)
 
                         self.threadlist.append(Process(target=self.__load_csv_multithread,
                                                        args=(build_file_name, taxi_color_request)))
