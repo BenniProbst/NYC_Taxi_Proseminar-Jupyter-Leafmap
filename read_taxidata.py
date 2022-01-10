@@ -227,6 +227,7 @@ class TaxiData:
                                     break
                             self.threadlist.append(Thread(target=self.__load_csv_multithread,
                                                           args=(read_obj, taxi_color_request)))
+                            self.threadlist[-1].join()
                 else:
                     return False
             else:
