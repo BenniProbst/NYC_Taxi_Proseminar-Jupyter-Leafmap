@@ -46,9 +46,12 @@ class TaxiData:
 
         return taxi_color_types_filter
 
-    def __load_csv_multithread(self, build_file_name, taxi_color_request) -> None:
+    def __load_csv_multithread(self, build_file_name: str, taxi_color_request: str) -> None:
         self.iomutex.acquire()
         with open(build_file_name, 'r') as read_obj:
+            time_csv: str = os.path.basename(build_file_name).split('_')[2]
+            time_string: str = time_csv.split('.')[0]
+            time_month: datetime = datetime.strptime(time_string, "%Y-%m")
             # pass the file object to reader() to get the reader object
             csv_reader = reader(read_obj)
             self.iomutex.release()
@@ -127,6 +130,9 @@ class TaxiData:
                     self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
                                        str, str, str, str, str, str] = output_tup1
                 else:
+                    pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
+                    if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
+                        continue
                     output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
                                       int, int, float, float, float, float, float, float,
                                       float, float]
@@ -152,7 +158,7 @@ class TaxiData:
                             congestion_surcharge_fix = float(tup[17])
 
                         output_tup = (vendor_fix,
-                                      datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S"),
+                                      pickup_time,
                                       datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
                                       passenger_count_fix,
                                       float(tup[4]),
@@ -182,7 +188,7 @@ class TaxiData:
                             congestion_surcharge_fix = float(tup[19])
 
                         output_tup = (vendor_fix,
-                                      datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S"),
+                                      pickup_time,
                                       datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
                                       passenger_count_fix,
                                       float(tup[8]),
@@ -235,10 +241,10 @@ class TaxiData:
                                 time.sleep(0.2)
 
                         self.threadlist.append(Thread(target=self.__load_csv_multithread,
-                                                       args=(build_file_name, taxi_color_request)))
+                                                      args=(build_file_name, taxi_color_request)))
                         self.threadlist[-1].start()
                         if not (taxi_color_request in self.already_loaded.keys()):
-                            self.already_loaded[taxi_color_request]=[times]
+                            self.already_loaded[taxi_color_request] = [times]
                         else:
                             self.already_loaded[taxi_color_request].append(times)
                 else:
