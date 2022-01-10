@@ -234,10 +234,11 @@ class TaxiData:
                 return False
         # join all threads
         while True:
+            newthreadlist: List[Thread] = []
             for t in self.threadlist:
-                if not t.is_alive():
-                    t.handled = True
-            self.threadlist = [t for t in self.threadlist if not t.handled]
+                if t.is_alive():
+                    newthreadlist.append(t)
+            self.threadlist = newthreadlist
             if len(self.threadlist) == 0:
                 break
         return True
