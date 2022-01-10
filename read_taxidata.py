@@ -273,10 +273,33 @@ class TaxiData:
         min_d = self.data[0][1]
         self.datamutex.release()
         for tup in self.data:
-            if tup[1] > min_d:
+            if tup[1] < min_d:
                 min_d = tup[1]
 
         return min_d
+
+    def get_maximum_available_time(self, taxi_color: str = '') -> datetime:
+        # get minimum month of available files
+        max_d: datetime = self.taxi_color_types_times[self.taxi_color_types_times.keys()[0]][0]
+        if taxi_color == '':
+            for times in self.taxi_color_types_times.values():
+                for time_taxi in times:
+                    if time_taxi > max_d:
+                        max_d = time_taxi
+        else:
+            for time_taxi in self.taxi_color_types_times[taxi_color]:
+                if time_taxi > max_d:
+                    max_d = time_taxi
+        # load all minimum month files and get minimum time
+        self.load_add_available(self.get_date_files(max_d.year, max_d.month))
+        self.datamutex.acquire()
+        max_d = self.data[0][1]
+        self.datamutex.release()
+        for tup in self.data:
+            if tup[1] > max_d:
+                max_d = tup[1]
+
+        return max_d
 
     def __init__(self, base: str):
         self.datamutex: Lock() = Lock()
