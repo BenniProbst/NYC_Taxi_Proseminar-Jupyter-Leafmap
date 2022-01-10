@@ -110,6 +110,7 @@ class TaxiData:
                                                        str(tup[17]),
                                                        )
                                     else:
+                                        # TODO: fix to yellow headers
                                         output_tup1 = (str(tup[0]),
                                                        str(tup[1]),
                                                        str(tup[2]),
@@ -135,22 +136,24 @@ class TaxiData:
                                     output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
                                                       int, int, float, float, float, float, float, float,
                                                       float, float]
+
+                                    vendor_fix: int = 0
+                                    passenger_count_fix: int = 0
+                                    ratecount_id_fix: int = 0
+                                    store_and_fwd_flag_fix: str = '?'
+                                    payment_type_fix: int = 0
+                                    if len(tup[0]) != 0:
+                                        vendor_fix = int(tup[0])
                                     if taxi_color_request == 'yellow':
-                                        vendor_fix: int = 0
-                                        if len(tup[0]) != 0:
-                                            vendor_fix = int(tup[0])
-                                        passenger_count_fix: int = 0
                                         if len(tup[3]) != 0:
                                             passenger_count_fix = int(tup[3])
-                                        ratecount_id_fix: int = 0
                                         if len(tup[5]) != 0:
                                             ratecount_id_fix = int(tup[5])
-                                        store_and_fwd_flag_fix: str = '?'
                                         if len(tup[6]) != 0:
                                             store_and_fwd_flag_fix = str(tup[6])
-                                        payment_type_fix: int = 0
                                         if len(tup[9]) != 0:
                                             payment_type_fix = int(tup[9])
+
                                         output_tup = (vendor_fix,
                                                       datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S"),
                                                       datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
@@ -169,9 +172,35 @@ class TaxiData:
                                                       float(tup[15]),
                                                       float(tup[16]),
                                                       float(tup[17]))
-                                        list_of_tuples_load_typed.append(output_tup)
                                     else:
-                                        pass
+                                        if len(tup[7]) != 0:
+                                            passenger_count_fix = int(tup[7])
+                                        if len(tup[4]) != 0:
+                                            ratecount_id_fix = int(tup[4])
+                                        if len(tup[3]) != 0:
+                                            store_and_fwd_flag_fix = str(tup[3])
+                                        if len(tup[17]) != 0:
+                                            payment_type_fix = int(tup[17])
+
+                                        output_tup = (vendor_fix,
+                                                      datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S"),
+                                                      datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
+                                                      passenger_count_fix,
+                                                      float(tup[8]),
+                                                      ratecount_id_fix,
+                                                      store_and_fwd_flag_fix,
+                                                      int(tup[5]),
+                                                      int(tup[6]),
+                                                      payment_type_fix,
+                                                      float(tup[9]),
+                                                      float(tup[10]),
+                                                      float(tup[11]),
+                                                      float(tup[12]),
+                                                      float(tup[13]),
+                                                      float(tup[15]),
+                                                      float(tup[16]),
+                                                      float(tup[19]))
+                                list_of_tuples_load_typed.append(output_tup)
                                 count += 1
                             # sort to pickup time
                             list_of_tuples_load_typed = sorted(list_of_tuples_load_typed, key=operator.itemgetter(1))
