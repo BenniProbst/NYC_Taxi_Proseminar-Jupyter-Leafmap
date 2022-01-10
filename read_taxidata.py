@@ -207,8 +207,7 @@ class TaxiData:
             self.data = list(merge(self.data, list_of_tuples_load_typed, key=operator.itemgetter(1)))
             self.datamutex.release()
 
-    def load_available(self, available: Dict[str, List[datetime]]) -> bool:
-        self.data = []
+    def load_add_available(self, available: Dict[str, List[datetime]]) -> bool:
         for taxi_color_request, times_request in available.items():
             if taxi_color_request in self.taxi_color_types_times.keys():
                 if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
@@ -243,6 +242,16 @@ class TaxiData:
         for t in self.threadlist:
             t.join()
         return True
+
+    def load_available(self, available: Dict[str, List[datetime]]) -> bool:
+        self.data = []
+        self.load_add_available(available)
+
+    def get_minimum_available_time(self, taxi_color: str = ''):
+
+        if taxi_color == '':
+            for taxi_color, times in self.taxi_color_types_times.items():
+                pass
 
     def __init__(self, base: str):
         self.datamutex: Lock() = Lock()

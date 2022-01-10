@@ -9,6 +9,6 @@ import read_taxidata
 if __name__ == '__main__':
     print('Starting first leafmap test...')
     td = read_taxidata.TaxiData('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
-    td.load_available(td.get_date_files(2021, 7))
+    td.load_add_available(td.get_date_files(2021, 7))
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
