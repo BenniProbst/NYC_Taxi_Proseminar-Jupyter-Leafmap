@@ -139,27 +139,30 @@ class TaxiData:
 
                                     vendor_fix: int = 0
                                     passenger_count_fix: int = 0
-                                    ratecount_id_fix: int = 0
+                                    ratecodeid_fix: int = 0
                                     store_and_fwd_flag_fix: str = '?'
                                     payment_type_fix: int = 0
+                                    congestion_surcharge_fix: float = 0
                                     if len(tup[0]) != 0:
                                         vendor_fix = int(tup[0])
                                     if taxi_color_request == 'yellow':
                                         if len(tup[3]) != 0:
                                             passenger_count_fix = int(tup[3])
                                         if len(tup[5]) != 0:
-                                            ratecount_id_fix = int(tup[5])
+                                            ratecodeid_fix = int(tup[5])
                                         if len(tup[6]) != 0:
                                             store_and_fwd_flag_fix = str(tup[6])
                                         if len(tup[9]) != 0:
                                             payment_type_fix = int(tup[9])
+                                        if len(tup[17]) != 0:
+                                            congestion_surcharge_fix = float(tup[17])
 
                                         output_tup = (vendor_fix,
                                                       datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S"),
                                                       datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
                                                       passenger_count_fix,
                                                       float(tup[4]),
-                                                      ratecount_id_fix,
+                                                      ratecodeid_fix,
                                                       store_and_fwd_flag_fix,
                                                       int(tup[7]),
                                                       int(tup[8]),
@@ -171,23 +174,25 @@ class TaxiData:
                                                       float(tup[14]),
                                                       float(tup[15]),
                                                       float(tup[16]),
-                                                      float(tup[17]))
+                                                      congestion_surcharge_fix)
                                     else:
                                         if len(tup[7]) != 0:
                                             passenger_count_fix = int(tup[7])
                                         if len(tup[4]) != 0:
-                                            ratecount_id_fix = int(tup[4])
+                                            ratecodeid_fix = int(tup[4])
                                         if len(tup[3]) != 0:
                                             store_and_fwd_flag_fix = str(tup[3])
                                         if len(tup[17]) != 0:
                                             payment_type_fix = int(tup[17])
+                                        if len(tup[19]) != 0:
+                                            congestion_surcharge_fix = float(tup[19])
 
                                         output_tup = (vendor_fix,
                                                       datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S"),
                                                       datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
                                                       passenger_count_fix,
                                                       float(tup[8]),
-                                                      ratecount_id_fix,
+                                                      ratecodeid_fix,
                                                       store_and_fwd_flag_fix,
                                                       int(tup[5]),
                                                       int(tup[6]),
@@ -199,7 +204,7 @@ class TaxiData:
                                                       float(tup[13]),
                                                       float(tup[15]),
                                                       float(tup[16]),
-                                                      float(tup[19]))
+                                                      congestion_surcharge_fix)
                                 list_of_tuples_load_typed.append(output_tup)
                                 count += 1
                             # sort to pickup time
