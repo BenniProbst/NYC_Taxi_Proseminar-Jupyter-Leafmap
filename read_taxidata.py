@@ -10,7 +10,7 @@ import os.path
 import operator
 from heapq import merge
 import multiprocessing
-from threading import Thread, Lock
+from multiprocessing import Process, Lock
 
 
 def list_taxi_files(folder: str) -> List[str]:
@@ -214,7 +214,7 @@ class TaxiData:
                             # create maximum number of threads with one master and rest workers
                             # don't reserve master thread for more speed
                             while True:
-                                newthreadlist: List[Thread] = []
+                                newthreadlist: List[Process] = []
                                 for t in self.threadlist:
                                     if t.is_alive():
                                         newthreadlist.append(t)
@@ -226,7 +226,7 @@ class TaxiData:
                             csv_reader = reader(read_obj)
                             # Get all rows of csv from csv_reader object as list of tuples
                             list_of_tuples_load = list(map(tuple, csv_reader))
-                            self.threadlist.append(Thread(target=self.__load_csv_multithread,
+                            self.threadlist.append(Process(target=self.__load_csv_multithread,
                                                           args=(list_of_tuples_load, taxi_color_request)))
                             self.threadlist[-1].start()
                 else:
@@ -240,7 +240,7 @@ class TaxiData:
 
     def __init__(self, base: str):
         self.datamutex: Lock() = Lock()
-        self.threadlist: List[Thread] = []
+        self.threadlist: List[Process] = []
         self.header = None
         self.base_folder: str = base
         self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
