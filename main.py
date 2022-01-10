@@ -2,12 +2,13 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-from datetime import datetime
+import read_taxizone
 import read_taxidata
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print('Starting first leafmap test...')
+    tz = read_taxizone.TaxiZone('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/taxi+_zone_lookup.csv')
     td = read_taxidata.TaxiData('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
     td.load_add_available(td.get_date_files(2021, 3))
     print(td.get_minimum_available_pickup_time())
