@@ -1,12 +1,15 @@
 from typing import Tuple
 from typing import List
 from csv import reader
+import operator
 
 
 class TaxiZone:
 
     def get_location(self, loc_id: int) -> Tuple[int, str, str, str]:
-        return self.zones[loc_id]
+        for tup in self.zones:
+            if tup[0] == loc_id:
+                return tup
 
     def __init__(self, target_path: str):
         self.header: Tuple[str, str, str, str]
@@ -24,3 +27,4 @@ class TaxiZone:
                 else:
                     self.zones.append((int(tup[0]), str(tup[1]), str(tup[2]), str(tup[3])))
                 count += 1
+            self.zones.sort(key=operator.itemgetter(0))
