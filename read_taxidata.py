@@ -46,11 +46,8 @@ class TaxiData:
 
         return taxi_color_types_filter
 
-    def __load_csv_multithread(self, read_obj, taxi_color_request) -> None:
-        # pass the file object to reader() to get the reader object
-        csv_reader = reader(read_obj)
+    def __load_csv_multithread(self, csv_reader, taxi_color_request) -> None:
         # Get all rows of csv from csv_reader object as list of tuples
-        # list_of_tuples = list(map(tuple, csv_reader))
         list_of_tuples_load = list(map(tuple, csv_reader))
         list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int,
                                               int, int, float, float, float, float, float, float,
@@ -225,9 +222,11 @@ class TaxiData:
                                 self.threadlist = [t for t in self.threadlist if not t.handled]
                                 if len(self.threadlist) < multiprocessing.cpu_count():
                                     break
+                            # pass the file object to reader() to get the reader object
+                            csv_reader = reader(read_obj)
                             self.threadlist.append(Thread(target=self.__load_csv_multithread,
-                                                          args=(read_obj, taxi_color_request)))
-                            self.threadlist[-1].join()
+                                                          args=(csv_reader, taxi_color_request)))
+                            self.threadlist[-1].start()
                 else:
                     return False
             else:
