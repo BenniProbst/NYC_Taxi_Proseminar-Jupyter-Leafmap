@@ -255,7 +255,7 @@ class TaxiData:
         self.already_loaded = {}
         return self.load_add_available(available)
 
-    def get_minimum_available_off_time(self, taxi_color: str = '') -> datetime:
+    def get_minimum_available_pickup_time(self, taxi_color: str = '') -> datetime:
         # get minimum month of available files
         min_d: datetime = self.taxi_color_types_times[self.taxi_color_types_times.keys()[0]][0]
         if taxi_color == '':
@@ -278,7 +278,7 @@ class TaxiData:
 
         return min_d
 
-    def get_maximum_available_off_time(self, taxi_color: str = '') -> datetime:
+    def get_maximum_available_pickup_time(self, taxi_color: str = '') -> datetime:
         # get minimum month of available files
         max_d: datetime = self.taxi_color_types_times[self.taxi_color_types_times.keys()[0]][0]
         if taxi_color == '':
