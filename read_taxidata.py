@@ -67,7 +67,7 @@ class TaxiData:
                             count: int = 0
                             for tup in list_of_tuples_load:
                                 if count == 0:
-                                    output_tup: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
+                                    output_tup1: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
                                                       str, str, str, str, str, str]
                                     if taxi_color_request == 'yellow':
                                         """
@@ -90,86 +90,88 @@ class TaxiData:
                                         total_amount
                                         congestion_surcharge
                                         """
-                                        output_tup = (str(tup[0]),
-                                                      str(tup[1]),
-                                                      str(tup[2]),
-                                                      str(tup[3]),
-                                                      str(tup[4]),
-                                                      str(tup[5]),
-                                                      str(tup[6]),
-                                                      str(tup[7]),
-                                                      str(tup[8]),
-                                                      str(tup[9]),
-                                                      str(tup[10]),
-                                                      str(tup[11]),
-                                                      str(tup[12]),
-                                                      str(tup[13]),
-                                                      str(tup[14]),
-                                                      str(tup[15]),
-                                                      str(tup[16]),
-                                                      str(tup[17]),
-                                                      )
+                                        output_tup1 = (str(tup[0]),
+                                                       str(tup[1]),
+                                                       str(tup[2]),
+                                                       str(tup[3]),
+                                                       str(tup[4]),
+                                                       str(tup[5]),
+                                                       str(tup[6]),
+                                                       str(tup[7]),
+                                                       str(tup[8]),
+                                                       str(tup[9]),
+                                                       str(tup[10]),
+                                                       str(tup[11]),
+                                                       str(tup[12]),
+                                                       str(tup[13]),
+                                                       str(tup[14]),
+                                                       str(tup[15]),
+                                                       str(tup[16]),
+                                                       str(tup[17]),
+                                                       )
                                     else:
-                                        output_tup = (str(tup[0]),
-                                                      str(tup[1]),
-                                                      str(tup[2]),
-                                                      str(tup[7]),
-                                                      str(tup[8]),
-                                                      str(tup[4]),
-                                                      str(tup[3]),
-                                                      str(tup[5]),
-                                                      str(tup[6]),
-                                                      str(tup[17]),
-                                                      str(tup[9]),
-                                                      str(tup[10]),
-                                                      str(tup[11]),
-                                                      str(tup[12]),
-                                                      str(tup[13]),
-                                                      str(tup[15]),
-                                                      str(tup[16]),
-                                                      str(tup[19]),
-                                                      )
+                                        output_tup1 = (str(tup[0]),
+                                                       str(tup[1]),
+                                                       str(tup[2]),
+                                                       str(tup[7]),
+                                                       str(tup[8]),
+                                                       str(tup[4]),
+                                                       str(tup[3]),
+                                                       str(tup[5]),
+                                                       str(tup[6]),
+                                                       str(tup[17]),
+                                                       str(tup[9]),
+                                                       str(tup[10]),
+                                                       str(tup[11]),
+                                                       str(tup[12]),
+                                                       str(tup[13]),
+                                                       str(tup[15]),
+                                                       str(tup[16]),
+                                                       str(tup[19]),
+                                                       )
                                     self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
-                                                       str, str, str, str, str, str] = output_tup
+                                                       str, str, str, str, str, str] = output_tup1
                                 else:
-                                    vendor_fix: int = 0
-                                    if len(tup[0]) != 0:
-                                        vendor_fix = int(tup[0])
-                                    passenger_count_fix: int = 0
-                                    if len(tup[3]) != 0:
-                                        passenger_count_fix = int(tup[3])
-                                    ratecount_id_fix: int = 0
-                                    if len(tup[5]) != 0:
-                                        ratecount_id_fix = int(tup[5])
-                                    store_and_fwd_flag_fix: str = '?'
-                                    if len(tup[6]) != 0:
-                                        store_and_fwd_flag_fix = str(tup[6])
-                                    payment_type_fix: int = 0
-                                    if len(tup[9]) != 0:
-                                        payment_type_fix = int(tup[9])
                                     output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
                                                       int, int, float, float, float, float, float, float,
-                                                      float, float] = (vendor_fix,
-                                                                       datetime.strptime(str(tup[1]),
-                                                                                         "%Y-%m-%d %H:%M:%S"),
-                                                                       datetime.strptime(str(tup[2]),
-                                                                                         "%Y-%m-%d %H:%M:%S"),
-                                                                       passenger_count_fix,
-                                                                       float(tup[4]),
-                                                                       ratecount_id_fix,
-                                                                       store_and_fwd_flag_fix,
-                                                                       int(tup[7]),
-                                                                       int(tup[8]),
-                                                                       payment_type_fix,
-                                                                       float(tup[10]),
-                                                                       float(tup[11]),
-                                                                       float(tup[12]),
-                                                                       float(tup[13]),
-                                                                       float(tup[14]),
-                                                                       float(tup[15]),
-                                                                       float(tup[16]),
-                                                                       float(tup[17]))
-                                    list_of_tuples_load_typed.append(output_tup)
+                                                      float, float]
+                                    if taxi_color_request == 'yellow':
+                                        vendor_fix: int = 0
+                                        if len(tup[0]) != 0:
+                                            vendor_fix = int(tup[0])
+                                        passenger_count_fix: int = 0
+                                        if len(tup[3]) != 0:
+                                            passenger_count_fix = int(tup[3])
+                                        ratecount_id_fix: int = 0
+                                        if len(tup[5]) != 0:
+                                            ratecount_id_fix = int(tup[5])
+                                        store_and_fwd_flag_fix: str = '?'
+                                        if len(tup[6]) != 0:
+                                            store_and_fwd_flag_fix = str(tup[6])
+                                        payment_type_fix: int = 0
+                                        if len(tup[9]) != 0:
+                                            payment_type_fix = int(tup[9])
+                                        output_tup = (vendor_fix,
+                                                      datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S"),
+                                                      datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
+                                                      passenger_count_fix,
+                                                      float(tup[4]),
+                                                      ratecount_id_fix,
+                                                      store_and_fwd_flag_fix,
+                                                      int(tup[7]),
+                                                      int(tup[8]),
+                                                      payment_type_fix,
+                                                      float(tup[10]),
+                                                      float(tup[11]),
+                                                      float(tup[12]),
+                                                      float(tup[13]),
+                                                      float(tup[14]),
+                                                      float(tup[15]),
+                                                      float(tup[16]),
+                                                      float(tup[17]))
+                                        list_of_tuples_load_typed.append(output_tup)
+                                    else:
+                                        pass
                                 count += 1
                             # sort to pickup time
                             list_of_tuples_load_typed = sorted(list_of_tuples_load_typed, key=operator.itemgetter(1))
