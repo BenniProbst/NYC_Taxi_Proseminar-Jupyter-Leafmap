@@ -229,6 +229,13 @@ class TaxiData:
                     return False
             else:
                 return False
+        while True:
+            for t in self.threadlist:
+                if not t.is_alive():
+                    t.handled = True
+            self.threadlist = [t for t in self.threadlist if not t.handled]
+            if len(self.threadlist) == 0:
+                break
         return True
 
     def __init__(self, base: str):
