@@ -5,6 +5,9 @@ from csv import reader
 
 class TaxiZone:
 
+    def get_location(self, loc_id: int) -> Tuple[int, str, str, str]:
+        return self.zones[loc_id]
+
     def __init__(self, target_path: str):
         self.header: Tuple[str, str, str, str]
         self.zones: List[Tuple[int, str, str, str]] = []
