@@ -255,11 +255,28 @@ class TaxiData:
         self.already_loaded = {}
         return self.load_add_available(available)
 
-    def get_minimum_available_time(self, taxi_color: str = ''):
-
+    def get_minimum_available_time(self, taxi_color: str = '') -> datetime:
+        # get minimum month of available files
+        min_d: datetime = self.taxi_color_types_times[self.taxi_color_types_times.keys()[0]][0]
         if taxi_color == '':
-            for taxi_color, times in self.taxi_color_types_times.items():
-                pass
+            for times in self.taxi_color_types_times.values():
+                for time_taxi in times:
+                    if time_taxi < min_d:
+                        min_d = time_taxi
+        else:
+            for time_taxi in self.taxi_color_types_times[taxi_color]:
+                if time_taxi < min_d:
+                    min_d = time_taxi
+        # load all minimum month files and get minimum time
+        self.load_add_available(self.get_date_files(min_d.year, min_d.month))
+        self.datamutex.acquire()
+        min_d = self.data[0][1]
+        self.datamutex.release()
+        for tup in self.data:
+            if tup[1] > min_d:
+                min_d = tup[1]
+
+        return min_d
 
     def __init__(self, base: str):
         self.datamutex: Lock() = Lock()
