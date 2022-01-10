@@ -214,10 +214,11 @@ class TaxiData:
                             # create maximum number of threads with one master and rest workers
                             # don't reserve master thread for more speed
                             while True:
+                                newthreadlist: List[Thread] = []
                                 for t in self.threadlist:
-                                    if not t.is_alive():
-                                        t.handled = True
-                                self.threadlist = [t for t in self.threadlist if not t.handled]
+                                    if t.is_alive():
+                                        newthreadlist.append(t)
+                                self.threadlist = newthreadlist
                                 if len(self.threadlist) < multiprocessing.cpu_count():
                                     break
                             # pass the file object to reader() to get the reader object
