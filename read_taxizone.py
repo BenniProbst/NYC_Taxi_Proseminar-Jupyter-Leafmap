@@ -47,7 +47,11 @@ class TaxiZone:
                     most_likely_tup = neighborhood_tup
         else:
             for neighborhood_tup in candidates:
-                dist_cur = distance(n_name, candidates[2])
+                if len(neighborhood_tup[2]) == len(n_name):
+                    print('Length analysis showed that this should be correct:')
+                    print(neighborhood_tup)
+                    return neighborhood_tup
+                dist_cur = distance(n_name, neighborhood_tup[2])
                 if dist_cur < dist_lev:
                     dist_lev = dist_cur
                     most_likely_tup = neighborhood_tup
