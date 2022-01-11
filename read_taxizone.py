@@ -6,6 +6,10 @@ import operator
 from Levenshtein import distance
 
 
+def filter_brackets(input_string: str) -> str:
+    return input_string.replace('(', '').replace(')', '')
+
+
 class TaxiZone:
 
     def get_from_location_id(self, loc_id: int) -> Union[Tuple[int, str, str, str], None]:
@@ -20,21 +24,13 @@ class TaxiZone:
                 return tup
         return None
 
-    def filter_brackets(self, input: str) -> str:
-        filtered: str = ''
-        for n in input:
-            if n != '(' or n != ')':
-                filtered += n
-
-        return filtered
-
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
         # find max alikeness
         candidates: List[Tuple[int, str, str, str]] = []
         for neighborhood_tup in self.zones:
             if n_name.find(neighborhood_tup[2]) != -1 or neighborhood_tup[2].find(n_name) != -1 or \
-                    n_name.find(self.filter_brackets(neighborhood_tup[2])) != -1 or \
-                    neighborhood_tup[2].find(self.filter_brackets(n_name)) != -1:
+                    n_name.find(filter_brackets(neighborhood_tup[2])) != -1 or \
+                    neighborhood_tup[2].find(filter_brackets(n_name)) != -1:
                 candidates.append(neighborhood_tup)
 
         if len(candidates) == 1:
@@ -52,7 +48,7 @@ class TaxiZone:
         if len(candidates) == 0:
             for neighborhood_tup in self.zones:
                 dist_cur = min(distance(n_name, neighborhood_tup[2]),
-                               distance(self.filter_brackets(n_name), self.filter_brackets(neighborhood_tup[2])))
+                               distance(filter_brackets(n_name), filter_brackets(neighborhood_tup[2])))
                 if dist_cur < dist_lev:
                     dist_lev = dist_cur
                     most_likely_tup = neighborhood_tup
@@ -64,7 +60,7 @@ class TaxiZone:
                     print('')
                     return neighborhood_tup
                 dist_cur = min(distance(n_name, neighborhood_tup[2]),
-                               distance(self.filter_brackets(n_name), self.filter_brackets(neighborhood_tup[2])))
+                               distance(filter_brackets(n_name), filter_brackets(neighborhood_tup[2])))
                 if dist_cur < dist_lev:
                     dist_lev = dist_cur
                     most_likely_tup = neighborhood_tup
