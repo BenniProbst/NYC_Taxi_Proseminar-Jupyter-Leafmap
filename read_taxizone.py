@@ -25,7 +25,7 @@ class TaxiZone:
         return None
 
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
-        # find max alikeness
+        # find maximum alike taxi zone to the neighborhood name
         n_name.replace('-', '/')
         candidates = set()
         for neighborhood_tup in self.zones:

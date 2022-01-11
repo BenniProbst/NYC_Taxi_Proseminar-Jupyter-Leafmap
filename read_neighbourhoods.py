@@ -2,6 +2,7 @@ import json
 from typing import List
 from typing import Tuple
 import read_taxizone
+from Levenshtein import distance
 
 
 class NeighbourhoodData:
@@ -29,3 +30,29 @@ class NeighbourhoodData:
             else:
                 self.neighbourhoodTuples.append(data_tuple)
                 self.neighbourhoodPolynoms.append([polygon_list])
+
+        # double join
+        for zone_tup in tz.zones:
+            if not (zone_tup in self.neighbourhoodTuples):
+                min_dist: int = 99999
+                polygon_list: List[Tuple[float, float]] = []
+                loop_breaker: bool = False
+                for features in tmp_list['features']:
+                    for variants in zone_tup[2].split('/'):
+                        if features['properties']['NTAName'].find(variants) != -1:
+                            if features['geometry']['type'] == 'MultiPolygon':
+                                for point in features['geometry']['coordinates'][0][0]:
+                                    polygon_list.append((float(point[0]), float(point[1])))
+                            else:
+                                if features['geometry']['type'] == 'Polygon':
+                                    for point in features['geometry']['coordinates'][0]:
+                                        polygon_list.append((float(point[0]), float(point[1])))
+                            self.neighbourhoodTuples.append(zone_tup)
+                            self.neighbourhoodPolynoms.append([polygon_list])
+                            loop_breaker = True
+                            break
+                        cur_dist = distance(variants, features['properties']['NTAName'])
+                    if loop_breaker:
+                        break
+
+
