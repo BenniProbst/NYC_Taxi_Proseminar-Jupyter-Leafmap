@@ -27,7 +27,7 @@ class TaxiZone:
 
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
         # find max alikeness
-        candidates: Set[Tuple[int, str, str, str]] = {}
+        candidates = set()
         for neighborhood_tup in self.zones:
             for name_variants in neighborhood_tup[2].split('/'):
                 if n_name.find(name_variants) != -1 or name_variants.find(n_name) != -1 or \
@@ -37,7 +37,8 @@ class TaxiZone:
                         candidates.add(neighborhood_tup)
 
         if len(candidates) == 1:
-            return candidates[0]
+            for c in candidates:
+                return c
 
         if len(candidates) == 0:
             print('Not really found: ' + n_name)
