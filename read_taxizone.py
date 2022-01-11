@@ -27,6 +27,7 @@ class TaxiZone:
 
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
         # find max alikeness
+        n_name.replace('-', '/')
         candidates = set()
         for neighborhood_tup in self.zones:
             for name_variants in neighborhood_tup[2].split('/'):
