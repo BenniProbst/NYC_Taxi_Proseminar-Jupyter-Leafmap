@@ -31,9 +31,10 @@ class TaxiZone:
             return candidates[0]
 
         if len(candidates) == 0:
-            print('Not really found: '+n_name)
+            print('Not really found: ' + n_name)
         else:
             print('Multiple found: ' + n_name)
+            print(candidates)
 
         # find min dist
         dist_lev: int = 999999
@@ -43,6 +44,9 @@ class TaxiZone:
             if dist_cur < dist_lev:
                 dist_lev = dist_cur
                 most_likely_tup = neighborhood_tup
+
+        print('Estimated this information instead:')
+        print(most_likely_tup)
 
         return most_likely_tup
 
