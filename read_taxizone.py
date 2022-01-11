@@ -6,9 +6,14 @@ import operator
 
 class TaxiZone:
 
-    def get_location(self, loc_id: int) -> Tuple[int, str, str, str]:
+    def get_from_location_id(self, loc_id: int) -> Tuple[int, str, str, str]:
         for tup in self.zones:
             if tup[0] == loc_id:
+                return tup
+
+    def get_from_neighbourhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
+        for tup in self.zones:
+            if tup[3] == n_name:
                 return tup
 
     def __init__(self, target_path: str):
