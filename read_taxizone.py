@@ -1,5 +1,6 @@
 from typing import Tuple, List
 from typing import List
+from typing import Set
 from typing import Union
 from csv import reader
 import operator
@@ -26,12 +27,14 @@ class TaxiZone:
 
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
         # find max alikeness
-        candidates: List[Tuple[int, str, str, str]] = []
+        candidates: Set[Tuple[int, str, str, str]] = {}
         for neighborhood_tup in self.zones:
-            if n_name.find(neighborhood_tup[2]) != -1 or neighborhood_tup[2].find(n_name) != -1 or \
-                    n_name.find(filter_brackets(neighborhood_tup[2])) != -1 or \
-                    neighborhood_tup[2].find(filter_brackets(n_name)) != -1:
-                candidates.append(neighborhood_tup)
+            for name_variants in neighborhood_tup[2].split('/'):
+                if n_name.find(name_variants) != -1 or name_variants.find(n_name) != -1 or \
+                        n_name.find(filter_brackets(name_variants)) != -1 or \
+                        name_variants.find(filter_brackets(n_name)) != -1:
+                    if not set(neighborhood_tup).issubset(candidates):
+                        candidates.add(neighborhood_tup)
 
         if len(candidates) == 1:
             return candidates[0]
@@ -47,23 +50,25 @@ class TaxiZone:
         most_likely_tup: Tuple[int, str, str, str] = self.zones[0]
         if len(candidates) == 0:
             for neighborhood_tup in self.zones:
-                dist_cur = min(distance(n_name, neighborhood_tup[2]),
-                               distance(filter_brackets(n_name), filter_brackets(neighborhood_tup[2])))
-                if dist_cur < dist_lev:
-                    dist_lev = dist_cur
-                    most_likely_tup = neighborhood_tup
+                for name_variants in neighborhood_tup[2].split('/'):
+                    dist_cur = min(distance(n_name, name_variants),
+                                   distance(filter_brackets(n_name), filter_brackets(name_variants)))
+                    if dist_cur < dist_lev:
+                        dist_lev = dist_cur
+                        most_likely_tup = neighborhood_tup
         else:
             for neighborhood_tup in candidates:
-                if len(neighborhood_tup[2]) == len(n_name):
-                    print('Length analysis showed that this should be correct on the input taxi lookup table:')
-                    print(neighborhood_tup)
-                    print('')
-                    return neighborhood_tup
-                dist_cur = min(distance(n_name, neighborhood_tup[2]),
-                               distance(filter_brackets(n_name), filter_brackets(neighborhood_tup[2])))
-                if dist_cur < dist_lev:
-                    dist_lev = dist_cur
-                    most_likely_tup = neighborhood_tup
+                for name_variants in neighborhood_tup[2].split('/'):
+                    if len(name_variants) == len(n_name) and name_variants == n_name:
+                        print('Length analysis showed that this should be correct on the input taxi lookup table:')
+                        print(neighborhood_tup)
+                        print('')
+                        return neighborhood_tup
+                    dist_cur = min(distance(n_name, name_variants),
+                                   distance(filter_brackets(n_name), filter_brackets(name_variants)))
+                    if dist_cur < dist_lev:
+                        dist_lev = dist_cur
+                        most_likely_tup = neighborhood_tup
 
         print('Estimated this very alike information instead on the taxi lookup table:')
         print(most_likely_tup)
