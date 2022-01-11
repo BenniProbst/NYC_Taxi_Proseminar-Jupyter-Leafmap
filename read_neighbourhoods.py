@@ -70,7 +70,12 @@ class NeighbourhoodData:
                                       features['properties']['NTAName'])
                                 break
                             else:
-                                cur_dist = abs(len(variants) - len(features['properties']['NTAName']))
+                                cur_dist = 0
+                                if len(variants) > len(features['properties']['NTAName']):
+                                    cur_dist = abs(len(variants) - len(features['properties']['NTAName']))
+                                else:
+                                    cur_dist = len(features['properties']['NTAName']) - abs(len(variants))
+
                                 if cur_dist < min_dist:
                                     min_dist = cur_dist
                                     polygon_list = cur_polygon_list
