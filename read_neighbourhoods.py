@@ -41,6 +41,7 @@ class NeighbourhoodData:
             if not (zone_tup in self.neighbourhoodTuples):
                 min_dist: int = 99999
                 polygon_list: List[Tuple[float, float]] = []
+                neighborhood_name: str = ''
                 loop_breaker: bool = False
                 for features in tmp_list['features']:
                     for variants in zone_tup[2].split('/'):
@@ -60,6 +61,8 @@ class NeighbourhoodData:
                             self.neighbourhoodTuples.append(zone_tup)
                             self.neighbourhoodPolynoms.append([polygon_list])
                             loop_breaker = True
+                            print('Double joined missing tuple '+str(zone_tup)+' to the neighborhood '+
+                                  features['properties']['NTAName'])
                             break
                         cur_dist = distance(variants, features['properties']['NTAName'])
                         if cur_dist < min_dist:
@@ -73,11 +76,14 @@ class NeighbourhoodData:
                                     for point in features['geometry']['coordinates'][0]:
                                         cur_polygon_list.append((float(point[0]), float(point[1])))
                             polygon_list = cur_polygon_list
+                            neighborhood_name = features['properties']['NTAName']
                     if loop_breaker:
                         break
 
                 if not loop_breaker:
                     self.neighbourhoodTuples.append(zone_tup)
                     self.neighbourhoodPolynoms.append([polygon_list])
+                    print('Double joined missing tuple ' + str(zone_tup) + ' to the neighborhood ' +
+                          neighborhood_name)
 
 
