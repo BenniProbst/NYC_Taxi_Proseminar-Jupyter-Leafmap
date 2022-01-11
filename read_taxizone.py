@@ -47,7 +47,7 @@ class TaxiZone:
                     most_likely_tup = neighborhood_tup
         else:
             for neighborhood_tup in candidates:
-                dist_cur = distance(n_name, neighborhood_tup[2])
+                dist_cur = distance(n_name, candidates[2])
                 if dist_cur < dist_lev:
                     dist_lev = dist_cur
                     most_likely_tup = neighborhood_tup
