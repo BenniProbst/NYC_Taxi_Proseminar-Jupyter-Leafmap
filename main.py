@@ -10,8 +10,7 @@ from leafmap import leafmap
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    tz = read_taxizone.TaxiZone('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/taxi+_zone_lookup.csv')
-    print('Printing neighbourhood Williamsburg:')
-    print(tz.get_from_neighbourhood_name('Williamsburg (North Side)'))
+    pass
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
