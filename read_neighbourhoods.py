@@ -15,8 +15,6 @@ class NeighbourhoodData:
         tmp_list = json.loads(open(path, 'r').read())
         for features in tmp_list['features']:
             data_tuple: Tuple[int, str, str, str] = tz.get_alike_from_neighborhood_name(features['properties']['neighborhood'])
-            if data_tuple is None:
-                continue
             polygon_list: List[Tuple[float, float]] = []
             for point in features['geometry']['coordinates'][0][0]:
                 polygon_list.append((float(point[0]), float(point[1])))

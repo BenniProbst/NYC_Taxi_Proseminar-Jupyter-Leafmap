@@ -21,8 +21,12 @@ class TaxiZone:
         return None
 
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
-        dist: int = distance(n_name, self.zones[0][2])
+        for neighborhood_tup in self.zones:
+            if set(n_name).issubset(neighborhood_tup[2]) or set(neighborhood_tup[2]).issubset(n_name):
+                return neighborhood_tup
+
         most_likely_tup: Tuple[int, str, str, str] = self.zones[0]
+        dist: int = distance(n_name, self.zones[0][2])
         for neighborhood_tup in self.zones:
             dist_cur = distance(n_name, neighborhood_tup[2])
             if dist_cur < dist:
@@ -30,7 +34,6 @@ class TaxiZone:
                 most_likely_tup = neighborhood_tup
 
         return most_likely_tup
-
 
     def __init__(self, target_path: str):
         self.header: Tuple[str, str, str, str]
