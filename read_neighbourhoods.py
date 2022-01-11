@@ -7,7 +7,18 @@ from Levenshtein import distance
 
 class NeighbourhoodData:
 
+    def central_points(self):
+        for polygon_array in self.neighbourhoodPolynoms:
+            polygon_centers: List[Tuple[float, float]] = []
+            for polygon in polygon_array:
+                central_point: List[float, float] = [0, 0]
+                for point in polygon:
+                    pass
+                pass
+
+
     def __init__(self, path):
+        self.centrals: List[Tuple[float, float]] = []
         tz = read_taxizone.TaxiZone('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/taxi+_zone_lookup.csv')
         self.neighbourhoodTuples: List[Tuple[int, str, str, str]] = []
         # multiple neighborhood polynoms for every taxi zone
