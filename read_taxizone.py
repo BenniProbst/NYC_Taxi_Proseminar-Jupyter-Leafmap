@@ -22,9 +22,18 @@ class TaxiZone:
 
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
         # find max alikeness
+        candidates: List[Tuple[int, str, str, str]] = []
         for neighborhood_tup in self.zones:
             if n_name.find(neighborhood_tup[2]) != -1 or neighborhood_tup[2].find(n_name) != -1:
-                return neighborhood_tup
+                candidates.append(neighborhood_tup)
+
+        if len(candidates) == 1:
+            return candidates[0]
+
+        if len(candidates) == 0:
+            print('Not really found: '+n_name)
+        else:
+            print('Multiple found: ' + n_name)
 
         # find min dist
         dist_lev: int = 999999
