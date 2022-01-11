@@ -3,6 +3,7 @@ from typing import List
 from typing import Union
 from csv import reader
 import operator
+from Levenshtein import distance
 
 
 class TaxiZone:
@@ -18,6 +19,18 @@ class TaxiZone:
             if tup[2] == n_name:
                 return tup
         return None
+
+    def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
+        dist: int = distance(n_name, self.zones[0][2])
+        most_likely_tup: Tuple[int, str, str, str]
+        for neighborhood_tup in self.zones:
+            dist_cur = distance(n_name, neighborhood_tup[2])
+            if dist_cur < dist:
+                dist = dist_cur
+                most_likely_tup = neighborhood_tup
+
+        return most_likely_tup
+
 
     def __init__(self, target_path: str):
         self.header: Tuple[str, str, str, str]
