@@ -14,13 +14,18 @@ class NeighbourhoodData:
         self.neighbourhoodPolynoms: List[List[Tuple[float, float]]] = []
         tmp_list = json.loads(open(path, 'r').read())
         for features in tmp_list['features']:
-            data_tuple: Tuple[int, str, str, str] = tz.get_alike_from_neighborhood_name(features['properties']['neighborhood'])
+            data_tuple: Tuple[int, str, str, str] = tz.get_alike_from_neighborhood_name(features['properties']['NTAName'])
             polygon_list: List[Tuple[float, float]] = []
-            for point in features['geometry']['coordinates'][0][0]:
-                polygon_list.append((float(point[0]), float(point[1])))
+            if features['geometry']['type'] == 'MultiPolygon':
+                for point in features['geometry']['coordinates'][0][0]:
+                    polygon_list.append((float(point[0]), float(point[1])))
+            else:
+                if features['geometry']['type'] == 'Polygon':
+                    for point in features['geometry']['coordinates'][0]:
+                        polygon_list.append((float(point[0]), float(point[1])))
             new_data_tuple: Tuple[int, str, str, str]
-            if features['properties']['cartodb_id'] != data_tuple[2]:
-                new_data_tuple = (data_tuple[0], data_tuple[1], features['properties']['cartodb_id'], data_tuple[3])
+            if features['properties']['NTAName'] != data_tuple[2]:
+                new_data_tuple = (data_tuple[0], data_tuple[1], features['properties']['NTAName'], data_tuple[3])
             else:
                 new_data_tuple = data_tuple
 
