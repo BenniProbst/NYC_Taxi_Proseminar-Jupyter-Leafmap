@@ -1,8 +1,6 @@
 import json
-from typing import Dict
 from typing import List
 from typing import Tuple
-from typing import Union
 import read_taxizone
 
 
