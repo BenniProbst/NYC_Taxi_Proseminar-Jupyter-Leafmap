@@ -51,12 +51,6 @@ class NeighbourhoodData:
                             loop_breaker = True
                             print('Draw '+variants+' to outer New York.')
                             break
-                        if variants == 'Bronxville':
-                            self.neighbourhoodTuples.append(zone_tup)
-                            self.neighbourhoodPolynoms.append([[(40.94108, -73.83187)]])
-                            loop_breaker = True
-                            print('Draw ' + variants + ' to outer New York.')
-                            break
                         if features['properties']['NTAName'].find(variants) != -1:
                             if features['geometry']['type'] == 'MultiPolygon':
                                 for point in features['geometry']['coordinates'][0][0]:
