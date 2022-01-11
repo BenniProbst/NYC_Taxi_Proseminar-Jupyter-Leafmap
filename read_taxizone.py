@@ -51,7 +51,8 @@ class TaxiZone:
         most_likely_tup: Tuple[int, str, str, str] = self.zones[0]
         if len(candidates) == 0:
             for neighborhood_tup in self.zones:
-                dist_cur = distance(n_name, neighborhood_tup[2])
+                dist_cur = min(distance(n_name, neighborhood_tup[2]),
+                               distance(self.filter_brackets(n_name), self.filter_brackets(neighborhood_tup[2])))
                 if dist_cur < dist_lev:
                     dist_lev = dist_cur
                     most_likely_tup = neighborhood_tup
@@ -62,7 +63,8 @@ class TaxiZone:
                     print(neighborhood_tup)
                     print('')
                     return neighborhood_tup
-                dist_cur = distance(n_name, neighborhood_tup[2])
+                dist_cur = min(distance(n_name, neighborhood_tup[2]),
+                               distance(self.filter_brackets(n_name), self.filter_brackets(neighborhood_tup[2])))
                 if dist_cur < dist_lev:
                     dist_lev = dist_cur
                     most_likely_tup = neighborhood_tup
