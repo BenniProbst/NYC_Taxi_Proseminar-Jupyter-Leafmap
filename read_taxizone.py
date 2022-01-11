@@ -13,7 +13,7 @@ class TaxiZone:
 
     def get_from_neighbourhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
         for tup in self.zones:
-            if tup[3] == n_name:
+            if tup[2] == n_name:
                 return tup
 
     def __init__(self, target_path: str):
