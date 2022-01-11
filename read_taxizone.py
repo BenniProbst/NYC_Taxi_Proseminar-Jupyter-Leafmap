@@ -48,16 +48,18 @@ class TaxiZone:
         else:
             for neighborhood_tup in candidates:
                 if len(neighborhood_tup[2]) == len(n_name):
-                    print('Length analysis showed that this should be correct:')
+                    print('Length analysis showed that this should be correct on the input taxi lookup table:')
                     print(neighborhood_tup)
+                    print('')
                     return neighborhood_tup
                 dist_cur = distance(n_name, neighborhood_tup[2])
                 if dist_cur < dist_lev:
                     dist_lev = dist_cur
                     most_likely_tup = neighborhood_tup
 
-        print('Estimated this information instead:')
+        print('Estimated this very alike information instead on the taxi lookup table:')
         print(most_likely_tup)
+        print('')
 
         return most_likely_tup
 

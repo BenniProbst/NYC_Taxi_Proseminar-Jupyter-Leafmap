@@ -6,7 +6,7 @@ from read_neighbourhoods import NeighbourhoodData
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    nd = NeighbourhoodData('/home/benjamin-elias/Proseminar/Jupyterlab/nyc_neighborhoods.geo.json')
+    nd = NeighbourhoodData('/home/benjamin-elias/Proseminar/Jupyterlab/nyc-neighborhoods.geo.json')
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
