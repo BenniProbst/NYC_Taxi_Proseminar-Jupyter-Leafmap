@@ -52,7 +52,22 @@ class NeighbourhoodData:
                             loop_breaker = True
                             break
                         cur_dist = distance(variants, features['properties']['NTAName'])
+                        if cur_dist < min_dist:
+                            min_dist = cur_dist
+                            cur_polygon_list: List[Tuple[float, float]] = []
+                            if features['geometry']['type'] == 'MultiPolygon':
+                                for point in features['geometry']['coordinates'][0][0]:
+                                    cur_polygon_list.append((float(point[0]), float(point[1])))
+                            else:
+                                if features['geometry']['type'] == 'Polygon':
+                                    for point in features['geometry']['coordinates'][0]:
+                                        cur_polygon_list.append((float(point[0]), float(point[1])))
+                            polygon_list = cur_polygon_list
                     if loop_breaker:
                         break
+
+                if not loop_breaker:
+                    self.neighbourhoodTuples.append(zone_tup)
+                    self.neighbourhoodPolynoms.append([polygon_list])
 
 
