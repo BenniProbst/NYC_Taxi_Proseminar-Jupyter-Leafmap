@@ -21,16 +21,18 @@ class TaxiZone:
         return None
 
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
+        # find max alikeness
         for neighborhood_tup in self.zones:
-            if set(n_name).issubset(neighborhood_tup[2]) or set(neighborhood_tup[2]).issubset(n_name):
+            if n_name.find(neighborhood_tup[2]) != -1 or neighborhood_tup[2].find(n_name) != -1:
                 return neighborhood_tup
 
+        # find min dist
+        dist_lev: int = 999999
         most_likely_tup: Tuple[int, str, str, str] = self.zones[0]
-        dist: int = distance(n_name, self.zones[0][2])
         for neighborhood_tup in self.zones:
             dist_cur = distance(n_name, neighborhood_tup[2])
-            if dist_cur < dist:
-                dist = dist_cur
+            if dist_cur < dist_lev:
+                dist_lev = dist_cur
                 most_likely_tup = neighborhood_tup
 
         return most_likely_tup
