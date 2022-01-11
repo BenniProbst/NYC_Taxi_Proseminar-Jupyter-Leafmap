@@ -64,7 +64,7 @@ class NeighbourhoodData:
                                         for point in features['geometry']['coordinates'][0]:
                                             cur_polygon_list.append((float(point[0]), float(point[1])))
 
-                                if variants == neighborhood_name_tmp_i:
+                                if variants == neighborhood_name_tmp_i or neighborhood_name_tmp_i.startswith(variants):
                                     self.neighbourhoodTuples.append(zone_tup)
                                     self.neighbourhoodPolynoms.append([cur_polygon_list])
                                     loop_breaker = True
