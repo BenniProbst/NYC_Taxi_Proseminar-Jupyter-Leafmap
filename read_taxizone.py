@@ -1,20 +1,23 @@
 from typing import Tuple
 from typing import List
+from typing import Union
 from csv import reader
 import operator
 
 
 class TaxiZone:
 
-    def get_from_location_id(self, loc_id: int) -> Tuple[int, str, str, str]:
+    def get_from_location_id(self, loc_id: int) -> Union[Tuple[int, str, str, str], None]:
         for tup in self.zones:
             if tup[0] == loc_id:
                 return tup
+        return None
 
-    def get_from_neighbourhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
+    def get_from_neighbourhood_name(self, n_name: str) -> Union[Tuple[int, str, str, str], None]:
         for tup in self.zones:
             if tup[2] == n_name:
                 return tup
+        return None
 
     def __init__(self, target_path: str):
         self.header: Tuple[str, str, str, str]
