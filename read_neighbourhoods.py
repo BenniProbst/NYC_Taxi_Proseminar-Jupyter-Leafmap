@@ -53,6 +53,7 @@ class NeighbourhoodData:
                             break
                         cur_polygon_list: List[Tuple[float, float]] = []
                         if features['properties']['NTAName'].find(variants) != -1:
+                            # alike string name of neighborhood was found in geojson
                             if features['geometry']['type'] == 'MultiPolygon':
                                 for point in features['geometry']['coordinates'][0][0]:
                                     cur_polygon_list.append((float(point[0]), float(point[1])))
