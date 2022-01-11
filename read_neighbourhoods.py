@@ -44,6 +44,11 @@ class NeighbourhoodData:
                 loop_breaker: bool = False
                 for features in tmp_list['features']:
                     for variants in zone_tup[2].split('/'):
+                        if variants == 'Newark Airport':
+                            self.neighbourhoodTuples.append(zone_tup)
+                            self.neighbourhoodPolynoms.append([[(40.68883, -74.18003)]])
+                            loop_breaker = True
+                            break
                         if features['properties']['NTAName'].find(variants) != -1:
                             if features['geometry']['type'] == 'MultiPolygon':
                                 for point in features['geometry']['coordinates'][0][0]:
