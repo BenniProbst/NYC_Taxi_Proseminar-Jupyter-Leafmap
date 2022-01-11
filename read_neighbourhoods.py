@@ -44,55 +44,59 @@ class NeighbourhoodData:
                 neighborhood_name: str = ''
                 loop_breaker: bool = False
                 for features in tmp_list['features']:
-                    for variants in zone_tup[2].split('/'):
-                        if variants == 'Newark Airport':
-                            self.neighbourhoodTuples.append(zone_tup)
-                            self.neighbourhoodPolynoms.append([[(40.68883, -74.18003)]])
-                            loop_breaker = True
-                            print('Draw '+variants+' to outer New York.')
-                            break
-                        cur_polygon_list: List[Tuple[float, float]] = []
-                        if features['properties']['NTAName'].find(variants) != -1:
-                            # alike string name of neighborhood was found in geojson
-                            if features['geometry']['type'] == 'MultiPolygon':
-                                for point in features['geometry']['coordinates'][0][0]:
-                                    cur_polygon_list.append((float(point[0]), float(point[1])))
-                            else:
-                                if features['geometry']['type'] == 'Polygon':
-                                    for point in features['geometry']['coordinates'][0]:
-                                        cur_polygon_list.append((float(point[0]), float(point[1])))
-
-                            if variants == features['properties']['NTAName']:
+                    neighborhood_name_tmp = features['properties']['NTAName'].replace('-', '/')
+                    for neighborhood_name_tmp_i in neighborhood_name_tmp.split('/'):
+                        for variants in zone_tup[2].split('/'):
+                            if variants == 'Newark Airport':
                                 self.neighbourhoodTuples.append(zone_tup)
-                                self.neighbourhoodPolynoms.append([cur_polygon_list])
+                                self.neighbourhoodPolynoms.append([[(40.68883, -74.18003)]])
                                 loop_breaker = True
-                                print('Double joined missing tuple '+str(zone_tup)+' to the neighborhood '+
-                                      features['properties']['NTAName'])
+                                print('Draw '+variants+' to outer New York.')
                                 break
-                            else:
-                                cur_dist = 0
-                                if len(variants) > len(features['properties']['NTAName']):
-                                    cur_dist = abs(len(variants) - len(features['properties']['NTAName']))
-                                else:
-                                    cur_dist = len(features['properties']['NTAName']) - abs(len(variants))
-
-                                if cur_dist < min_dist:
-                                    min_dist = cur_dist
-                                    polygon_list = cur_polygon_list
-                                    neighborhood_name = features['properties']['NTAName']
-
-                        cur_dist = distance(variants, features['properties']['NTAName'])
-                        if cur_dist < min_dist:
-                            min_dist = cur_dist
-                            if features['geometry']['type'] == 'MultiPolygon':
-                                for point in features['geometry']['coordinates'][0][0]:
-                                    cur_polygon_list.append((float(point[0]), float(point[1])))
-                            else:
-                                if features['geometry']['type'] == 'Polygon':
-                                    for point in features['geometry']['coordinates'][0]:
+                            cur_polygon_list: List[Tuple[float, float]] = []
+                            if neighborhood_name_tmp_i.find(variants) != -1:
+                                # alike string name of neighborhood was found in geojson
+                                if features['geometry']['type'] == 'MultiPolygon':
+                                    for point in features['geometry']['coordinates'][0][0]:
                                         cur_polygon_list.append((float(point[0]), float(point[1])))
-                            polygon_list = cur_polygon_list
-                            neighborhood_name = features['properties']['NTAName']
+                                else:
+                                    if features['geometry']['type'] == 'Polygon':
+                                        for point in features['geometry']['coordinates'][0]:
+                                            cur_polygon_list.append((float(point[0]), float(point[1])))
+
+                                if variants == neighborhood_name_tmp_i:
+                                    self.neighbourhoodTuples.append(zone_tup)
+                                    self.neighbourhoodPolynoms.append([cur_polygon_list])
+                                    loop_breaker = True
+                                    print('Double joined missing tuple '+str(zone_tup)+' to the neighborhood '+
+                                          neighborhood_name_tmp_i)
+                                    break
+                                else:
+                                    cur_dist = 0
+                                    if len(variants) > len(neighborhood_name_tmp_i):
+                                        cur_dist = abs(len(variants) - len(neighborhood_name_tmp_i))
+                                    else:
+                                        cur_dist = len(neighborhood_name_tmp_i) - abs(len(variants))
+
+                                    if cur_dist < min_dist:
+                                        min_dist = cur_dist
+                                        polygon_list = cur_polygon_list
+                                        neighborhood_name = neighborhood_name_tmp_i
+
+                            cur_dist = distance(variants, neighborhood_name_tmp_i)
+                            if cur_dist < min_dist:
+                                min_dist = cur_dist
+                                if features['geometry']['type'] == 'MultiPolygon':
+                                    for point in features['geometry']['coordinates'][0][0]:
+                                        cur_polygon_list.append((float(point[0]), float(point[1])))
+                                else:
+                                    if features['geometry']['type'] == 'Polygon':
+                                        for point in features['geometry']['coordinates'][0]:
+                                            cur_polygon_list.append((float(point[0]), float(point[1])))
+                                polygon_list = cur_polygon_list
+                                neighborhood_name = neighborhood_name_tmp_i
+                        if loop_breaker:
+                            break
                     if loop_breaker:
                         break
 
