@@ -39,11 +39,18 @@ class TaxiZone:
         # find min dist
         dist_lev: int = 999999
         most_likely_tup: Tuple[int, str, str, str] = self.zones[0]
-        for neighborhood_tup in self.zones:
-            dist_cur = distance(n_name, neighborhood_tup[2])
-            if dist_cur < dist_lev:
-                dist_lev = dist_cur
-                most_likely_tup = neighborhood_tup
+        if len(candidates) == 0:
+            for neighborhood_tup in self.zones:
+                dist_cur = distance(n_name, neighborhood_tup[2])
+                if dist_cur < dist_lev:
+                    dist_lev = dist_cur
+                    most_likely_tup = neighborhood_tup
+        else:
+            for neighborhood_tup in candidates:
+                dist_cur = distance(n_name, neighborhood_tup[2])
+                if dist_cur < dist_lev:
+                    dist_lev = dist_cur
+                    most_likely_tup = neighborhood_tup
 
         print('Estimated this information instead:')
         print(most_likely_tup)
