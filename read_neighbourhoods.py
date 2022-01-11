@@ -31,8 +31,13 @@ class NeighbourhoodData:
                 self.neighbourhoodTuples.append(data_tuple)
                 self.neighbourhoodPolynoms.append([polygon_list])
 
-        # double join
+        # double join and look for fitting neighborhoods for each taxi zone
         for zone_tup in tz.zones:
+            # filter unknown and set them anywhere
+            if zone_tup[0] == 264 or zone_tup[0] == 265:
+                self.neighbourhoodTuples.append(zone_tup)
+                self.neighbourhoodPolynoms.append([[(40.54999, -73.99562)]])
+                continue
             if not (zone_tup in self.neighbourhoodTuples):
                 min_dist: int = 99999
                 polygon_list: List[Tuple[float, float]] = []
