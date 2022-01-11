@@ -1,6 +1,5 @@
 from typing import Tuple, List
 from typing import List
-from typing import Set
 from typing import Union
 from csv import reader
 import operator
