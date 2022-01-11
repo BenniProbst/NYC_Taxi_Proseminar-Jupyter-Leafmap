@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 from typing import List
 from typing import Union
 from csv import reader
@@ -20,11 +20,21 @@ class TaxiZone:
                 return tup
         return None
 
+    def filter_brackets(self, input: str) -> str:
+        filtered: str = ''
+        for n in input:
+            if n != '(' or n != ')':
+                filtered += n
+
+        return filtered
+
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
         # find max alikeness
         candidates: List[Tuple[int, str, str, str]] = []
         for neighborhood_tup in self.zones:
-            if n_name.find(neighborhood_tup[2]) != -1 or neighborhood_tup[2].find(n_name) != -1:
+            if n_name.find(neighborhood_tup[2]) != -1 or neighborhood_tup[2].find(n_name) != -1 or \
+                    n_name.find(self.filter_brackets(neighborhood_tup[2])) != -1 or \
+                    neighborhood_tup[2].find(self.filter_brackets(n_name)) != -1:
                 candidates.append(neighborhood_tup)
 
         if len(candidates) == 1:
