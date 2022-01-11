@@ -13,7 +13,7 @@ class TaxiZone:
                 return tup
         return None
 
-    def get_from_neighbourhood_name(self, n_name: str) -> Union[Tuple[int, str, str, str], None]:
+    def get_from_neighborhood_name(self, n_name: str) -> Union[Tuple[int, str, str, str], None]:
         for tup in self.zones:
             if tup[2] == n_name:
                 return tup
