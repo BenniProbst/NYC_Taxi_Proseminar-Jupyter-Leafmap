@@ -57,7 +57,7 @@ def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[Tuple[floa
 
 
 def geo_polygon_area(polygon: List[Tuple[float, float]]) -> float:
-    if len(polygon) <= 1:
+    if len(polygon) <= 2:
         return 0
     # Define WGS84 as CRS:
     geod = Geod('+a=6378137 +f=0.0033528106647475126')
