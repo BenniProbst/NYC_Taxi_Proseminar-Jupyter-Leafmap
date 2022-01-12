@@ -12,8 +12,12 @@ def distance_line(p1, p2):
 
 class NeighbourhoodTaxiData:
 
-    def to_geojson(self, path_out: str):
-        pass
+    def to_geojson(self, path_out: str) -> None:
+        output_json = {'type': 'FeatureCollection',
+                       'crs': {'type': 'name', 'properties': {'name': 'EPSG:4326/taxi_zone'}},
+                       'features': []
+                       }
+
 
     @staticmethod
     def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[float, float]:
@@ -76,6 +80,7 @@ class NeighbourhoodTaxiData:
         # multiple neighborhood polynoms for every taxi zone
         self.neighbourhoodPolynoms: List[List[List[Tuple[float, float]]]] = []
         tmp_list = json.loads(open(path, 'r').read())
+        self.input_geojson = tmp_list
         for features in tmp_list['features']:
             data_tuple: Tuple[int, str, str, str] = \
                 tz.get_alike_from_neighborhood_name(features['properties']['NTAName'])
