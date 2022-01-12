@@ -90,6 +90,13 @@ class NeighbourhoodTaxiData:
                 zone_area += geo_polygon_area(polygon)
             feature['properties']['zone_area'] = zone_area
 
+            if len(self.neighbourhoodPolynoms[i]) == 1:
+                feature['geometry']['type'] = 'Polygon'
+                feature['geometry']['coordinates'] = [[self.neighbourhoodPolynoms[i][0]]]
+            else:
+                feature['geometry']['type'] = 'MultiPolygon'
+                feature['geometry']['coordinates'] = [[self.neighbourhoodPolynoms[i]]]
+
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
         for polygon_array in self.neighbourhoodPolynoms:
