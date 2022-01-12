@@ -7,14 +7,23 @@ from Levenshtein import distance
 
 class NeighbourhoodData:
 
-    def central_points(self):
+    def single_central_point(self, polygon: List[Tuple[float, float]]) -> Tuple[float, float]:
+        pass
+
+    def central_points(self) -> List[Tuple[float, float]]:
+        self.centrals = []
         for polygon_array in self.neighbourhoodPolynoms:
-            polygon_centers: List[Tuple[float, float]] = []
+            polygon_center_list: List[Tuple[float, float]] = []
             for polygon in polygon_array:
-                central_point: List[float, float] = [0, 0]
-                for point in polygon:
-                    pass
-                pass
+                polygon_center_list.append(self.single_central_point(polygon))
+            out_x: float = 0
+            out_y: float = 0
+            for point in polygon_center_list:
+                out_x += (point[0] / len(polygon_center_list))
+                out_y += (point[1] / len(polygon_center_list))
+            out_tup: Tuple[float, float] = (out_x, out_y)
+            self.centrals.append(out_tup)
+        return self.centrals
 
 
     def __init__(self, path):
@@ -22,7 +31,7 @@ class NeighbourhoodData:
         tz = read_taxizone.TaxiZone('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/taxi+_zone_lookup.csv')
         self.neighbourhoodTuples: List[Tuple[int, str, str, str]] = []
         # multiple neighborhood polynoms for every taxi zone
-        self.neighbourhoodPolynoms = []
+        self.neighbourhoodPolynoms: List[List[List[Tuple[float, float]]]] = []
         tmp_list = json.loads(open(path, 'r').read())
         for features in tmp_list['features']:
             data_tuple: Tuple[int, str, str, str] = \
@@ -62,7 +71,7 @@ class NeighbourhoodData:
                                 self.neighbourhoodTuples.append(zone_tup)
                                 self.neighbourhoodPolynoms.append([[(40.68883, -74.18003)]])
                                 loop_breaker = True
-                                print('Draw '+variants+' to outer New York.')
+                                print('Draw ' + variants + ' to outer New York.')
                                 break
                             cur_polygon_list: List[Tuple[float, float]] = []
                             if neighborhood_name_tmp_i.find(variants) != -1:
@@ -79,7 +88,7 @@ class NeighbourhoodData:
                                     self.neighbourhoodTuples.append(zone_tup)
                                     self.neighbourhoodPolynoms.append([cur_polygon_list])
                                     loop_breaker = True
-                                    print('Double joined missing tuple '+str(zone_tup)+' to the neighborhood '+
+                                    print('Double joined missing tuple ' + str(zone_tup) + ' to the neighborhood ' +
                                           neighborhood_name_tmp_i)
                                     break
                                 else:
@@ -116,5 +125,3 @@ class NeighbourhoodData:
                     self.neighbourhoodPolynoms.append([polygon_list])
                     print('Double joined missing tuple ' + str(zone_tup) + ' to the neighborhood ' +
                           neighborhood_name)
-
-
