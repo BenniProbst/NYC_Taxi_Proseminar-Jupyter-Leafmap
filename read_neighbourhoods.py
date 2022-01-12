@@ -5,6 +5,7 @@ import read_taxizone
 from Levenshtein import distance
 import math
 from shapely.geometry import Polygon
+import geopy.distance as geo_dist
 
 
 def distance_line(p1, p2):
@@ -38,12 +39,16 @@ class NeighbourhoodTaxiData:
         if len(polygon) == 0:
             raise ValueError('The polygon list shall not be empty!')
         if len(polygon) == 1:
-            return polygon[0]
+            tup: Tuple[float, float] = polygon[0]
+            dist_len: float = 0
+            return tup, dist_len
         if len(polygon) == 2:
             x_tup: float = (polygon[0][0] / 2) + (polygon[1][0] / 2)
             y_tup: float = (polygon[0][1] / 2) + (polygon[1][1] / 2)
             tup: Tuple[float, float] = (x_tup, y_tup)
-            return tup
+            dist_len: float = distance_line(polygon[0], polygon[1])
+            out_tup: Tuple[Tuple[float, float], float] = (tup, dist_len)
+            return out_tup
         # a list containing the to analyse point at the front and the other two connected points
         point_connection_lines: List[Tuple[Tuple[float, float], List[Tuple[float, float]], float]] = [
             (polygon[0], [polygon[-1], polygon[1]],
@@ -84,7 +89,7 @@ class NeighbourhoodTaxiData:
             borderline_size: float = 0
             for point in polygon_center_list:
                 out_x += (point[0][0] / len(polygon_center_list))
-                out_y += (point[0][1] / len(polygon_center_list))#
+                out_y += (point[0][1] / len(polygon_center_list))
                 borderline_size += point[1]
             out_tup: Tuple[float, float] = (out_x, out_y)
             self.centrals.append(out_tup)
