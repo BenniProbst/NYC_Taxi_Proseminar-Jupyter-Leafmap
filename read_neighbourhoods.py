@@ -3,8 +3,9 @@ from typing import List
 from typing import Tuple
 import read_taxizone
 from Levenshtein import distance
-from shapely.geometry import Polygon
 import geopy.distance as geo_dist
+from pyproj import Geod
+import numpy as np
 
 
 def distance_line(p1, p2):
@@ -55,6 +56,16 @@ def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[Tuple[floa
     return out_tup_rel
 
 
+def geo_polygon_area(polygon: List[Tuple[float, float]]) -> float:
+    # Define WGS84 as CRS:
+    geod = Geod('+a=6378137 +f=0.0033528106647475126')
+    lats = polygon[:, 1]
+    lons = polygon[:, 0]
+    # Compute:
+    area, perim = geod.polygon_area_perimeter(lons, lats)
+    return abs(area)
+
+
 class NeighbourhoodTaxiData:
 
     def to_geojson(self, path_out: str) -> None:
@@ -70,10 +81,11 @@ class NeighbourhoodTaxiData:
                 'service_zone': self.neighbourhoodTuples[i][3], 'center': self.centrals[i]
             }, 'geometry': {}}
 
+            feature['properties']['borderline_miles'] = self.borderline_sizes[i]
+
             zone_area: float = 0
             for polygon in self.neighbourhoodPolynoms[i]:
-                s_poly = Polygon(polygon)
-                zone_area += s_poly.area
+                zone_area += geo_polygon_area(polygon)
             feature['properties']['zone_area'] = zone_area
 
     def central_points(self) -> List[Tuple[float, float]]:
