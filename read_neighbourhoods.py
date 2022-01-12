@@ -6,7 +6,7 @@ from Levenshtein import distance
 import math
 
 
-def distance(p1, p2):
+def distance_line(p1, p2):
     return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
 
@@ -26,14 +26,14 @@ class NeighbourhoodData:
         # a list containing the to analyse point at the front and the other two connected points
         point_connection_lines: List[Tuple[Tuple[float, float], List[Tuple[float, float]], float]] = [
             (polygon[0], [polygon[-1], polygon[1]],
-             distance(polygon[0], polygon[-1]) + distance(polygon[0], polygon[1]))]
+             distance_line(polygon[0], polygon[-1]) + distance_line(polygon[0], polygon[1]))]
 
         for i in range(1, len(polygon) - 1):
             point_connection_lines.append((polygon[i], [polygon[i-1], polygon[i + 1]],
-                                           distance(polygon[i], polygon[i - 1]) + distance(polygon[i], polygon[i + 1])))
+                                           distance_line(polygon[i], polygon[i - 1]) + distance_line(polygon[i], polygon[i + 1])))
 
         point_connection_lines.append((polygon[-1], [polygon[-2], polygon[0]],
-                                       distance(polygon[-1], polygon[-2]) + distance(polygon[-1], polygon[0])))
+                                       distance_line(polygon[-1], polygon[-2]) + distance_line(polygon[-1], polygon[0])))
 
         relative_distance_add: float = 0
         for p in point_connection_lines:
