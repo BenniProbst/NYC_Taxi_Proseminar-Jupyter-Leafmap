@@ -3,11 +3,17 @@ from typing import List
 from typing import Tuple
 import read_taxizone
 from Levenshtein import distance
+import math
+
+
+def distance(p1, p2):
+    return math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
 
 
 class NeighbourhoodData:
 
-    def single_central_point(self, polygon: List[Tuple[float, float]]) -> Tuple[float, float]:
+    @staticmethod
+    def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[float, float]:
         if len(polygon) == 0:
             raise ValueError('The polygon list shall not be empty!')
         if len(polygon) == 1:
