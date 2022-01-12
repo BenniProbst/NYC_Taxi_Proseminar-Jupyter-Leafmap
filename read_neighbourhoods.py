@@ -30,10 +30,12 @@ class NeighbourhoodData:
 
         for i in range(1, len(polygon) - 1):
             point_connection_lines.append((polygon[i], [polygon[i-1], polygon[i + 1]],
-                                           distance_line(polygon[i], polygon[i - 1]) + distance_line(polygon[i], polygon[i + 1])))
+                                           distance_line(polygon[i], polygon[i - 1]) +
+                                           distance_line(polygon[i], polygon[i + 1])))
 
         point_connection_lines.append((polygon[-1], [polygon[-2], polygon[0]],
-                                       distance_line(polygon[-1], polygon[-2]) + distance_line(polygon[-1], polygon[0])))
+                                       distance_line(polygon[-1], polygon[-2]) +
+                                       distance_line(polygon[-1], polygon[0])))
 
         relative_distance_add: float = 0
         for p in point_connection_lines:
