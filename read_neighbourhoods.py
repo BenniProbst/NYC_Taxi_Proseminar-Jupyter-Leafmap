@@ -7,7 +7,7 @@ import math
 
 
 def distance(p1, p2):
-    return math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
+    return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
 
 class NeighbourhoodData:
@@ -24,10 +24,23 @@ class NeighbourhoodData:
             tup: Tuple[float, float] = (x_tup, y_tup)
             return tup
         # a list containing the to analyse point at the front and the other two connected points
-        point_connection_lines: List[Tuple[Tuple[float, float], List[Tuple[float, float]]]] = [
-            (polygon[0], [polygon[-1], polygon[1]])]
-        for i in range(1, len(polygon)):
-            pass
+        point_connection_lines: List[Tuple[Tuple[float, float], List[Tuple[float, float]], float]] = [
+            (polygon[0], [polygon[-1], polygon[1]],
+             distance(polygon[0], polygon[-1]) + distance(polygon[0], polygon[1]))]
+
+        for i in range(1, len(polygon) - 1):
+            point_connection_lines.append((polygon[i], [polygon[i-1], polygon[i + 1]],
+                                           distance(polygon[i], polygon[i - 1]) + distance(polygon[i], polygon[i + 1])))
+
+        point_connection_lines.append((polygon[-1], [polygon[-2], polygon[0]],
+                                       distance(polygon[-1], polygon[-2]) + distance(polygon[-1], polygon[0])))
+
+        relative_distance_add: float = 0
+        for p in point_connection_lines:
+            relative_distance_add += p[2]
+
+        out_x: float = 0
+        out_y: float = 0
 
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
