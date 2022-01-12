@@ -34,7 +34,7 @@ class NeighbourhoodTaxiData:
 
 
     @staticmethod
-    def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[float, float]:
+    def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[Tuple[float, float], float]:
         if len(polygon) == 0:
             raise ValueError('The polygon list shall not be empty!')
         if len(polygon) == 1:
@@ -70,25 +70,30 @@ class NeighbourhoodTaxiData:
             out_y += (p[0][1]*(p[2]/relative_distance_add))
 
         out_tup: Tuple[float, float] = (out_x, out_y)
-        return out_tup
+        out_tup_rel: Tuple[Tuple[float, float], float] = (out_tup, relative_distance_add/2)
+        return out_tup_rel
 
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
         for polygon_array in self.neighbourhoodPolynoms:
-            polygon_center_list: List[Tuple[float, float]] = []
+            polygon_center_list: List[Tuple[Tuple[float, float], float]] = []
             for polygon in polygon_array:
                 polygon_center_list.append(self.single_central_point(polygon))
             out_x: float = 0
             out_y: float = 0
+            borderline_size: float = 0
             for point in polygon_center_list:
-                out_x += (point[0] / len(polygon_center_list))
-                out_y += (point[1] / len(polygon_center_list))
+                out_x += (point[0][0] / len(polygon_center_list))
+                out_y += (point[0][1] / len(polygon_center_list))#
+                borderline_size += point[1]
             out_tup: Tuple[float, float] = (out_x, out_y)
             self.centrals.append(out_tup)
+            self.borderline_sizes.append(borderline_size)
         return self.centrals
 
     def __init__(self, path):
         self.centrals: List[Tuple[float, float]] = []
+        self.borderline_sizes: List[float] = []
         tz = read_taxizone.TaxiZone('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/taxi+_zone_lookup.csv')
         self.neighbourhoodTuples: List[Tuple[int, str, str, str]] = []
         # multiple neighborhood polynoms for every taxi zone
