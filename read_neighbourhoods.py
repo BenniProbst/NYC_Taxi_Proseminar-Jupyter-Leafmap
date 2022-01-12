@@ -42,6 +42,13 @@ class NeighbourhoodData:
         out_x: float = 0
         out_y: float = 0
 
+        for p in point_connection_lines:
+            out_x += (p[0][0]*(p[2]/relative_distance_add))
+            out_y += (p[0][1]*(p[2]/relative_distance_add))
+
+        out_tup: Tuple[float, float] = (out_x, out_y)
+        return out_tup
+
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
         for polygon_array in self.neighbourhoodPolynoms:
