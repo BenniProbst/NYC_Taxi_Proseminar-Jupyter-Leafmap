@@ -12,6 +12,9 @@ def distance_line(p1, p2):
 
 class NeighbourhoodTaxiData:
 
+    def to_geojson(self, path_out: str):
+        pass
+
     @staticmethod
     def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[float, float]:
         if len(polygon) == 0:
