@@ -57,6 +57,8 @@ def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[Tuple[floa
 
 
 def geo_polygon_area(polygon: List[Tuple[float, float]]) -> float:
+    if len(polygon) <= 1:
+        return 0
     # Define WGS84 as CRS:
     geod = Geod('+a=6378137 +f=0.0033528106647475126')
     lats = polygon[:, 1]
@@ -87,8 +89,6 @@ class NeighbourhoodTaxiData:
             for polygon in self.neighbourhoodPolynoms[i]:
                 zone_area += geo_polygon_area(polygon)
             feature['properties']['zone_area'] = zone_area
-
-
 
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
