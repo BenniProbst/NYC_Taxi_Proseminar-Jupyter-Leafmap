@@ -63,7 +63,7 @@ def geo_polygon_area(polygon: List[Tuple[float, float]]) -> float:
     lons = polygon[:, 0]
     # Compute:
     area, perim = geod.polygon_area_perimeter(lons, lats)
-    return abs(area)
+    return abs(area) * (1 / (1.609344 ** 2))  # area in miles
 
 
 class NeighbourhoodTaxiData:
