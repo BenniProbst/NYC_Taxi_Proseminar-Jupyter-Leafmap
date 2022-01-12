@@ -26,6 +26,11 @@ class NeighbourhoodTaxiData:
                 'service_zone': self.neighbourhoodTuples[i][3], 'center': self.centrals[i]
             }, 'geometry': {}}
 
+            zone_area: float = 0
+            for polygon in self.neighbourhoodPolynoms[i]:
+                s_poly = Polygon(polygon)
+                zone_area += s_poly.area
+            feature['properties']['zone_area'] = zone_area
 
 
     @staticmethod
