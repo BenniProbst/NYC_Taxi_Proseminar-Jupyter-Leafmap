@@ -3,13 +3,12 @@ from typing import List
 from typing import Tuple
 import read_taxizone
 from Levenshtein import distance
-import math
 from shapely.geometry import Polygon
 import geopy.distance as geo_dist
 
 
 def distance_line(p1, p2):
-    return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+    return geo_dist.distance(p1, p2).mi
 
 
 class NeighbourhoodTaxiData:
