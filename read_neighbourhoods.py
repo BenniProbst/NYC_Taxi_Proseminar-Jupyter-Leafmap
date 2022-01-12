@@ -97,6 +97,10 @@ class NeighbourhoodTaxiData:
                 feature['geometry']['type'] = 'MultiPolygon'
                 feature['geometry']['coordinates'] = [[self.neighbourhoodPolynoms[i]]]
 
+            output_json['features'].append(feature)
+        with open(path_out, 'w') as outfile:
+            json.dump(output_json, outfile)
+
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
         for polygon_array in self.neighbourhoodPolynoms:
