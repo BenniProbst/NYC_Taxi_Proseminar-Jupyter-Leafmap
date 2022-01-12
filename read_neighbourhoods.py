@@ -8,7 +8,20 @@ from Levenshtein import distance
 class NeighbourhoodData:
 
     def single_central_point(self, polygon: List[Tuple[float, float]]) -> Tuple[float, float]:
-        pass
+        if len(polygon) == 0:
+            raise ValueError('The polygon list shall not be empty!')
+        if len(polygon) == 1:
+            return polygon[0]
+        if len(polygon) == 2:
+            x_tup: float = (polygon[0][0] / 2) + (polygon[1][0] / 2)
+            y_tup: float = (polygon[0][1] / 2) + (polygon[1][1] / 2)
+            tup: Tuple[float, float] = (x_tup, y_tup)
+            return tup
+        # a list containing the to analyse point at the front and the other two connected points
+        point_connection_lines: List[Tuple[Tuple[float, float], List[Tuple[float, float]]]] = [
+            (polygon[0], [polygon[-1], polygon[1]])]
+        for i in range(1, len(polygon)):
+            pass
 
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
@@ -24,7 +37,6 @@ class NeighbourhoodData:
             out_tup: Tuple[float, float] = (out_x, out_y)
             self.centrals.append(out_tup)
         return self.centrals
-
 
     def __init__(self, path):
         self.centrals: List[Tuple[float, float]] = []
