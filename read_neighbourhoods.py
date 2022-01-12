@@ -10,7 +10,7 @@ def distance_line(p1, p2):
     return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
 
-class NeighbourhoodData:
+class NeighbourhoodTaxiData:
 
     @staticmethod
     def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[float, float]:
