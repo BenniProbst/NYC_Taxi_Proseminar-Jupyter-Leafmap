@@ -11,6 +11,50 @@ def distance_line(p1, p2):
     return geo_dist.distance(p1, p2).mi
 
 
+def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[Tuple[float, float], float]:
+    if len(polygon) == 0:
+        raise ValueError('The polygon list shall not be empty!')
+    if len(polygon) == 1:
+        tup: Tuple[float, float] = polygon[0]
+        dist_len: float = 0
+        return tup, dist_len
+    if len(polygon) == 2:
+        x_tup: float = (polygon[0][0] / 2) + (polygon[1][0] / 2)
+        y_tup: float = (polygon[0][1] / 2) + (polygon[1][1] / 2)
+        tup: Tuple[float, float] = (x_tup, y_tup)
+        dist_len: float = distance_line(polygon[0], polygon[1])
+        out_tup: Tuple[Tuple[float, float], float] = (tup, dist_len)
+        return out_tup
+    # a list containing the to analyse point at the front and the other two connected points
+    point_connection_lines: List[Tuple[Tuple[float, float], List[Tuple[float, float]], float]] = [
+        (polygon[0], [polygon[-1], polygon[1]],
+         distance_line(polygon[0], polygon[-1]) + distance_line(polygon[0], polygon[1]))]
+
+    for i in range(1, len(polygon) - 1):
+        point_connection_lines.append((polygon[i], [polygon[i - 1], polygon[i + 1]],
+                                       distance_line(polygon[i], polygon[i - 1]) +
+                                       distance_line(polygon[i], polygon[i + 1])))
+
+    point_connection_lines.append((polygon[-1], [polygon[-2], polygon[0]],
+                                   distance_line(polygon[-1], polygon[-2]) +
+                                   distance_line(polygon[-1], polygon[0])))
+
+    relative_distance_add: float = 0
+    for p in point_connection_lines:
+        relative_distance_add += p[2]
+
+    out_x: float = 0
+    out_y: float = 0
+
+    for p in point_connection_lines:
+        out_x += (p[0][0] * (p[2] / relative_distance_add))
+        out_y += (p[0][1] * (p[2] / relative_distance_add))
+
+    out_tup: Tuple[float, float] = (out_x, out_y)
+    out_tup_rel: Tuple[Tuple[float, float], float] = (out_tup, relative_distance_add / 2)
+    return out_tup_rel
+
+
 class NeighbourhoodTaxiData:
 
     def to_geojson(self, path_out: str) -> None:
@@ -20,8 +64,8 @@ class NeighbourhoodTaxiData:
                        }
         self.central_points()
         for i in range(0, len(self.neighbourhoodTuples)):
-            feature = {'type': 'Feature', 'id': i+1, 'properties': {
-                'OBJECTID': i+1, 'LocationID': self.neighbourhoodTuples[i][0],
+            feature = {'type': 'Feature', 'id': i + 1, 'properties': {
+                'OBJECTID': i + 1, 'LocationID': self.neighbourhoodTuples[i][0],
                 'Borough': self.neighbourhoodTuples[i][1], 'Zone': self.neighbourhoodTuples[i][2],
                 'service_zone': self.neighbourhoodTuples[i][3], 'center': self.centrals[i]
             }, 'geometry': {}}
@@ -32,57 +76,12 @@ class NeighbourhoodTaxiData:
                 zone_area += s_poly.area
             feature['properties']['zone_area'] = zone_area
 
-
-    @staticmethod
-    def single_central_point(polygon: List[Tuple[float, float]]) -> Tuple[Tuple[float, float], float]:
-        if len(polygon) == 0:
-            raise ValueError('The polygon list shall not be empty!')
-        if len(polygon) == 1:
-            tup: Tuple[float, float] = polygon[0]
-            dist_len: float = 0
-            return tup, dist_len
-        if len(polygon) == 2:
-            x_tup: float = (polygon[0][0] / 2) + (polygon[1][0] / 2)
-            y_tup: float = (polygon[0][1] / 2) + (polygon[1][1] / 2)
-            tup: Tuple[float, float] = (x_tup, y_tup)
-            dist_len: float = distance_line(polygon[0], polygon[1])
-            out_tup: Tuple[Tuple[float, float], float] = (tup, dist_len)
-            return out_tup
-        # a list containing the to analyse point at the front and the other two connected points
-        point_connection_lines: List[Tuple[Tuple[float, float], List[Tuple[float, float]], float]] = [
-            (polygon[0], [polygon[-1], polygon[1]],
-             distance_line(polygon[0], polygon[-1]) + distance_line(polygon[0], polygon[1]))]
-
-        for i in range(1, len(polygon) - 1):
-            point_connection_lines.append((polygon[i], [polygon[i-1], polygon[i + 1]],
-                                           distance_line(polygon[i], polygon[i - 1]) +
-                                           distance_line(polygon[i], polygon[i + 1])))
-
-        point_connection_lines.append((polygon[-1], [polygon[-2], polygon[0]],
-                                       distance_line(polygon[-1], polygon[-2]) +
-                                       distance_line(polygon[-1], polygon[0])))
-
-        relative_distance_add: float = 0
-        for p in point_connection_lines:
-            relative_distance_add += p[2]
-
-        out_x: float = 0
-        out_y: float = 0
-
-        for p in point_connection_lines:
-            out_x += (p[0][0]*(p[2]/relative_distance_add))
-            out_y += (p[0][1]*(p[2]/relative_distance_add))
-
-        out_tup: Tuple[float, float] = (out_x, out_y)
-        out_tup_rel: Tuple[Tuple[float, float], float] = (out_tup, relative_distance_add/2)
-        return out_tup_rel
-
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
         for polygon_array in self.neighbourhoodPolynoms:
             polygon_center_list: List[Tuple[Tuple[float, float], float]] = []
             for polygon in polygon_array:
-                polygon_center_list.append(self.single_central_point(polygon))
+                polygon_center_list.append(single_central_point(polygon))
             out_x: float = 0
             out_y: float = 0
             borderline_size: float = 0
