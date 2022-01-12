@@ -88,6 +88,8 @@ class NeighbourhoodTaxiData:
                 zone_area += geo_polygon_area(polygon)
             feature['properties']['zone_area'] = zone_area
 
+
+
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
         for polygon_array in self.neighbourhoodPolynoms:
