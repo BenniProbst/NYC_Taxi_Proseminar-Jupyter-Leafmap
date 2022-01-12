@@ -4,6 +4,7 @@ from typing import Tuple
 import read_taxizone
 from Levenshtein import distance
 import math
+from shapely.geometry import Polygon
 
 
 def distance_line(p1, p2):
@@ -17,6 +18,14 @@ class NeighbourhoodTaxiData:
                        'crs': {'type': 'name', 'properties': {'name': 'EPSG:4326/taxi_zone'}},
                        'features': []
                        }
+        self.central_points()
+        for i in range(0, len(self.neighbourhoodTuples)):
+            feature = {'type': 'Feature', 'id': i+1, 'properties': {
+                'OBJECTID': i+1, 'LocationID': self.neighbourhoodTuples[i][0],
+                'Borough': self.neighbourhoodTuples[i][1], 'Zone': self.neighbourhoodTuples[i][2],
+                'service_zone': self.neighbourhoodTuples[i][3], 'center': self.centrals[i]
+            }, 'geometry': {}}
+
 
 
     @staticmethod
