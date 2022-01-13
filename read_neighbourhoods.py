@@ -133,19 +133,18 @@ class NeighbourhoodTaxiData:
                 thread_list.append((thread_num,
                                     executor.submit(polygon_array_central_point,
                                                     self.neighbourhoodPolynoms[thread_num])))
-                #future.done()
-                #return_value = future.result()
-                while True:
-                    if len(thread_list) < multiprocessing.cpu_count()*2:
-                        break
-                    else:
-                        counter: int = 0
-                        for t in thread_list:
-                            if t[1].
-                self.datamutex.acquire()
-                self.centrals[thread_num] = return_value[0]
-                self.borderline_sizes[thread_num] = return_value[1]
-                self.datamutex.release()
+
+                if len(thread_list) < multiprocessing.cpu_count()*2:
+                    continue
+                else:
+                    for t in thread_list:
+                        if t[1].done():
+                            return_value = t[1].result()
+                            self.datamutex.acquire()
+                            self.centrals[t[0]] = return_value[0]
+                            self.borderline_sizes[t[0]] = return_value[1]
+                            self.datamutex.release()
+                            thread_list.remove(t)
 
                 thread_num += 1
             while len(thread_list) > 0:
