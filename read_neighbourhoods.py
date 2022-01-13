@@ -1,11 +1,11 @@
 import json
+from geojson import Polygon, MultiPolygon, Point, Feature, FeatureCollection, dump
 from typing import List
 from typing import Tuple
 import read_taxizone
 from Levenshtein import distance
 import geopy.distance as geo_dist
 from pyproj import Geod
-import multiprocessing
 from threading import Lock
 import concurrent.futures
 
@@ -93,50 +93,36 @@ def polygon_array_central_point(polygon_array: List[List[Tuple[float, float]]]) 
 class NeighbourhoodTaxiData:
 
     def to_geojson(self, path_out: str) -> None:
-        output_json = {'type': 'FeatureCollection',
-                       'crs': {'type': 'name', 'properties': {'name': 'EPSG:4326'}},
-                       'features': []
-                       }
+        features = []
         self.central_points()
         for i in range(0, len(self.neighbourhoodTuples)):
-            feature = {'type': 'Feature', 'id': i + 1, 'properties': {
-                'OBJECTID': i + 1, 'LocationID': self.neighbourhoodTuples[i][0],
-                'Borough': self.neighbourhoodTuples[i][1], 'Zone': self.neighbourhoodTuples[i][2],
-                'service_zone': self.neighbourhoodTuples[i][3], 'center': [self.centrals[i][0], self.centrals[i][1]]
-            }, 'geometry': {}}
-
-            feature['properties']['Shape__Length'] = self.borderline_sizes[i]
-
             zone_area: float = 0
             for polygon in self.neighbourhoodPolynoms[i]:
                 zone_area += geo_polygon_area(polygon)
-            feature['properties']['Shape__Area'] = zone_area
+
+            prop = {
+                'LocationID': self.neighbourhoodTuples[i][0],
+                'Borough': self.neighbourhoodTuples[i][1], 'Zone': self.neighbourhoodTuples[i][2],
+                'service_zone': self.neighbourhoodTuples[i][3], 'center': [self.centrals[i][0], self.centrals[i][1]],
+                'Shape__Length': self.borderline_sizes[i], 'Shape__Area': zone_area
+            }
 
             if len(self.neighbourhoodPolynoms[i]) == 1:
                 if len(self.neighbourhoodPolynoms[i][0]) == 1:
-                    feature['geometry']['type'] = 'Point'
                     for p1 in self.neighbourhoodPolynoms[i][0]:
-                        feature['geometry']['coordinates'] = [p1[0], p1[1]]
+                        feature = Feature(id=i + 1, properties=prop, geometry=Point(p1))
+                        features.append(feature)
                 else:
-                    feature['geometry']['type'] = 'Polygon'
-                    output_list = []
-                    for p1 in self.neighbourhoodPolynoms[i][0]:
-                        output_list.append([p1[0], p1[1]])
-                    feature['geometry']['coordinates'] = [output_list]
+                    feature = Feature(id=i + 1, properties=prop, geometry=Polygon(self.neighbourhoodPolynoms[i]))
+                    features.append(feature)
             else:
-                feature['geometry']['type'] = 'MultiPolygon'
-                output_list = []
-                for polygon1 in self.neighbourhoodPolynoms[i]:
-                    output_list1 = []
-                    for p1 in polygon1:
-                        output_list1.append([p1[0], p1[1]])
-                    output_list.append(output_list1)
-                feature['geometry']['coordinates'] = [output_list]
+                feature = Feature(id=i + 1, properties=prop, geometry=MultiPolygon(self.neighbourhoodPolynoms[i]))
+                features.append(feature)
 
-            output_json['features'].append(feature)
+        feature_collection = FeatureCollection(features)
         with open(path_out, 'w') as outfile:
-            json.dump(output_json, outfile)
-        self.taxizone_geojson = output_json
+            dump(feature_collection, outfile)
+        self.taxizone_geojson = json.loads(open(path_out, 'r').read())
 
     def central_points(self) -> List[Tuple[float, float]]:
         if len(self.centrals):
