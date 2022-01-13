@@ -60,13 +60,13 @@ class TaxiData:
 
             list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int,
                                                   int, int, float, float, float, float, float, float,
-                                                  float, float]] = []
+                                                  float, float, str]] = []
 
             count: int = 0
             for tup in list_of_tuples_load:
                 if count == 0:
                     output_tup1: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
-                                       str, str, str, str, str, str]
+                                       str, str, str, str, str, str, str]
                     if taxi_color_request == 'yellow':
                         """
                         VendorID
@@ -106,7 +106,7 @@ class TaxiData:
                                        str(tup[15]),
                                        str(tup[16]),
                                        str(tup[17]),
-                                       )
+                                       'TaxiColor')
                     else:
                         output_tup1 = (str(tup[0]),
                                        str(tup[1])[5:],
@@ -126,16 +126,16 @@ class TaxiData:
                                        str(tup[15]),
                                        str(tup[16]),
                                        str(tup[19]),
-                                       )
+                                       'TaxiColor')
                     self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
-                                       str, str, str, str, str, str] = output_tup1
+                                       str, str, str, str, str, str, str] = output_tup1
                 else:
                     pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
                     if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
                         continue
                     output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
                                       int, int, float, float, float, float, float, float,
-                                      float, float]
+                                      float, float, str]
 
                     vendor_fix: int = 0
                     passenger_count_fix: int = 0
@@ -174,7 +174,8 @@ class TaxiData:
                                       float(tup[14]),
                                       float(tup[15]),
                                       float(tup[16]),
-                                      congestion_surcharge_fix)
+                                      congestion_surcharge_fix,
+                                      'yellow')
                     else:
                         if len(tup[7]) != 0:
                             passenger_count_fix = int(tup[7])
@@ -204,7 +205,8 @@ class TaxiData:
                                       float(tup[13]),
                                       float(tup[15]),
                                       float(tup[16]),
-                                      congestion_surcharge_fix)
+                                      congestion_surcharge_fix,
+                                      'green')
                     list_of_tuples_load_typed.append(output_tup)
                 count += 1
             # sort to pickup time
@@ -321,8 +323,9 @@ class TaxiData:
         self.threadlist: List[Thread] = []
         self.header = None
         self.base_folder: str = base
+        # last tuple entry is taxi color
         self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
-                              float, float, float, float, float, float, float, float]] = []
+                              float, float, float, float, float, float, float, float, str]] = []
         # get available files
         self.taxi_files: List[str] = list_taxi_files(self.base_folder)
         # read available month to be read instantly
