@@ -9,3 +9,4 @@ class TaxiTime:
         self.zone_neighborhoods.to_geojson('/home/benjamin-elias/PycharmProjects/Proseminar '
                                            'Jupyter-Leafmap/taxi_zones.geo.json')
         self.big_taxi_data = TaxiData('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
+        pass
