@@ -5,7 +5,10 @@ import read_taxizone
 from Levenshtein import distance
 import geopy.distance as geo_dist
 from pyproj import Geod
-import numpy as np
+import multiprocessing
+from threading import Lock
+import concurrent.futures
+import time
 
 
 def distance_line(p1, p2):
@@ -69,6 +72,21 @@ def geo_polygon_area(polygon: List[Tuple[float, float]]) -> float:
     return abs(area) * (1 / (1.609344 ** 2))  # area in miles
 
 
+def polygon_array_central_point(polygon_array: List[List[Tuple[float, float]]]) -> Tuple[Tuple[float, float], float]:
+    polygon_center_list: List[Tuple[Tuple[float, float], float]] = []
+    for polygon in polygon_array:
+        polygon_center_list.append(single_central_point(polygon))
+    out_x: float = 0
+    out_y: float = 0
+    borderline_size: float = 0
+    for point in polygon_center_list:
+        out_x += (point[0][0] / len(polygon_center_list))
+        out_y += (point[0][1] / len(polygon_center_list))
+        borderline_size += point[1]
+    out_tup: Tuple[float, float] = (out_x, out_y)
+    return out_tup, borderline_size
+
+
 class NeighbourhoodTaxiData:
 
     def to_geojson(self, path_out: str) -> None:
@@ -104,23 +122,25 @@ class NeighbourhoodTaxiData:
 
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
+        thread_num: int = 0
         for polygon_array in self.neighbourhoodPolynoms:
-            polygon_center_list: List[Tuple[Tuple[float, float], float]] = []
-            for polygon in polygon_array:
-                polygon_center_list.append(single_central_point(polygon))
-            out_x: float = 0
-            out_y: float = 0
-            borderline_size: float = 0
-            for point in polygon_center_list:
-                out_x += (point[0][0] / len(polygon_center_list))
-                out_y += (point[0][1] / len(polygon_center_list))
-                borderline_size += point[1]
-            out_tup: Tuple[float, float] = (out_x, out_y)
-            self.centrals.append(out_tup)
-            self.borderline_sizes.append(borderline_size)
+            while len(self.centrals) <= thread_num:
+                self.centrals.append((0, 0))
+                self.borderline_sizes.append(0)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                local_thread_num = thread_num
+                future = executor.submit(polygon_array_central_point, polygon_array)
+                return_value = future.result()
+                self.datamutex.acquire()
+                self.centrals[local_thread_num] = return_value[0]
+                self.borderline_sizes[local_thread_num] = return_value[1]
+                self.datamutex.release()
+
+            thread_num += 1
         return self.centrals
 
     def __init__(self, path):
+        self.datamutex: Lock() = Lock()
         self.centrals: List[Tuple[float, float]] = []
         self.borderline_sizes: List[float] = []
         tz = read_taxizone.TaxiZone('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/taxi+_zone_lookup.csv')
