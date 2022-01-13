@@ -124,8 +124,8 @@ class NeighbourhoodTaxiData:
             json.dump(output_json, outfile)
 
     def central_points(self) -> List[Tuple[float, float]]:
-        self.centrals = []
-
+        if len(self.centrals):
+            return self.centrals
         with concurrent.futures.ThreadPoolExecutor() as executor:
             thread_num: int = 0
             thread_list = []
