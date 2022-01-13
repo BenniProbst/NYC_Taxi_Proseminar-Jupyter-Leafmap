@@ -1,5 +1,4 @@
 import json
-import time
 from typing import List
 from typing import Tuple
 import read_taxizone
@@ -186,7 +185,7 @@ class NeighbourhoodTaxiData:
             # filter unknown and set them anywhere
             if zone_tup[0] == 264 or zone_tup[0] == 265:
                 self.neighbourhoodTuples.append(zone_tup)
-                self.neighbourhoodPolynoms.append([[(40.54999, -73.99562)]])
+                self.neighbourhoodPolynoms.append([[(-73.99562, 40.54999)]])
                 continue
             if not (zone_tup in self.neighbourhoodTuples):
                 min_dist: int = 99999
@@ -199,7 +198,7 @@ class NeighbourhoodTaxiData:
                         for variants in zone_tup[2].split('/'):
                             if variants == 'Newark Airport':
                                 self.neighbourhoodTuples.append(zone_tup)
-                                self.neighbourhoodPolynoms.append([[(40.68883, -74.18003)]])
+                                self.neighbourhoodPolynoms.append([[(-74.18003, 40.68883)]])
                                 loop_breaker = True
                                 print('Draw ' + variants + ' to outer New York.')
                                 break
