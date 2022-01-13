@@ -147,7 +147,9 @@ class NeighbourhoodTaxiData:
                 out_polygons = []
                 if not valid_MultiPolygon(multi_polygon):
                     out_polygons = cascaded_union(multi_polygon)
-                feature = Feature(id=i + 1, properties=prop, geometry=polygons)
+                else:
+                    out_polygons = multi_polygon
+                feature = Feature(id=i + 1, properties=prop, geometry=out_polygons)
                 features.append(feature)
 
         feature_collection = FeatureCollection(features)
