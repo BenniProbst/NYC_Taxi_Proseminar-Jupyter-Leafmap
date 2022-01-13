@@ -8,7 +8,7 @@ class TaxiTime:
         self.zone_neighborhoods = NeighbourhoodTaxiData('/home/benjamin-elias/PycharmProjects/Proseminar '
                                                         'Jupyter-Leafmap/nyc-neighborhoods.geojson')
         self.zone_neighborhoods.to_geojson('/home/benjamin-elias/PycharmProjects/Proseminar '
-                                           'Jupyter-Leafmap/taxi_zones.geo.json')
+                                           'Jupyter-Leafmap/taxi_zones.geojson')
         self.big_taxi_data = TaxiData('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
         self.min_time: datetime = self.big_taxi_data.get_minimum_available_pickup_time()
         self.max_time: datetime = self.big_taxi_data.get_maximum_available_pickup_time()
