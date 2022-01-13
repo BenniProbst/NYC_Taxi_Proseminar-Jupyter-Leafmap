@@ -105,7 +105,7 @@ def valid_MultiPolygon(multi_polygon) -> bool:
                     if multi_polygon[i1][(i3 + counter) % len(multi_polygon[i1])] != \
                             multi_polygon[i2][(i4 + counter) % len(multi_polygon[i2])]:
                         i4 += 1
-                        break
+                        continue
                     counter += 1
                 if counter > 1:
                     valid = False
