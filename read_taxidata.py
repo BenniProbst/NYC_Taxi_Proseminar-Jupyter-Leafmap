@@ -106,7 +106,7 @@ class TaxiData:
                                        str(tup[15]),
                                        str(tup[16]),
                                        str(tup[17]),
-                                       'TaxiColor')
+                                       str('TaxiColor'))
                     else:
                         output_tup1 = (str(tup[0]),
                                        str(tup[1])[5:],
@@ -126,7 +126,7 @@ class TaxiData:
                                        str(tup[15]),
                                        str(tup[16]),
                                        str(tup[19]),
-                                       'TaxiColor')
+                                       str('TaxiColor'))
                     self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
                                        str, str, str, str, str, str, str] = output_tup1
                 else:
@@ -175,7 +175,7 @@ class TaxiData:
                                       float(tup[15]),
                                       float(tup[16]),
                                       congestion_surcharge_fix,
-                                      'yellow')
+                                      str('yellow'))
                     else:
                         if len(tup[7]) != 0:
                             passenger_count_fix = int(tup[7])
@@ -206,7 +206,7 @@ class TaxiData:
                                       float(tup[15]),
                                       float(tup[16]),
                                       congestion_surcharge_fix,
-                                      'green')
+                                      str('green'))
                     list_of_tuples_load_typed.append(output_tup)
                 count += 1
             # sort to pickup time
