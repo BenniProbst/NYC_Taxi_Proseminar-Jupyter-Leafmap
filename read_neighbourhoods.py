@@ -91,7 +91,7 @@ def polygon_array_central_point(polygon_array: List[List[Tuple[float, float]]]) 
     return out_tup, borderline_size
 
 
-def valid_MultiPolygon(multi_polygon) -> bool:
+def valid_multi_polygon(multi_polygon) -> bool:
     valid: bool = True
     for i1 in range(0, len(multi_polygon)):
         for i2 in range(0, len(multi_polygon)):
@@ -145,11 +145,7 @@ class NeighbourhoodTaxiData:
                     features.append(feature)
             else:
                 multi_polygon = self.neighbourhoodPolynoms[i]
-                out_polygons = []
-                if not valid_MultiPolygon(multi_polygon):
-                    out_polygons = cascaded_union(multi_polygon)
-                else:
-                    out_polygons = multi_polygon
+                out_polygons = cascaded_union(multi_polygon)
                 feature = Feature(id=i + 1, properties=prop, geometry=out_polygons)
                 features.append(feature)
 
