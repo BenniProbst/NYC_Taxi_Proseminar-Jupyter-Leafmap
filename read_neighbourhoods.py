@@ -8,6 +8,7 @@ import geopy.distance as geo_dist
 from pyproj import Geod
 from threading import Lock
 import concurrent.futures
+from shapely.ops import cascaded_union
 
 
 def distance_line(p1, p2):
@@ -89,6 +90,32 @@ def polygon_array_central_point(polygon_array: List[List[Tuple[float, float]]]) 
     out_tup: Tuple[float, float] = (out_x, out_y)
     return out_tup, borderline_size
 
+def valid_MultiPolygon(multi_polygon) -> bool:
+    valid: bool = True
+    for i1 in range(0, len(multi_polygon)):
+        for i2 in range(0, len(multi_polygon)):
+            if i1 == i2:
+                continue
+            same: int = 0
+            i3: int = 0
+            i4: int = 0
+            while i3 < len(multi_polygon[i1]):
+                counter: int = 0
+                while i4 < len(multi_polygon[i1]):
+                    if multi_polygon[i1][(i3 + counter) % len(multi_polygon[i1])] != \
+                            multi_polygon[i2][(i4 + counter) % len(multi_polygon[i2])]:
+                        i4 += 1
+                        break
+                    counter += 1
+                if counter > 1:
+                    valid = False
+                    break
+                i3 += 1
+            if not valid:
+                break
+        if not valid:
+            break
+    return valid
 
 class NeighbourhoodTaxiData:
 
@@ -116,13 +143,11 @@ class NeighbourhoodTaxiData:
                     feature = Feature(id=i + 1, properties=prop, geometry=Polygon(self.neighbourhoodPolynoms[i]))
                     features.append(feature)
             else:
-                polygons = []
-                for p1 in self.neighbourhoodPolynoms[i]:
-                    polygon = []
-                    for points in p1:
-                        polygon.append([points[0], points[1]])
-                    polygons.append(polygon)
-                feature = Feature(id=i + 1, properties=prop, geometry=MultiPolygon(polygons))
+                multi_polygon = self.neighbourhoodPolynoms[i]
+                out_polygons = []
+                if not valid_MultiPolygon(multi_polygon):
+                    out_polygons = cascaded_union(multi_polygon)
+                feature = Feature(id=i + 1, properties=prop, geometry=polygons)
                 features.append(feature)
 
         feature_collection = FeatureCollection(features)
