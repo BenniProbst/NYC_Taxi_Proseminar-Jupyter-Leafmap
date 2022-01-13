@@ -134,9 +134,6 @@ class NeighbourhoodTaxiData:
                                                     self.neighbourhoodPolynoms[thread_num])))
 
                 thread_num += 1
-                if len(thread_list) < multiprocessing.cpu_count()*2 and \
-                        not (thread_num == len(self.neighbourhoodPolynoms)):
-                    continue
                 while True:
                     for t in thread_list:
                         if t[1].done():
