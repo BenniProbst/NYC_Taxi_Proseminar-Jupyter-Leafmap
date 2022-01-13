@@ -94,7 +94,7 @@ class NeighbourhoodTaxiData:
 
     def to_geojson(self, path_out: str) -> None:
         output_json = {'type': 'FeatureCollection',
-                       'crs': {'type': 'name', 'properties': {'name': 'EPSG:4326/taxi_zone'}},
+                       'crs': {'type': 'name', 'properties': {'name': 'EPSG:4326'}},
                        'features': []
                        }
         self.central_points()
@@ -102,22 +102,31 @@ class NeighbourhoodTaxiData:
             feature = {'type': 'Feature', 'id': i + 1, 'properties': {
                 'OBJECTID': i + 1, 'LocationID': self.neighbourhoodTuples[i][0],
                 'Borough': self.neighbourhoodTuples[i][1], 'Zone': self.neighbourhoodTuples[i][2],
-                'service_zone': self.neighbourhoodTuples[i][3], 'center': self.centrals[i]
+                'service_zone': self.neighbourhoodTuples[i][3], 'center': [self.centrals[i][0], self.centrals[i][1]]
             }, 'geometry': {}}
 
-            feature['properties']['borderline_miles'] = self.borderline_sizes[i]
+            feature['properties']['Shape__Length'] = self.borderline_sizes[i]
 
             zone_area: float = 0
             for polygon in self.neighbourhoodPolynoms[i]:
                 zone_area += geo_polygon_area(polygon)
-            feature['properties']['zone_area'] = zone_area
+            feature['properties']['Shape__Area'] = zone_area
 
             if len(self.neighbourhoodPolynoms[i]) == 1:
                 feature['geometry']['type'] = 'Polygon'
-                feature['geometry']['coordinates'] = [[self.neighbourhoodPolynoms[i][0]]]
+                output_list = []
+                for p1 in self.neighbourhoodPolynoms[i][0]:
+                    output_list.append([p1[0], p1[1]])
+                feature['geometry']['coordinates'] = [output_list]
             else:
                 feature['geometry']['type'] = 'MultiPolygon'
-                feature['geometry']['coordinates'] = [[self.neighbourhoodPolynoms[i]]]
+                output_list = []
+                for polygon1 in self.neighbourhoodPolynoms[i]:
+                    output_list1 = []
+                    for p1 in polygon1:
+                        output_list1.append([p1[0], p1[1]])
+                    output_list.append(output_list1)
+                feature['geometry']['coordinates'] = [output_list]
 
             output_json['features'].append(feature)
         with open(path_out, 'w') as outfile:
