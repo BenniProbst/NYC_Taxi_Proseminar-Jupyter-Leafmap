@@ -125,15 +125,23 @@ class NeighbourhoodTaxiData:
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             thread_num: int = 0
-            thread_list: List[Tuple[int, executor]]
+            thread_list = []
             while thread_num < len(self.neighbourhoodPolynoms):
                 while len(self.centrals) <= thread_num:
                     self.centrals.append((0, 0))
                     self.borderline_sizes.append(0)
-
-                future = executor.submit(polygon_array_central_point, self.neighbourhoodPolynoms[thread_num])
-                future.done()
-                return_value = future.result()
+                thread_list.append((thread_num,
+                                    executor.submit(polygon_array_central_point,
+                                                    self.neighbourhoodPolynoms[thread_num])))
+                #future.done()
+                #return_value = future.result()
+                while True:
+                    if len(thread_list) < multiprocessing.cpu_count()*2:
+                        break
+                    else:
+                        counter: int = 0
+                        for t in thread_list:
+                            if t[1].
                 self.datamutex.acquire()
                 self.centrals[thread_num] = return_value[0]
                 self.borderline_sizes[thread_num] = return_value[1]
