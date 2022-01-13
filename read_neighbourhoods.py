@@ -90,6 +90,7 @@ def polygon_array_central_point(polygon_array: List[List[Tuple[float, float]]]) 
     out_tup: Tuple[float, float] = (out_x, out_y)
     return out_tup, borderline_size
 
+
 def valid_MultiPolygon(multi_polygon) -> bool:
     valid: bool = True
     for i1 in range(0, len(multi_polygon)):
@@ -115,6 +116,7 @@ def valid_MultiPolygon(multi_polygon) -> bool:
         if not valid:
             break
     return valid
+
 
 class NeighbourhoodTaxiData:
 
