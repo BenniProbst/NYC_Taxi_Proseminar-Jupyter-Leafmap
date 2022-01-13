@@ -157,7 +157,8 @@ class NeighbourhoodTaxiData:
         self.datamutex: Lock() = Lock()
         self.centrals: List[Tuple[float, float]] = []
         self.borderline_sizes: List[float] = []
-        tz = read_taxizone.TaxiZone('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/taxi+_zone_lookup.csv')
+        tz = read_taxizone.TaxiZone('/home/benjamin-elias/PycharmProjects/Proseminar '
+                                    'Jupyter-Leafmap/taxi_data/taxi+_zone_lookup.csv')
         self.neighbourhoodTuples: List[Tuple[int, str, str, str]] = []
         # multiple neighborhood polynoms for every taxi zone
         self.neighbourhoodPolynoms: List[List[List[Tuple[float, float]]]] = []

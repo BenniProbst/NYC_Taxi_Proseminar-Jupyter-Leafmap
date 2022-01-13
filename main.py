@@ -6,9 +6,10 @@ from read_neighbourhoods import NeighbourhoodTaxiData
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    ntd = NeighbourhoodTaxiData('/home/benjamin-elias/Proseminar/Jupyterlab/nyc-neighborhoods.geo.json')
+    ntd = NeighbourhoodTaxiData('/home/benjamin-elias/PycharmProjects/Proseminar '
+                                'Jupyter-Leafmap/nyc-neighborhoods.geo.json')
     print(ntd.central_points())
-    ntd.to_geojson('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_zones.geo.json')
+    ntd.to_geojson('/home/benjamin-elias/PycharmProjects/Proseminar Jupyter-Leafmap/taxi_zones.geo.json')
     pass
 
 
