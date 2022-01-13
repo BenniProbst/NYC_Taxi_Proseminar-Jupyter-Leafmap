@@ -96,7 +96,6 @@ def valid_MultiPolygon(multi_polygon) -> bool:
         for i2 in range(0, len(multi_polygon)):
             if i1 == i2:
                 continue
-            same: int = 0
             i3: int = 0
             i4: int = 0
             while i3 < len(multi_polygon[i1]):
