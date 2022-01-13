@@ -113,11 +113,16 @@ class NeighbourhoodTaxiData:
             feature['properties']['Shape__Area'] = zone_area
 
             if len(self.neighbourhoodPolynoms[i]) == 1:
-                feature['geometry']['type'] = 'Polygon'
-                output_list = []
-                for p1 in self.neighbourhoodPolynoms[i][0]:
-                    output_list.append([p1[0], p1[1]])
-                feature['geometry']['coordinates'] = [output_list]
+                if len(self.neighbourhoodPolynoms[i][0]) == 1:
+                    feature['geometry']['type'] = 'Point'
+                    for p1 in self.neighbourhoodPolynoms[i][0]:
+                        feature['geometry']['coordinates'] = [p1[0], p1[1]]
+                else:
+                    feature['geometry']['type'] = 'Polygon'
+                    output_list = []
+                    for p1 in self.neighbourhoodPolynoms[i][0]:
+                        output_list.append([p1[0], p1[1]])
+                    feature['geometry']['coordinates'] = [output_list]
             else:
                 feature['geometry']['type'] = 'MultiPolygon'
                 output_list = []
