@@ -131,6 +131,7 @@ class NeighbourhoodTaxiData:
             output_json['features'].append(feature)
         with open(path_out, 'w') as outfile:
             json.dump(output_json, outfile)
+        self.taxizone_geojson = output_json
 
     def central_points(self) -> List[Tuple[float, float]]:
         if len(self.centrals):
