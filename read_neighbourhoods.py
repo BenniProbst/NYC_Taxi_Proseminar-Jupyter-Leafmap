@@ -64,8 +64,12 @@ def geo_polygon_area(polygon: List[Tuple[float, float]]) -> float:
         return 0
     # Define WGS84 as CRS:
     geod = Geod('+a=6378137 +f=0.0033528106647475126')
-    lats = polygon[:, 1]
-    lons = polygon[:, 0]
+    lons = []
+    for p in polygon:
+        lons.append(p[0])
+    lats = []
+    for p in polygon:
+        lats.append(p[1])
     # Compute:
     area, perim = geod.polygon_area_perimeter(lons, lats)
     return abs(area) * (1 / (1.609344 ** 2))  # area in miles
