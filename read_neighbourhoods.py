@@ -1,4 +1,5 @@
 import json
+import time
 from typing import List
 from typing import Tuple
 import read_taxizone
@@ -8,7 +9,6 @@ from pyproj import Geod
 import multiprocessing
 from threading import Lock
 import concurrent.futures
-import time
 
 
 def distance_line(p1, p2):
@@ -122,21 +122,26 @@ class NeighbourhoodTaxiData:
 
     def central_points(self) -> List[Tuple[float, float]]:
         self.centrals = []
-        thread_num: int = 0
-        for polygon_array in self.neighbourhoodPolynoms:
-            while len(self.centrals) <= thread_num:
-                self.centrals.append((0, 0))
-                self.borderline_sizes.append(0)
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                local_thread_num = thread_num
-                future = executor.submit(polygon_array_central_point, polygon_array)
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            thread_num: int = 0
+            thread_list: List[Tuple[int, executor]]
+            while thread_num < len(self.neighbourhoodPolynoms):
+                while len(self.centrals) <= thread_num:
+                    self.centrals.append((0, 0))
+                    self.borderline_sizes.append(0)
+
+                future = executor.submit(polygon_array_central_point, self.neighbourhoodPolynoms[thread_num])
+                future.done()
                 return_value = future.result()
                 self.datamutex.acquire()
-                self.centrals[local_thread_num] = return_value[0]
-                self.borderline_sizes[local_thread_num] = return_value[1]
+                self.centrals[thread_num] = return_value[0]
+                self.borderline_sizes[thread_num] = return_value[1]
                 self.datamutex.release()
 
-            thread_num += 1
+                thread_num += 1
+            while len(thread_list) > 0:
+                time.sleep(1)
         return self.centrals
 
     def __init__(self, path):
