@@ -9,6 +9,7 @@ from pyproj import Geod
 from threading import Lock
 import concurrent.futures
 from shapely.ops import cascaded_union
+from shapely.geometry import Polygon
 
 
 def distance_line(p1, p2):
@@ -144,8 +145,11 @@ class NeighbourhoodTaxiData:
                     feature = Feature(id=i + 1, properties=prop, geometry=Polygon(self.neighbourhoodPolynoms[i]))
                     features.append(feature)
             else:
-                multi_polygon = self.neighbourhoodPolynoms[i]
-                out_polygons = cascaded_union(multi_polygon)
+                polygons = []
+                for p1 in self.neighbourhoodPolynoms[i]:
+                    polygons.append(Polygon(p1))
+
+                out_polygons = cascaded_union(polygons)
                 feature = Feature(id=i + 1, properties=prop, geometry=out_polygons)
                 features.append(feature)
 
