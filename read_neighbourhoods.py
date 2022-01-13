@@ -134,9 +134,11 @@ class NeighbourhoodTaxiData:
                                     executor.submit(polygon_array_central_point,
                                                     self.neighbourhoodPolynoms[thread_num])))
 
-                if len(thread_list) < multiprocessing.cpu_count()*2:
+                thread_num += 1
+                if len(thread_list) < multiprocessing.cpu_count()*2 and \
+                        not (thread_num == len(self.neighbourhoodPolynoms)):
                     continue
-                else:
+                while True:
                     for t in thread_list:
                         if t[1].done():
                             return_value = t[1].result()
@@ -145,10 +147,10 @@ class NeighbourhoodTaxiData:
                             self.borderline_sizes[t[0]] = return_value[1]
                             self.datamutex.release()
                             thread_list.remove(t)
+                    if thread_num < len(self.neighbourhoodPolynoms) or \
+                            (thread_num == len(self.neighbourhoodPolynoms) and len(thread_list) == 0):
+                        break
 
-                thread_num += 1
-            while len(thread_list) > 0:
-                time.sleep(1)
         return self.centrals
 
     def __init__(self, path):
