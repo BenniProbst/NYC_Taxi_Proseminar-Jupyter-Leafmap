@@ -164,6 +164,7 @@ class NeighbourhoodTaxiData:
         return self.centrals
 
     def __init__(self, path):
+        self.taxizone_geojson = None
         self.datamutex: Lock() = Lock()
         self.centrals: List[Tuple[float, float]] = []
         self.borderline_sizes: List[float] = []
