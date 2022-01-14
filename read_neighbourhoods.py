@@ -166,7 +166,7 @@ class NeighbourhoodTaxiData:
                         feature = Feature(id=i + 1, properties=prop, geometry=Point(p1))
                         features.append(feature)
                 else:
-                    feature = Feature(id=i + 1, properties=prop, geometry=Polygon([self.neighbourhoodPolynoms[i]]))
+                    feature = Feature(id=i + 1, properties=prop, geometry=Polygon(self.neighbourhoodPolynoms[i]))
                     features.append(feature)
             else:
                 polygons: List[S_Polygon] = []
@@ -191,7 +191,7 @@ class NeighbourhoodTaxiData:
                     out_polygons = []
                     for p in polygons:
                         out_polygons.append(list(p.exterior.coords))
-                    feature = Feature(id=i + 1, properties=prop, geometry=MultiPolygon(out_polygons))
+                    feature = Feature(id=i + 1, properties=prop, geometry=MultiPolygon([out_polygons]))
                     features.append(feature)
 
         self.feature_collection = FeatureCollection(features)
