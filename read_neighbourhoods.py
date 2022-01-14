@@ -197,7 +197,6 @@ class NeighbourhoodTaxiData:
         self.feature_collection = FeatureCollection(features)
         with open(path_out, 'w') as outfile:
             dump(self.feature_collection, outfile)
-        self.taxizone_geojson = json.loads(path_out)
 
     def central_points(self) -> List[Tuple[float, float]]:
         if len(self.centrals):
