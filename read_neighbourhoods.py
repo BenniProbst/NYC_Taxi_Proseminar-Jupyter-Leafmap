@@ -1,5 +1,7 @@
 import json
 
+import geojson
+
 import geopandas
 from geojson import Polygon, MultiPolygon, Point, Feature, FeatureCollection, dump
 from typing import List
@@ -177,11 +179,7 @@ class NeighbourhoodTaxiData:
                         if p1 == p2:
                             continue
                         df2 = GeoSeries([p2])
-                        df3 = df1
-                        df4 = df2
-                        df3.simplify(tolerance=0.0001)
-                        df4.simplify(tolerance=0.0001)
-                        if any(df3.touches(df4, align=False)) or any(df3.overlaps(df4, align=False)):
+                        if any(df1.touches(df2, align=False)) or any(df1.overlaps(df2, align=False)):
                             polygons.append(S_Polygon(list(unary_union([p1, p2]).exterior.coords)))
                             polygons.remove(p1)
                             polygons.remove(p2)
@@ -196,10 +194,10 @@ class NeighbourhoodTaxiData:
                     feature = Feature(id=i + 1, properties=prop, geometry=MultiPolygon(out_polygons))
                     features.append(feature)
 
-        feature_collection = FeatureCollection(features)
+        self.feature_collection = FeatureCollection(features)
         with open(path_out, 'w') as outfile:
-            dump(feature_collection, outfile)
-        self.taxizone_geojson = json.loads(open(path_out, 'r').read())
+            dump(self.feature_collection, outfile)
+        self.taxizone_geojson = geojson.load(open(path_out, 'r').read())
 
     def central_points(self) -> List[Tuple[float, float]]:
         if len(self.centrals):
@@ -232,6 +230,7 @@ class NeighbourhoodTaxiData:
         return self.centrals
 
     def __init__(self, path):
+        self.feature_collection = None
         self.taxizone_geojson = None
         self.datamutex: Lock() = Lock()
         self.centrals: List[Tuple[float, float]] = []
