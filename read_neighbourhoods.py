@@ -9,7 +9,8 @@ from pyproj import Geod
 from threading import Lock
 import concurrent.futures
 from shapely.ops import cascaded_union
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon as S_Polygon
+from geopandas import GeoSeries
 
 
 def distance_line(p1, p2):
@@ -119,6 +120,25 @@ def valid_multi_polygon(multi_polygon) -> bool:
     return valid
 
 
+def create_list(r1, r2):
+    # Testing if range r1 and r2
+    # are equal
+    if r1 == r2:
+        return r1
+
+    else:
+
+        # Create empty list
+        res = []
+
+        # loop to append successors to
+        # list until r2 is reached.
+        while r1 < r2 + 1:
+            res.append(r1)
+            r1 += 1
+        return res
+
+
 class NeighbourhoodTaxiData:
 
     def to_geojson(self, path_out: str) -> None:
@@ -145,13 +165,30 @@ class NeighbourhoodTaxiData:
                     feature = Feature(id=i + 1, properties=prop, geometry=Polygon(self.neighbourhoodPolynoms[i]))
                     features.append(feature)
             else:
-                polygons = []
+                polygons: List[S_Polygon] = []
                 for p1 in self.neighbourhoodPolynoms[i]:
-                    polygons.append(Polygon(p1))
+                    polygons.append(S_Polygon(p1))
 
-                out_polygons = cascaded_union(polygons)
-                feature = Feature(id=i + 1, properties=prop, geometry=out_polygons)
-                features.append(feature)
+                for p1 in polygons:
+                    df1 = GeoSeries([p1])
+                    for p2 in polygons:
+                        if p1 == p2:
+                            continue
+                        df2 = GeoSeries([p2])
+                        if any(df1.touches(df2, align=False)):
+                            polygons.append(S_Polygon(list(cascaded_union([p1, p2]).exterior.coords)))
+                            polygons.remove(p1)
+                            polygons.remove(p2)
+
+                if len(polygons) == 1:
+                    feature = Feature(id=i + 1, properties=prop, geometry=Polygon(list(polygons[0].exterior.coords)))
+                    features.append(feature)
+                else:
+                    out_polygons = []
+                    for p in polygons:
+                        out_polygons.append(list(p.exterior.coords))
+                    feature = Feature(id=i + 1, properties=prop, geometry=MultiPolygon(out_polygons))
+                    features.append(feature)
 
         feature_collection = FeatureCollection(features)
         with open(path_out, 'w') as outfile:

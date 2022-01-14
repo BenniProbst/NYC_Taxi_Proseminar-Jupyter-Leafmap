@@ -1,3 +1,4 @@
+sudo apt install -y protobuf-compiler
 sudo apt-get install libgl1-mesa-glx libegl1-mesa libxrandr2 libxrandr2 libxss1 libxcursor1 libxcomposite1 libasound2 libxi6 libxtst6 -y
 sudo apt install npm curl
 curl -fsSL https://deb.nodesource.com/setup_17.x | sudo -E bash -
@@ -8,3 +9,6 @@ sudo apt-get install pyhton3-pip
 sudo apt-get install python-pygments
 sudo pip install jupyterlab
 sudo jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-leaflet
+git clone https://github.com/geopandas/geopandas.git
+cd geopandas
+pip install .
