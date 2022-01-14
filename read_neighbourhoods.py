@@ -10,7 +10,7 @@ import geopy.distance as geo_dist
 from pyproj import Geod
 from threading import Lock
 import concurrent.futures
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 from shapely.geometry import Polygon as S_Polygon
 from geopandas import GeoSeries
 
@@ -182,7 +182,7 @@ class NeighbourhoodTaxiData:
                         df3.simplify(tolerance=0.0001)
                         df4.simplify(tolerance=0.0001)
                         if any(df3.touches(df4, align=False)) or any(df3.overlaps(df4, align=False)):
-                            polygons.append(S_Polygon(list(cascaded_union([p1, p2]).exterior.coords)))
+                            polygons.append(S_Polygon(list(unary_union([p1, p2]).exterior.coords)))
                             polygons.remove(p1)
                             polygons.remove(p2)
 
