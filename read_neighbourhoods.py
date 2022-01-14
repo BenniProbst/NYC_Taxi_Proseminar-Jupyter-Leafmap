@@ -1,4 +1,6 @@
 import json
+
+import geopandas
 from geojson import Polygon, MultiPolygon, Point, Feature, FeatureCollection, dump
 from typing import List
 from typing import Tuple
@@ -175,7 +177,11 @@ class NeighbourhoodTaxiData:
                         if p1 == p2:
                             continue
                         df2 = GeoSeries([p2])
-                        if any(df1.touches(df2, align=False)):
+                        df3 = df1
+                        df4 = df2
+                        df3.simplify(tolerance=0.0001)
+                        df4.simplify(tolerance=0.0001)
+                        if any(df3.touches(df4, align=False)) or any(df3.overlaps(df4, align=False)):
                             polygons.append(S_Polygon(list(cascaded_union([p1, p2]).exterior.coords)))
                             polygons.remove(p1)
                             polygons.remove(p2)
