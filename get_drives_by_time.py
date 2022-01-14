@@ -12,3 +12,4 @@ class TaxiTime:
         self.big_taxi_data = TaxiData('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
         self.min_time: datetime = self.big_taxi_data.get_minimum_available_pickup_time()
         self.max_time: datetime = self.big_taxi_data.get_maximum_available_pickup_time()
+        pass

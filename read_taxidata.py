@@ -256,6 +256,7 @@ class TaxiData:
         # join all threads
         for t in self.threadlist:
             t.join()
+        self.threadlist = []
         return True
 
     def load_available(self, available: Dict[str, List[datetime]]) -> bool:
