@@ -34,6 +34,16 @@ def list_taxi_month(files: List[str], taxi_type: str) -> List[datetime]:
     return taxi_type_month
 
 
+def end_of_month(date_in: datetime) -> datetime:
+    end_month = datetime(date_in.year, date_in.month, 1)
+    over_one_month_later = end_month + timedelta(days=32)
+    end_last_month = datetime(1, 1)
+    for dt in rrule.rrule(rrule.MONTHLY, dtstart=end_month, until=over_one_month_later):
+        end_last_month = dt - timedelta(seconds=1)
+        break
+    return end_last_month
+
+
 class TaxiData:
 
     def get_date_files(self, year: int, month: int) -> Dict[str, List[datetime]]:
@@ -360,16 +370,27 @@ class TaxiData:
         if total_reload:
             return self.load_available(month_to_load)
         else:
-            over_one_month_later = end_month + timedelta(days=32)
-            end_last_month = datetime(1, 1)
-            for dt in rrule.rrule(rrule.MONTHLY, dtstart=end_month, until=over_one_month_later):
-                end_last_month = dt - timedelta(seconds=1)
-                break
+            # filter down everything that is not officially loaded
+            for color_al, time_list_al in self.already_loaded.items():
+                if len(time_list_al) == 0:
+                    for entry in self.data:
+                        if entry[18] == color_al:
+                            self.data.remove(entry)
+                else:
+                    min_month = min(time_list_al)
+                    max_month = end_of_month(max(time_list_al))
+                    for entry in self.data:
+                        if entry[18] == color_al and (entry[1] < min_month or entry[1] > max_month):
+                            self.data.remove(entry)
+
+            # filter down everything that does not fit into our new month load range
+            end_last_month = end_of_month(end_month)
             for entry in self.data:
-                if entry[1] <= start_month or entry[1] >= end_last_month:
+                if entry[1] < start_month or entry[1] > end_last_month:
                     self.data.remove(entry)
-
-
+            self.load_add_available(month_to_load)
+            # when we now filter with start and end within the first and last month we check if we deleted values
+            # on deletion the month is incomplete is does not count to self.already loaded
 
     def __init__(self, base: str):
         self.datamutex: Lock() = Lock()
