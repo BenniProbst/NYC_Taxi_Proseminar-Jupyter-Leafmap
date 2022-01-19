@@ -11,6 +11,7 @@ from heapq import merge
 import multiprocessing
 from threading import Thread, Lock
 import time
+from dateutil import rrule
 
 
 def list_taxi_files(folder: str) -> List[str]:
@@ -319,10 +320,15 @@ class TaxiData:
         return max_d
 
     # start and an optional 'end'
-    def load_range(self, start: datetime, *args, **kwargs):
+    def load_range(self, start: datetime, *args, **kwargs) -> bool:
         if len(args) == 0:
             return self.load_range(start, start)
         end = kwargs.get('end', datetime)
+        if start > end:
+            print('Start was older than end, switching start and and of range now!')
+            tmp = start
+            start = end
+            end = tmp
         start_month: datetime = datetime(start.year, start.month)
         end_month: datetime = datetime(end.year, end.month)
         if start_month < self.min_time:
@@ -333,6 +339,36 @@ class TaxiData:
             raise ValueError('End month was smaller than known minimum month.')
         if end_month > self.max_time:
             raise ValueError('End month was greater than known maximum month.')
+        # load not already loaded month
+        month_to_load: Dict[str: List[datetime]] = []
+        total_reload: bool = True
+        for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_month, until=end_month):
+            available_files = self.get_date_files(dt.year, dt.month)
+            for color, color_list in self.already_loaded.items():
+                for color_av, color_list_av in available_files.items():
+                    if color != color_av:
+                        continue
+                    if not set(color_list_av).issubset(set(color_list)):
+                        if not (color_av in month_to_load.keys()):
+                            month_to_load[color_av] = []
+                        for time_av in color_list_av:
+                            month_to_load[color_av].append(time_av)
+                    else:
+                        total_reload = False
+        # on total reload just load_available, else filter from the first day of the first month to the last second
+        # of the last month and then load_add_available
+        if total_reload:
+            return self.load_available(month_to_load)
+        else:
+            over_one_month_later = end_month + timedelta(days=32)
+            end_last_month = datetime(1, 1)
+            for dt in rrule.rrule(rrule.MONTHLY, dtstart=end_month, until=over_one_month_later):
+                end_last_month = dt - timedelta(seconds=1)
+                break
+            for entry in self.data:
+                if entry[1] <= start_month or entry[1] >= end_last_month:
+                    self.data.remove(entry)
+
 
 
     def __init__(self, base: str):
