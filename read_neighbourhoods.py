@@ -333,3 +333,5 @@ class NeighbourhoodTaxiData:
                     self.neighbourhoodPolynoms.append([polygon_list])
                     print('Double joined missing tuple ' + str(zone_tup) + ' to the neighborhood ' +
                           neighborhood_name)
+
+        self.to_geojson('/home/benjamin-elias/PycharmProjects/Proseminar Jupyter-Leafmap/taxi_zones.geojson')

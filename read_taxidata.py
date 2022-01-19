@@ -318,6 +318,13 @@ class TaxiData:
 
         return max_d
 
+    #start and an optional 'end'
+    def load_range(self, start: datetime, *args, **kwargs):
+        if len(args) == 0:
+            return self.load_range(start, start)
+        end = kwargs.get('end', datetime)
+
+
     def __init__(self, base: str):
         self.datamutex: Lock() = Lock()
         self.iomutex: Lock() = Lock()
@@ -333,3 +340,5 @@ class TaxiData:
         self.taxi_color_types_times: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
                                                                   'green': list_taxi_month(self.taxi_files, 'green')}
         self.already_loaded: Dict[str, List[datetime]] = {}
+        self.min_time: datetime = self.get_minimum_available_pickup_time()
+        self.max_time: datetime = self.get_maximum_available_pickup_time()
