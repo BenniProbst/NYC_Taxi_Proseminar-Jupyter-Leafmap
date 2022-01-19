@@ -318,11 +318,21 @@ class TaxiData:
 
         return max_d
 
-    #start and an optional 'end'
+    # start and an optional 'end'
     def load_range(self, start: datetime, *args, **kwargs):
         if len(args) == 0:
             return self.load_range(start, start)
         end = kwargs.get('end', datetime)
+        start_month: datetime = datetime(start.year, start.month)
+        end_month: datetime = datetime(end.year, end.month)
+        if start_month < self.min_time:
+            raise ValueError('Start month was smaller than known minimum month.')
+        if start_month > self.max_time:
+            raise ValueError('Start month was greater than known maximum month.')
+        if end_month < self.min_time:
+            raise ValueError('End month was smaller than known minimum month.')
+        if end_month > self.max_time:
+            raise ValueError('End month was greater than known maximum month.')
 
 
     def __init__(self, base: str):
