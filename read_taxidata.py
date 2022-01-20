@@ -347,7 +347,7 @@ class TaxiData:
         if end_month > self.max_time:
             raise ValueError('End month was greater than known maximum month.')
         # load not already loaded month
-        month_to_load: Dict[str: List[datetime]] = []
+        month_to_load: Dict[str: List[datetime]] = {}
         total_reload: bool = True
         for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_month, until=end_month):
             available_files = self.get_date_files(dt.year, dt.month)
