@@ -330,10 +330,7 @@ class TaxiData:
         return max_d
 
     # start and an optional 'end'
-    def load_range(self, start: datetime, *args, **kwargs) -> bool:
-        if len(args) == 0:
-            return self.load_range(start, start)
-        end = kwargs.get('end', datetime)
+    def load_range(self, start: datetime, end: datetime) -> bool:
         if start > end:
             print('Start was older than end, switching start and and of range now!')
             tmp = start
