@@ -393,7 +393,7 @@ class TaxiData:
         for entry in self.data:
             if entry[1] < start or entry[1] > end:
                 self.data.remove(entry)
-                month_here = datetime(entry[1].year, entry[1].month)
+                month_here = datetime(entry[1].year, entry[1].month, 1)
                 if not (month_here in month_incomplete):
                     month_incomplete.append(month_here)
         # remove incomplete month from already_loaded
