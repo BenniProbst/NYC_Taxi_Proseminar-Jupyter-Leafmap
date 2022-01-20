@@ -390,12 +390,16 @@ class TaxiData:
         # when we now filter with start and end within the first and last month we check if we deleted values
         # on deletion the month is incomplete is does not count to self.already loaded
         month_incomplete: List[datetime] = []
+        new_data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float, float, float, float,
+                             float, float, float, float, str]] = []
         for entry in self.data:
             if entry[1] < start or entry[1] > end:
-                self.data.remove(entry)
                 month_here = datetime(entry[1].year, entry[1].month, 1)
                 if not (month_here in month_incomplete):
                     month_incomplete.append(month_here)
+            else:
+                new_data.append(entry)
+        self.data = new_data
         # remove incomplete month from already_loaded
         for incom in month_incomplete:
             for color_al, time_list_al in self.already_loaded.items():
