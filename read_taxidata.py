@@ -347,6 +347,7 @@ class TaxiData:
         if end_month > self.max_time:
             raise ValueError('End month was greater than known maximum month.')
 
+        feedback: bool = True
         if not (self.min_is_loaded is not None and self.max_is_loaded is not None and self.min_is_loaded <= start
                 and end <= self.max_is_loaded):
             # load not already loaded month
@@ -367,7 +368,7 @@ class TaxiData:
                             total_reload = False
             # on total reload just load_available, else filter from the first day of the first month to the last second
             # of the last month and then load_add_available
-            feedback: bool = False
+
             if total_reload:
                 feedback = self.load_available(month_to_load)
             else:
