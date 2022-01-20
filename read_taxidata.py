@@ -37,7 +37,7 @@ def list_taxi_month(files: List[str], taxi_type: str) -> List[datetime]:
 def end_of_month(date_in: datetime) -> datetime:
     end_month = datetime(date_in.year, date_in.month, 1)
     over_one_month_later = end_month + timedelta(days=32)
-    end_last_month = datetime(1, 1)
+    end_last_month = datetime(1, 1, 1)
     for dt in rrule.rrule(rrule.MONTHLY, dtstart=end_month, until=over_one_month_later):
         end_last_month = dt - timedelta(seconds=1)
         break
