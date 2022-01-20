@@ -336,8 +336,8 @@ class TaxiData:
             tmp = start
             start = end
             end = tmp
-        start_month: datetime = datetime(start.year, start.month)
-        end_month: datetime = datetime(end.year, end.month)
+        start_month: datetime = datetime(start.year, start.month, 1)
+        end_month: datetime = datetime(end.year, end.month, 1)
         if start_month < self.min_time:
             raise ValueError('Start month was smaller than known minimum month.')
         if start_month > self.max_time:

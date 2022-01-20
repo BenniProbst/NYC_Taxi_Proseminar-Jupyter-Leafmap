@@ -4,7 +4,6 @@ import datetime
 
 
 class TaxiTime(TaxiData):
-    def __init__(self, base: str):
+    def __init__(self, base: str, zone_output: str):
         super().__init__(base)
-        self.zone_neighborhoods = NeighbourhoodTaxiData('/home/benjamin-elias/PycharmProjects/Proseminar '
-                                                        'Jupyter-Leafmap/nyc-neighborhoods.geojson')
+        self.zone_neighborhoods = NeighbourhoodTaxiData(zone_output)
