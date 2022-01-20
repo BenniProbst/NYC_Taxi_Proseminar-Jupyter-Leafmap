@@ -7,12 +7,12 @@ from datetime import datetime
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     tt = TaxiTime('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/')
-    pass
     start = datetime(2020, 2, 10)
     end = datetime(2020, 5, 25)
     tt.load_range(start, end)
     start = datetime(2020, 3, 10)
     end = datetime(2020, 6, 25)
     tt.load_range(start, end)
+    pass
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
