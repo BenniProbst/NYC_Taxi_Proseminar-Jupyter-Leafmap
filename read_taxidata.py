@@ -364,8 +364,9 @@ class TaxiData:
                         total_reload = False
         # on total reload just load_available, else filter from the first day of the first month to the last second
         # of the last month and then load_add_available
+        feedback: bool = False
         if total_reload:
-            return self.load_available(month_to_load)
+            feedback = self.load_available(month_to_load)
         else:
             # filter down everything that is not officially loaded
             for color_al, time_list_al in self.already_loaded.items():
@@ -385,21 +386,22 @@ class TaxiData:
             for entry in self.data:
                 if entry[1] < start_month or entry[1] > end_last_month:
                     self.data.remove(entry)
-            self.load_add_available(month_to_load)
-            # when we now filter with start and end within the first and last month we check if we deleted values
-            # on deletion the month is incomplete is does not count to self.already loaded
-            month_incomplete: List[datetime] = []
-            for entry in self.data:
-                if entry[1] < start or entry[1] > end:
-                    self.data.remove(entry)
-                    month_here = datetime(entry[1].year, entry[1].month)
-                    if not (month_here in month_incomplete):
-                        month_incomplete.append(month_here)
-            # remove incomplete month from already_loaded
-            for incom in month_incomplete:
-                for color_al, time_list_al in self.already_loaded.items():
-                    if incom in time_list_al:
-                        self.already_loaded[color_al].remove(incom)
+            feedback = self.load_add_available(month_to_load)
+        # when we now filter with start and end within the first and last month we check if we deleted values
+        # on deletion the month is incomplete is does not count to self.already loaded
+        month_incomplete: List[datetime] = []
+        for entry in self.data:
+            if entry[1] < start or entry[1] > end:
+                self.data.remove(entry)
+                month_here = datetime(entry[1].year, entry[1].month)
+                if not (month_here in month_incomplete):
+                    month_incomplete.append(month_here)
+        # remove incomplete month from already_loaded
+        for incom in month_incomplete:
+            for color_al, time_list_al in self.already_loaded.items():
+                if incom in time_list_al:
+                    self.already_loaded[color_al].remove(incom)
+        return feedback
 
     def __init__(self, base: str):
         self.datamutex: Lock() = Lock()
