@@ -16,5 +16,6 @@ if __name__ == '__main__':
     end = datetime(2020, 6, 25)
     tt.load_range(start, end)
     pass
+    con = TaxiTime.interconnections(start, end)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

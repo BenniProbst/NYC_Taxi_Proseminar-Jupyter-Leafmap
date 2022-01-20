@@ -346,50 +346,53 @@ class TaxiData:
             raise ValueError('End month was smaller than known minimum month.')
         if end_month > self.max_time:
             raise ValueError('End month was greater than known maximum month.')
-        # load not already loaded month
-        month_to_load: Dict[str: List[datetime]] = {}
-        total_reload: bool = True
-        for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_month, until=end_month):
-            available_files = self.get_date_files(dt.year, dt.month)
-            for color, color_list in self.already_loaded.items():
-                for color_av, color_list_av in available_files.items():
-                    if color != color_av:
-                        continue
-                    if not set(color_list_av).issubset(set(color_list)):
-                        if not (color_av in month_to_load.keys()):
-                            month_to_load[color_av] = []
-                        for time_av in color_list_av:
-                            month_to_load[color_av].append(time_av)
-                    else:
-                        total_reload = False
-        # on total reload just load_available, else filter from the first day of the first month to the last second
-        # of the last month and then load_add_available
-        feedback: bool = False
-        if total_reload:
-            feedback = self.load_available(month_to_load)
-        else:
-            # filter down everything that is not officially loaded
-            for color_al, time_list_al in self.already_loaded.items():
-                new_data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float, float, float,
-                                     float, float, float, float, float, str]] = []
-                if len(time_list_al) == 0:
-                    for entry in self.data:
-                        if entry[18] != color_al:
-                            new_data.append(entry)
-                else:
-                    min_month = min(time_list_al)
-                    max_month = end_of_month(max(time_list_al))
-                    for entry in self.data:
-                        if entry[18] != color_al and (entry[1] >= min_month or entry[1] <= max_month):
-                            new_data.append(entry)
-                self.data = new_data
 
-            # filter down everything that does not fit into our new month load range
-            end_last_month = end_of_month(end_month)
-            for entry in self.data:
-                if entry[1] < start_month or entry[1] > end_last_month:
-                    self.data.remove(entry)
-            feedback = self.load_add_available(month_to_load)
+        if not (self.min_is_loaded is not None and self.max_is_loaded is not None and self.min_is_loaded <= start
+                and end <= self.max_is_loaded):
+            # load not already loaded month
+            month_to_load: Dict[str: List[datetime]] = {}
+            total_reload: bool = True
+            for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_month, until=end_month):
+                available_files = self.get_date_files(dt.year, dt.month)
+                for color, color_list in self.already_loaded.items():
+                    for color_av, color_list_av in available_files.items():
+                        if color != color_av:
+                            continue
+                        if not set(color_list_av).issubset(set(color_list)):
+                            if not (color_av in month_to_load.keys()):
+                                month_to_load[color_av] = []
+                            for time_av in color_list_av:
+                                month_to_load[color_av].append(time_av)
+                        else:
+                            total_reload = False
+            # on total reload just load_available, else filter from the first day of the first month to the last second
+            # of the last month and then load_add_available
+            feedback: bool = False
+            if total_reload:
+                feedback = self.load_available(month_to_load)
+            else:
+                # filter down everything that is not officially loaded
+                for color_al, time_list_al in self.already_loaded.items():
+                    new_data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float, float, float,
+                                         float, float, float, float, float, str]] = []
+                    if len(time_list_al) == 0:
+                        for entry in self.data:
+                            if entry[18] != color_al:
+                                new_data.append(entry)
+                    else:
+                        min_month = min(time_list_al)
+                        max_month = end_of_month(max(time_list_al))
+                        for entry in self.data:
+                            if entry[18] != color_al and (entry[1] >= min_month or entry[1] <= max_month):
+                                new_data.append(entry)
+                    self.data = new_data
+
+                # filter down everything that does not fit into our new month load range
+                end_last_month = end_of_month(end_month)
+                for entry in self.data:
+                    if entry[1] < start_month or entry[1] > end_last_month:
+                        self.data.remove(entry)
+                feedback = self.load_add_available(month_to_load)
         # when we now filter with start and end within the first and last month we check if we deleted values
         # on deletion the month is incomplete is does not count to self.already loaded
         month_incomplete: List[datetime] = []
@@ -408,9 +411,13 @@ class TaxiData:
             for color_al, time_list_al in self.already_loaded.items():
                 if incom in time_list_al:
                     self.already_loaded[color_al].remove(incom)
+        self.min_is_loaded = self.data[0]
+        self.max_is_loaded = self.data[-1]
         return feedback
 
     def __init__(self, base: str):
+        self.min_is_loaded = None
+        self.max_is_loaded = None
         self.datamutex: Lock() = Lock()
         self.iomutex: Lock() = Lock()
         self.threadlist: List[Thread] = []
