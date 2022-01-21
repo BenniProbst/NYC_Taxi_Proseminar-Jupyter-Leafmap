@@ -231,7 +231,7 @@ class NeighbourhoodTaxiData:
                 return f
         raise ValueError('The id for the feature was not found.')
 
-    def neighbourhood_points(self):
+    def neighbourhood_points(self, path_out: str):
         features: List[Feature] = []
         line_count: int = 0
         for f in self.feature_collection:
@@ -239,7 +239,8 @@ class NeighbourhoodTaxiData:
             start_point: tuple = (f['properties']['center'][0], f['properties']['center'][1])
             features.append(Feature(id=line_count, geometry=Point(start_point), properties=prop))
             line_count += 1
-
+        with open(path_out, 'w') as outfile:
+            dump(features, outfile)
         return FeatureCollection(features)
 
     def __init__(self, path):

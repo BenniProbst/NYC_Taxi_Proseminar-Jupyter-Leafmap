@@ -1,13 +1,13 @@
 from read_taxidata import TaxiData
 from read_neighbourhoods import NeighbourhoodTaxiData
 import datetime
-from geojson import Feature, FeatureCollection, Point, LineString
+from geojson import Feature, FeatureCollection, LineString, dump
 from typing import List
 
 
 class TaxiTime(TaxiData):
 
-    def interconnections(self, start: datetime, end: datetime) -> FeatureCollection:
+    def interconnections(self, start: datetime, end: datetime, path_out: str) -> FeatureCollection:
         self.load_range(start, end)
         features: List[Feature] = []
         line_count: int = 0
@@ -19,7 +19,8 @@ class TaxiTime(TaxiData):
             end_point: tuple = (end_feature['properties']['center'][0], end_feature['properties']['center'][1])
             features.append(Feature(id=line_count, geometry=LineString([start_point, end_point]), properties=prop))
             line_count += 1
-
+        with open(path_out, 'w') as outfile:
+            dump(features, outfile)
         return FeatureCollection(features)
 
     def __init__(self, base: str, zone_output: str):
