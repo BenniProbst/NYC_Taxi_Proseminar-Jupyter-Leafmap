@@ -379,22 +379,29 @@ class TaxiData:
             else:
                 # filter down everything that is not officially loaded
                 for color_al, time_list_al in self.already_loaded.items():
+                    new_data: List[
+                        Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float, float, float, float,
+                              float, float, float, float, str]] = []
                     if len(time_list_al) == 0:
                         for entry in self.data:
-                            if entry[18] == color_al:
-                                self.data.remove(entry)
+                            if not (entry[18] == color_al):
+                                new_data.append(entry)
                     else:
                         min_month = min(time_list_al)
                         max_month = end_of_month(max(time_list_al))
                         for entry in self.data:
-                            if entry[18] == color_al and (entry[1] < min_month or entry[1] > max_month):
-                                self.data.remove(entry)
+                            if not (entry[18] == color_al) and not (entry[1] < min_month or entry[1] > max_month):
+                                new_data.append(entry)
+                    self.data = new_data
 
                 # filter down everything that does not fit into our new month load range
                 end_last_month = end_of_month(end_month)
+                new_data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float, float, float,
+                                     float, float, float, float, float, str]] = []
                 for entry in self.data:
-                    if entry[1] < start_month or entry[1] > end_last_month:
-                        self.data.remove(entry)
+                    if not (entry[1] < start_month or entry[1] > end_last_month):
+                        new_data.append(entry)
+                self.data = new_data
                 feedback = self.load_add_available(month_to_load)
         # when we now filter with start and end within the first and last month we check if we deleted values
         # on deletion the month is incomplete is does not count to self.already loaded
