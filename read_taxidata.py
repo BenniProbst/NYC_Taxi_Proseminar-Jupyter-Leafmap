@@ -412,8 +412,8 @@ class TaxiData:
             for color_al, time_list_al in self.already_loaded.items():
                 if incom in time_list_al:
                     self.already_loaded[color_al].remove(incom)
-        self.min_is_loaded = self.data[0]
-        self.max_is_loaded = self.data[-1]
+        self.min_is_loaded = self.data[0][1]
+        self.max_is_loaded = self.data[-1][1]
         return feedback
 
     def __init__(self, base: str):

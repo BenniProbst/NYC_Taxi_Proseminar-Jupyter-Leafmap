@@ -9,7 +9,6 @@ class TaxiTime(TaxiData):
 
     def interconnections(self, start: datetime, end: datetime) -> FeatureCollection:
         self.load_range(start, end)
-        output: FeatureCollection = FeatureCollection(Feature())
         features: List[Feature] = []
         line_count: int = 0
         for d in self.data:
@@ -26,4 +25,3 @@ class TaxiTime(TaxiData):
     def __init__(self, base: str, zone_output: str):
         super().__init__(base)
         self.zone_neighborhoods = NeighbourhoodTaxiData(zone_output)
-        pass
