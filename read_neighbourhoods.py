@@ -1,8 +1,5 @@
 import json
 
-import geojson
-
-import geopandas
 from geojson import Polygon, MultiPolygon, Point, Feature, FeatureCollection, dump
 from typing import List
 from typing import Tuple
@@ -227,6 +224,12 @@ class NeighbourhoodTaxiData:
                         break
 
         return self.centrals
+
+    def get_feature(self, id_num: int) -> Feature:
+        for f in self.feature_collection.features:
+            if f['properties']['LocationID'] == id_num:
+                return f
+        raise ValueError('The id for the feature was not found.')
 
     def __init__(self, path):
         self.feature_collection = None
