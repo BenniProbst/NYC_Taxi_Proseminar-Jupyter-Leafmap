@@ -379,26 +379,16 @@ class TaxiData:
             else:
                 # filter down everything that is not officially loaded
                 for color_al, time_list_al in self.already_loaded.items():
-                    new_data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float, float, float,
-                                         float, float, float, float, float, str]] = []
                     if len(time_list_al) == 0:
                         for entry in self.data:
-                            if entry[18] != color_al:
-                                new_data.append(entry)
+                            if entry[18] == color_al:
+                                self.data.remove(entry)
                     else:
-                        min_month = time_list_al[0]
-                        for d in time_list_al:
-                            if d < min_month:
-                                min_month = d
-                        max_month = time_list_al[0]
-                        for d in time_list_al:
-                            if d > max_month:
-                                max_month = d
-                        max_month = end_of_month(max_month)
+                        min_month = min(time_list_al)
+                        max_month = end_of_month(max(time_list_al))
                         for entry in self.data:
-                            if entry[18] != color_al and (entry[1] >= min_month or entry[1] <= max_month):
-                                new_data.append(entry)
-                    self.data = new_data
+                            if entry[18] == color_al and (entry[1] < min_month or entry[1] > max_month):
+                                self.data.remove(entry)
 
                 # filter down everything that does not fit into our new month load range
                 end_last_month = end_of_month(end_month)
