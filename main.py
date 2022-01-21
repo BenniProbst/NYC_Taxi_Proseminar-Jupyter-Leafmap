@@ -15,7 +15,7 @@ if __name__ == '__main__':
     start = datetime(2020, 3, 10)
     end = datetime(2020, 6, 25)
     tt.load_range(start, end)
-    pass
-    con = TaxiTime.interconnections(start, end)
+    con = tt.interconnections(start, end)
+    points = tt.zone_neighborhoods.neighbourhood_points()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
