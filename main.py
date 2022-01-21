@@ -2,10 +2,12 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import read_taxidata
 from get_drives_by_time import TaxiTime
 from datetime import datetime
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    print(read_taxidata.end_of_month(datetime(2020, 4, 1)))
     tt = TaxiTime('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/', '/home/benjamin-elias/PycharmProjects'
                                                                            '/Proseminar '
                                                                            'Jupyter-Leafmap/nyc-neighborhoods.geojson')
