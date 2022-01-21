@@ -21,6 +21,8 @@ class TaxiTime(TaxiData):
             features.append(Feature(id=line_count, geometry=LineString([start_point, end_point]), properties=prop))
             line_count += 1
 
+        return FeatureCollection(features)
+
     def __init__(self, base: str, zone_output: str):
         super().__init__(base)
         self.zone_neighborhoods = NeighbourhoodTaxiData(zone_output)
