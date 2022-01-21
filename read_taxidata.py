@@ -381,8 +381,15 @@ class TaxiData:
                             if entry[18] != color_al:
                                 new_data.append(entry)
                     else:
-                        min_month = min(time_list_al)
-                        max_month = end_of_month(max(time_list_al))
+                        min_month = time_list_al[0]
+                        for d in time_list_al:
+                            if d < min_month:
+                                min_month = d
+                        max_month = time_list_al[0]
+                        for d in time_list_al:
+                            if d > max_month:
+                                max_month = d
+                        max_month = end_of_month(max_month)
                         for entry in self.data:
                             if entry[18] != color_al and (entry[1] >= min_month or entry[1] <= max_month):
                                 new_data.append(entry)
