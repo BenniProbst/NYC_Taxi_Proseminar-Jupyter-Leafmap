@@ -267,9 +267,8 @@ class TaxiData:
                         """
 
                         if not (taxi_color_request in self.already_loaded.keys()):
-                            self.already_loaded[taxi_color_request] = [times]
-                        else:
-                            self.already_loaded[taxi_color_request].append(times)
+                            self.already_loaded[taxi_color_request] = []
+                        self.already_loaded[taxi_color_request].append(times)
                 else:
                     return False
             else:
