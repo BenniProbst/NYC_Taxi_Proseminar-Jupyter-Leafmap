@@ -247,7 +247,8 @@ class TaxiData:
 
                         # create maximum number of threads with one master and rest workers
                         # don't reserve master thread for more speed
-                        while True:
+                        """
+                                                while True:
                             newthreadlist: List[Thread] = []
                             for t in self.threadlist:
                                 if t.is_alive():
@@ -257,10 +258,14 @@ class TaxiData:
                                 break
                             else:
                                 time.sleep(0.2)
-
+                        """
+                        self.__load_csv_multithread(build_file_name, taxi_color_request)
+                        """
                         self.threadlist.append(Thread(target=self.__load_csv_multithread,
                                                       args=(build_file_name, taxi_color_request)))
                         self.threadlist[-1].start()
+                        """
+
                         if not (taxi_color_request in self.already_loaded.keys()):
                             self.already_loaded[taxi_color_request] = [times]
                         else:
@@ -270,9 +275,12 @@ class TaxiData:
             else:
                 return False
         # join all threads
-        for t in self.threadlist:
+        """
+                for t in self.threadlist:
             t.join()
         self.threadlist = []
+        """
+
         return True
 
     def load_available(self, available: Dict[str, List[datetime]]) -> bool:
@@ -430,7 +438,7 @@ class TaxiData:
         self.max_is_loaded = None
         self.datamutex: Lock() = Lock()
         self.iomutex: Lock() = Lock()
-        self.threadlist: List[Thread] = []
+        # self.threadlist: List[Thread] = []
         self.header = None
         self.base_folder: str = base
         # last tuple entry is taxi color
