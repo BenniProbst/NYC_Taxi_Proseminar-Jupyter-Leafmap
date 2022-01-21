@@ -19,7 +19,7 @@ class TaxiTime(TaxiData):
             start_point: tuple = (start_feature['properties']['center'][0], start_feature['properties']['center'][1])
             end_point: tuple = (end_feature['properties']['center'][0], end_feature['properties']['center'][1])
             features.append(Feature(id=line_count, geometry=LineString([start_point, end_point]), properties=prop))
-            pass
+            line_count += 1
 
     def __init__(self, base: str, zone_output: str):
         super().__init__(base)
