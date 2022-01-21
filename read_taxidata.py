@@ -41,6 +41,7 @@ def end_of_month(date_in: datetime) -> datetime:
     first: bool = True
     for dt in rrule.rrule(rrule.MONTHLY, dtstart=end_month, until=over_one_month_later):
         if first:
+            first = False
             continue
         else:
             end_last_month = dt - timedelta(seconds=1)
