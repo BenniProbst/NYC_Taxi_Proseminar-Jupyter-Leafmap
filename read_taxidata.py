@@ -242,15 +242,11 @@ class TaxiData:
                 list_of_tuples_load_typed.append(output_tup)
 
             # sort to pickup time
-            list_of_tuples_load_typed_np = np.array(list_of_tuples_load_typed, dtype=dtype)
-            list_of_tuples_load_typed_np = np.sort(list_of_tuples_load_typed_np, order=['pickup_datetime',
-                                                                                        'dropoff_datetime',
-                                                                                        'TaxiColor'])
             self.datamutex.acquire()
             if self.data is None:
-                self.data = list(list_of_tuples_load_typed_np)
+                self.data = sorted(list_of_tuples_load_typed, key=operator.itemgetter(1))
             else:
-                self.data.extend(list(list_of_tuples_load_typed_np))
+                self.data.extend(list_of_tuples_load_typed)
                 self.data = sorted(self.data, key=operator.itemgetter(1))
             self.datamutex.release()
 
