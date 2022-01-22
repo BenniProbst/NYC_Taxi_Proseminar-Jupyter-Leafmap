@@ -459,8 +459,9 @@ class TaxiData:
         self.header = None
         self.base_folder: str = base
         # last tuple entry is taxi color
-        self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
-                              float, float, float, float, float, float, float, float, str]] = []
+        # self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
+        #                      float, float, float, float, float, float, float, float, str]] = []
+        self.data = None
         # get available files
         self.taxi_files: List[str] = list_taxi_files(self.base_folder)
         # read available month to be read instantly
