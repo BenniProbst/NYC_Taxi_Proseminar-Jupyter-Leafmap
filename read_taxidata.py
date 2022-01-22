@@ -77,11 +77,12 @@ class TaxiData:
 
             output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
                               int, int, float, float, float, float, float, float,
-                              float, float, str]
+                              float, float, str] = (0, datetime(1, 1, 1), datetime(1, 1, 1), 0, 0.0, 0, '', 0,
+                                                    0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                                    0.0, 0.0, '')
 
             # get type list of header
             tList = []
-            tName = []
             dtype = []
 
             output_tup1 = []
@@ -150,12 +151,11 @@ class TaxiData:
                                str(output_tup1[19]),
                                str('TaxiColor')]
             self.header: List[str, str, str, str, str, str, str, str, str, str, str, str,
-                            str, str, str, str, str, str, str] = output_tup1
-            for n in self.header:
-                tName.append(n)
+                              str, str, str, str, str, str, str] = output_tup1
             for n in list(output_tup):
                 tList.append(type(n))
-            dtype = zip(tName, tName)
+            for i in range(len(self.header)):
+                dtype.append((self.header[i], tList[i]))
 
             list_of_tuples_load_typed = np.array([], dtype=dtype)
             """
