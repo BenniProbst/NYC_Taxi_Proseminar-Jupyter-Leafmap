@@ -7,7 +7,8 @@ from datetime import *
 import os
 import os.path
 import multiprocessing
-from threading import Thread, Lock
+from multiprocessing import Process, Lock, Manager
+# from threading import Thread, Lock
 import time
 from dateutil import rrule
 # import numpy as np
@@ -62,7 +63,7 @@ class TaxiData:
 
         return taxi_color_types_filter
 
-    def __load_csv_multithread(self, build_file_name: str, taxi_color_request: str) -> None:
+    def __load_csv_multithread(self, data, build_file_name: str, taxi_color_request: str):
         self.iomutex.acquire()
         with open(build_file_name, 'r') as read_obj:
             time_csv: str = os.path.basename(build_file_name).split('_')[2]
@@ -237,15 +238,16 @@ class TaxiData:
                 list_of_tuples_load_typed.append(output_tup)
 
             # sort to pickup time
-            self.datamutex.acquire()
-            if self.data is None:
-                self.data = sorted(list_of_tuples_load_typed, key=operator.itemgetter(1))
-            else:
-                self.data.extend(list_of_tuples_load_typed)
-                self.data = sorted(self.data, key=operator.itemgetter(1))
-            self.datamutex.release()
+            # self.datamutex.acquire()
+            data.extend(list_of_tuples_load_typed)
+            data = data.sort(key=operator.itemgetter(1))
+            # self.datamutex.release()
+        return data
 
-    def load_add_available(self, available: Dict[str, List[datetime]]) -> bool:
+    def load_add_available(self, available: Dict[str, List[datetime]], l_tmp=None) -> bool:
+        if l_tmp is None:
+            l_tmp = Manager().list()
+        l_tmp.extend(self.data)
         for taxi_color_request, times_request in available.items():
             if taxi_color_request in self.taxi_color_types_times.keys():
                 if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
@@ -262,7 +264,7 @@ class TaxiData:
                         # create maximum number of threads with one master and rest workers
                         # don't reserve master thread for more speed
                         while True:
-                            newthreadlist: List[Thread] = []
+                            newthreadlist: List[Process] = []
                             for t in self.threadlist:
                                 if t.is_alive():
                                     newthreadlist.append(t)
@@ -272,9 +274,8 @@ class TaxiData:
                             else:
                                 time.sleep(0.1)
 
-                        # self.__load_csv_multithread(build_file_name, taxi_color_request)
-                        self.threadlist.append(Thread(target=self.__load_csv_multithread,
-                                                      args=(build_file_name, taxi_color_request)))
+                        self.threadlist.append(Process(target=self.__load_csv_multithread,
+                                                       args=(l_tmp, build_file_name, taxi_color_request)))
                         self.threadlist[-1].start()
                         if not (taxi_color_request in self.already_loaded.keys()):
                             self.already_loaded[taxi_color_request] = []
@@ -316,16 +317,19 @@ class TaxiData:
                 if time_taxi > max_d:
                     max_d = time_taxi
         # load all minimum month files and get minimum time
-        self.load_add_available(self.get_date_files(min_d.year, min_d.month))
-        self.load_add_available(self.get_date_files(max_d.year, max_d.month))
+        with Manager() as manager:
+            l_tmp = manager.list()
+            self.load_add_available(self.get_date_files(min_d.year, min_d.month), l_tmp)
+            self.load_add_available(self.get_date_files(max_d.year, max_d.month), l_tmp)
+            self.data = l_tmp.copy()
         # join all threads
         for t in self.threadlist:
             t.join()
         self.threadlist = []
-        self.datamutex.acquire()
+        # self.datamutex.acquire()
         min_d = self.data[0][1]
         max_d = self.data[-1][1]
-        self.datamutex.release()
+        # self.datamutex.release()
         for tup in self.data:
             if tup[1] < min_d:
                 min_d = tup[1]
@@ -395,7 +399,12 @@ class TaxiData:
                     self.data = new_data
 
                 # load missing months
-                feedback = self.load_add_available(month_to_load)
+                with Manager() as manager:
+                    l_tmp = manager.list()
+                    l_tmp.extend(self.data)
+                    feedback = self.load_add_available(month_to_load, l_tmp)
+                    self.data = l_tmp.copy()
+
             # join all threads
             for t in self.threadlist:
                 t.join()
@@ -425,9 +434,9 @@ class TaxiData:
     def __init__(self, base: str):
         self.min_is_loaded = None
         self.max_is_loaded = None
-        self.datamutex: Lock() = Lock()
+        # self.datamutex: Lock() = Lock()
         self.iomutex: Lock() = Lock()
-        self.threadlist: List[Thread] = []
+        self.threadlist: List[Process] = []
         self.header = None
         self.base_folder: str = base
         # last tuple entry is taxi color
