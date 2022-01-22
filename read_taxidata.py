@@ -12,6 +12,7 @@ from heapq import merge
 # from threading import Thread, Lock
 # import time
 from dateutil import rrule
+import numpy as np
 
 
 def list_taxi_files(folder: str) -> List[str]:
@@ -72,86 +73,104 @@ class TaxiData:
             csv_reader = reader(read_obj)
             # self.iomutex.release()
             # Get all rows of csv from csv_reader object as list of tuples
-            list_of_tuples_load = list(map(tuple, csv_reader))
+            # list_of_tuples_load = list(map(tuple, csv_reader))
 
-            list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int,
-                                                  int, int, float, float, float, float, float, float,
-                                                  float, float, str]] = []
+            output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
+                              int, int, float, float, float, float, float, float,
+                              float, float, str]
+
+            # get type list of header
+            tList = []
+            tName = []
+            dtype = []
+
+            output_tup1: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
+                               str, str, str, str, str, str, str] = map(tuple, csv_reader[0])
+            if taxi_color_request == 'yellow':
+                """
+                VendorID
+                tpep_pickup_datetime
+                tpep_dropoff_datetime
+                passenger_count
+                trip_distance
+                RatecodeID
+                store_and_fwd_flag
+                PULocation
+                DOLocation
+                payment_type
+                fare_amount
+                extra
+                mta_tax
+                tip_amount
+                tolls_amount
+                improvement_surcharge
+                total_amount
+                congestion_surcharge
+                (taxi color)
+                """
+                output_tup1 = (str(output_tup1[0]),
+                               str(output_tup1[1])[5:],
+                               str(output_tup1[2])[5:],
+                               str(output_tup1[3]),
+                               str(output_tup1[4]),
+                               str(output_tup1[5]),
+                               str(output_tup1[6]),
+                               str(output_tup1[7]),
+                               str(output_tup1[8]),
+                               str(output_tup1[9]),
+                               str(output_tup1[10]),
+                               str(output_tup1[11]),
+                               str(output_tup1[12]),
+                               str(output_tup1[13]),
+                               str(output_tup1[14]),
+                               str(output_tup1[15]),
+                               str(output_tup1[16]),
+                               str(output_tup1[17]),
+                               str('TaxiColor'))
+            else:
+                output_tup1 = (str(output_tup1[0]),
+                               str(output_tup1[1])[5:],
+                               str(output_tup1[2])[5:],
+                               str(output_tup1[7]),
+                               str(output_tup1[8]),
+                               str(output_tup1[4]),
+                               str(output_tup1[3]),
+                               str(output_tup1[5]),
+                               str(output_tup1[6]),
+                               str(output_tup1[17]),
+                               str(output_tup1[9]),
+                               str(output_tup1[10]),
+                               str(output_tup1[11]),
+                               str(output_tup1[12]),
+                               str(output_tup1[13]),
+                               str(output_tup1[15]),
+                               str(output_tup1[16]),
+                               str(output_tup1[19]),
+                               str('TaxiColor'))
+            self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
+                               str, str, str, str, str, str, str] = output_tup1
+            for n in list(self.header):
+                tName.append(n)
+            for n in list(output_tup):
+                tList.append(type(n))
+            dtype = zip(tName, tName)
+
+            list_of_tuples_load_typed = np.array([], dtype=dtype)
+            """
+            : List[Tuple[int, datetime, datetime, int, float, int, str, int,
+                                              int, int, float, float, float, float, float, float,
+                                              float, float, str]] = []
+            """
 
             count: int = 0
-            for tup in list_of_tuples_load:
+            for row in csv_reader:
                 if count == 0:
-                    output_tup1: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
-                                       str, str, str, str, str, str, str]
-                    if taxi_color_request == 'yellow':
-                        """
-                        VendorID
-                        tpep_pickup_datetime
-                        tpep_dropoff_datetime
-                        passenger_count
-                        trip_distance
-                        RatecodeID
-                        store_and_fwd_flag
-                        PULocation
-                        DOLocation
-                        payment_type
-                        fare_amount
-                        extra
-                        mta_tax
-                        tip_amount
-                        tolls_amount
-                        improvement_surcharge
-                        total_amount
-                        congestion_surcharge
-                        """
-                        output_tup1 = (str(tup[0]),
-                                       str(tup[1])[5:],
-                                       str(tup[2])[5:],
-                                       str(tup[3]),
-                                       str(tup[4]),
-                                       str(tup[5]),
-                                       str(tup[6]),
-                                       str(tup[7]),
-                                       str(tup[8]),
-                                       str(tup[9]),
-                                       str(tup[10]),
-                                       str(tup[11]),
-                                       str(tup[12]),
-                                       str(tup[13]),
-                                       str(tup[14]),
-                                       str(tup[15]),
-                                       str(tup[16]),
-                                       str(tup[17]),
-                                       str('TaxiColor'))
-                    else:
-                        output_tup1 = (str(tup[0]),
-                                       str(tup[1])[5:],
-                                       str(tup[2])[5:],
-                                       str(tup[7]),
-                                       str(tup[8]),
-                                       str(tup[4]),
-                                       str(tup[3]),
-                                       str(tup[5]),
-                                       str(tup[6]),
-                                       str(tup[17]),
-                                       str(tup[9]),
-                                       str(tup[10]),
-                                       str(tup[11]),
-                                       str(tup[12]),
-                                       str(tup[13]),
-                                       str(tup[15]),
-                                       str(tup[16]),
-                                       str(tup[19]),
-                                       str('TaxiColor'))
-                    self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
-                                       str, str, str, str, str, str, str] = output_tup1
+                    continue
                 else:
+                    tup = map(tuple, list(row))[0]
                     pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
                     if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
                         continue
-                    output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
-                                      int, int, float, float, float, float, float, float,
-                                      float, float, str]
 
                     vendor_fix: int = 0
                     passenger_count_fix: int = 0
@@ -223,12 +242,18 @@ class TaxiData:
                                       float(tup[16]),
                                       congestion_surcharge_fix,
                                       str('green'))
-                    list_of_tuples_load_typed.append(output_tup)
+                    list_of_tuples_load_typed = np.append(list_of_tuples_load_typed, [output_tup], axis=1)
                 count += 1
+
             # sort to pickup time
-            list_of_tuples_load_typed = sorted(list_of_tuples_load_typed, key=operator.itemgetter(1))
+            list_of_tuples_load_typed = np.sort(list_of_tuples_load_typed, order=['pickup_datetime', 'dropoff_datetime',
+                                                                                  'TaxiColor'])
             # self.datamutex.acquire()
-            self.data = list(merge(self.data, list_of_tuples_load_typed, key=operator.itemgetter(1)))
+            if self.data is None:
+                self.data = list_of_tuples_load_typed
+            else:
+                self.data = np.append(self.data, list_of_tuples_load_typed, axis=1)
+            # list(merge(self.data, list_of_tuples_load_typed, key=operator.itemgetter(1)))
             # self.datamutex.release()
 
     def load_add_available(self, available: Dict[str, List[datetime]]) -> bool:
