@@ -291,25 +291,25 @@ class TaxiData:
                     return False
             else:
                 return False
+        return True
+
+    def load_available(self, available: Dict[str, List[datetime]]) -> bool:
         # join all threads
         for t in self.threadlist:
             t.join()
         self.threadlist = []
-
-        return True
-
-    def load_available(self, available: Dict[str, List[datetime]]) -> bool:
         self.data = []
         self.already_loaded = {}
         return self.load_add_available(available)
 
-    def get_minimum_available_pickup_time(self, taxi_color: str = '') -> datetime:
+    def get_minmax_available_pickup_time(self, taxi_color: str = '') -> Tuple[datetime, datetime]:
         # get minimum month of available files
         first_key: str = ''
         for some_key in self.taxi_color_types_times.keys():
             first_key = some_key
             break
         min_d: datetime = self.taxi_color_types_times[first_key][0]
+        max_d: datetime = self.taxi_color_types_times[first_key][0]
         if taxi_color == '':
             for times in self.taxi_color_types_times.values():
                 for time_taxi in times:
@@ -319,24 +319,6 @@ class TaxiData:
             for time_taxi in self.taxi_color_types_times[taxi_color]:
                 if time_taxi < min_d:
                     min_d = time_taxi
-        # load all minimum month files and get minimum time
-        self.load_add_available(self.get_date_files(min_d.year, min_d.month))
-        self.datamutex.acquire()
-        min_d = self.data[0][1]
-        self.datamutex.release()
-        for tup in self.data:
-            if tup[1] < min_d:
-                min_d = tup[1]
-
-        return min_d
-
-    def get_maximum_available_pickup_time(self, taxi_color: str = '') -> datetime:
-        # get minimum month of available files
-        first_key: str = ''
-        for some_key in self.taxi_color_types_times.keys():
-            first_key = some_key
-            break
-        max_d: datetime = self.taxi_color_types_times[first_key][0]
         if taxi_color == '':
             for times in self.taxi_color_types_times.values():
                 for time_taxi in times:
@@ -347,15 +329,23 @@ class TaxiData:
                 if time_taxi > max_d:
                     max_d = time_taxi
         # load all minimum month files and get minimum time
+        self.load_add_available(self.get_date_files(min_d.year, min_d.month))
         self.load_add_available(self.get_date_files(max_d.year, max_d.month))
+        # join all threads
+        for t in self.threadlist:
+            t.join()
+        self.threadlist = []
         self.datamutex.acquire()
+        min_d = self.data[0][1]
         max_d = self.data[0][1]
         self.datamutex.release()
         for tup in self.data:
+            if tup[1] < min_d:
+                min_d = tup[1]
             if tup[1] > max_d:
                 max_d = tup[1]
 
-        return max_d
+        return min_d, max_d
 
     # start and an optional 'end'
     def load_range(self, start: datetime, end: datetime) -> bool:
@@ -419,6 +409,10 @@ class TaxiData:
 
                 # load missing months
                 feedback = self.load_add_available(month_to_load)
+            # join all threads
+            for t in self.threadlist:
+                t.join()
+            self.threadlist = []
         # when we now filter with start and end within the first and last month we check if we deleted values
         # on deletion the month is incomplete is does not count to self.already loaded
         month_incomplete: List[datetime] = []
@@ -459,5 +453,4 @@ class TaxiData:
         self.taxi_color_types_times: Dict[str, List[datetime]] = {'yellow': list_taxi_month(self.taxi_files, 'yellow'),
                                                                   'green': list_taxi_month(self.taxi_files, 'green')}
         self.already_loaded: Dict[str, List[datetime]] = {}
-        self.min_time: datetime = self.get_minimum_available_pickup_time()
-        self.max_time: datetime = self.get_maximum_available_pickup_time()
+        self.min_time, self.max_time = self.get_minmax_available_pickup_time()
