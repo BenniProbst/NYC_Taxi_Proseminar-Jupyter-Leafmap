@@ -401,14 +401,7 @@ class TaxiData:
                                 new_data.append(entry)
                     self.data = new_data
 
-                # filter down everything that does not fit into our new month load range
-                end_last_month = end_of_month(end_month)
-                new_data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float, float, float,
-                                     float, float, float, float, float, str]] = []
-                for entry in self.data:
-                    if not (entry[1] < start_month or entry[1] > end_last_month):
-                        new_data.append(entry)
-                self.data = new_data
+                # load missing months
                 feedback = self.load_add_available(month_to_load)
         # when we now filter with start and end within the first and last month we check if we deleted values
         # on deletion the month is incomplete is does not count to self.already loaded
