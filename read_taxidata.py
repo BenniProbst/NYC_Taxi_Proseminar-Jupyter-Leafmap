@@ -156,12 +156,8 @@ class TaxiData:
             for i in range(len(self.header)):
                 dtype.append((self.header[i], t_list[i]))
 
-            list_of_tuples_load_typed = []
-            """
-            : List[Tuple[int, datetime, datetime, int, float, int, str, int,
-                                              int, int, float, float, float, float, float, float,
-                                              float, float, str]] = []
-            """
+            list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float,
+                                                  float, float, float, float, float, float, float, str]] = []
 
             for tup in csv_reader:
                 pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
@@ -437,7 +433,8 @@ class TaxiData:
         # last tuple entry is taxi color
         # self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int,
         #                      float, float, float, float, float, float, float, float, str]] = []
-        self.data = None
+        self.data: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float,
+                              float, float, float, float, float, float, float, str]] = []
         # get available files
         self.taxi_files: List[str] = list_taxi_files(self.base_folder)
         # read available month to be read instantly
