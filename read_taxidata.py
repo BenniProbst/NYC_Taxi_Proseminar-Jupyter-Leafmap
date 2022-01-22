@@ -63,184 +63,178 @@ class TaxiData:
 
         return taxi_color_types_filter
 
-    def __load_csv_multithread(self, build_file_name: str, taxi_color_request: str, data):
-        self.iomutex.acquire()
-        with open(build_file_name, 'r') as read_obj:
-            time_csv: str = os.path.basename(build_file_name).split('_')[2]
-            time_string: str = time_csv.split('.')[0]
-            time_month: datetime = datetime.strptime(time_string, "%Y-%m")
-            # pass the file object to reader() to get the reader object
-            csv_reader = reader(read_obj)
-            self.iomutex.release()
-            # Get all rows of csv from csv_reader object as list of tuples
-            # list_of_tuples_load = list(map(tuple, csv_reader))
+    def __load_csv_multithread(self, build_file_name: str, taxi_color_request: str, data, csv_reader):
+        time_csv: str = os.path.basename(build_file_name).split('_')[2]
+        time_string: str = time_csv.split('.')[0]
+        time_month: datetime = datetime.strptime(time_string, "%Y-%m")
+        # Get all rows of csv from csv_reader object as list of tuples
+        # list_of_tuples_load = list(map(tuple, csv_reader))
 
-            output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
-                              int, int, float, float, float, float, float, float,
-                              float, float, str] = (0, datetime(1, 1, 1), datetime(1, 1, 1), 0, 0.0, 0, '', 0,
-                                                    0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                                    0.0, 0.0, '')
+        output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
+                          int, int, float, float, float, float, float, float,
+                          float, float, str] = (0, datetime(1, 1, 1), datetime(1, 1, 1), 0, 0.0, 0, '', 0,
+                                                0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                                0.0, 0.0, '')
 
-            # get type list of header
-            t_list = []
-            dtype = []
+        # get type list of header
+        t_list = []
+        dtype = []
 
-            output_tup1 = []
-            for row in csv_reader:
-                output_tup1 = row
-                break
+        output_tup1 = []
+        for row in csv_reader:
+            output_tup1 = row
+            break
+        if taxi_color_request == 'yellow':
+            """
+            VendorID
+            tpep_pickup_datetime
+            tpep_dropoff_datetime
+            passenger_count
+            trip_distance
+            RatecodeID
+            store_and_fwd_flag
+            PULocation
+            DOLocation
+            payment_type
+            fare_amount
+            extra
+            mta_tax
+            tip_amount
+            tolls_amount
+            improvement_surcharge
+            total_amount
+            congestion_surcharge
+            (taxi color)
+            """
+            output_tup1 = [str(output_tup1[0]),
+                           str(output_tup1[1])[5:],
+                           str(output_tup1[2])[5:],
+                           str(output_tup1[3]),
+                           str(output_tup1[4]),
+                           str(output_tup1[5]),
+                           str(output_tup1[6]),
+                           str(output_tup1[7]),
+                           str(output_tup1[8]),
+                           str(output_tup1[9]),
+                           str(output_tup1[10]),
+                           str(output_tup1[11]),
+                           str(output_tup1[12]),
+                           str(output_tup1[13]),
+                           str(output_tup1[14]),
+                           str(output_tup1[15]),
+                           str(output_tup1[16]),
+                           str(output_tup1[17]),
+                           str('TaxiColor')]
+        else:
+            output_tup1 = [str(output_tup1[0]),
+                           str(output_tup1[1])[5:],
+                           str(output_tup1[2])[5:],
+                           str(output_tup1[7]),
+                           str(output_tup1[8]),
+                           str(output_tup1[4]),
+                           str(output_tup1[3]),
+                           str(output_tup1[5]),
+                           str(output_tup1[6]),
+                           str(output_tup1[17]),
+                           str(output_tup1[9]),
+                           str(output_tup1[10]),
+                           str(output_tup1[11]),
+                           str(output_tup1[12]),
+                           str(output_tup1[13]),
+                           str(output_tup1[15]),
+                           str(output_tup1[16]),
+                           str(output_tup1[19]),
+                           str('TaxiColor')]
+        self.header: List[str, str, str, str, str, str, str, str, str, str, str, str,
+                          str, str, str, str, str, str, str] = output_tup1
+        for n in list(output_tup):
+            t_list.append(type(n))
+        for i in range(len(self.header)):
+            dtype.append((self.header[i], t_list[i]))
+
+        # list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float,
+        #                                       float, float, float, float, float, float, float, str]] = []
+
+        for tup in csv_reader:
+            pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
+            if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
+                continue
+
+            vendor_fix: int = 0
+            passenger_count_fix: int = 0
+            ratecodeid_fix: int = 0
+            store_and_fwd_flag_fix: str = '?'
+            payment_type_fix: int = 0
+            congestion_surcharge_fix: float = 0
+            if len(tup[0]) != 0:
+                vendor_fix = int(tup[0])
             if taxi_color_request == 'yellow':
-                """
-                VendorID
-                tpep_pickup_datetime
-                tpep_dropoff_datetime
-                passenger_count
-                trip_distance
-                RatecodeID
-                store_and_fwd_flag
-                PULocation
-                DOLocation
-                payment_type
-                fare_amount
-                extra
-                mta_tax
-                tip_amount
-                tolls_amount
-                improvement_surcharge
-                total_amount
-                congestion_surcharge
-                (taxi color)
-                """
-                output_tup1 = [str(output_tup1[0]),
-                               str(output_tup1[1])[5:],
-                               str(output_tup1[2])[5:],
-                               str(output_tup1[3]),
-                               str(output_tup1[4]),
-                               str(output_tup1[5]),
-                               str(output_tup1[6]),
-                               str(output_tup1[7]),
-                               str(output_tup1[8]),
-                               str(output_tup1[9]),
-                               str(output_tup1[10]),
-                               str(output_tup1[11]),
-                               str(output_tup1[12]),
-                               str(output_tup1[13]),
-                               str(output_tup1[14]),
-                               str(output_tup1[15]),
-                               str(output_tup1[16]),
-                               str(output_tup1[17]),
-                               str('TaxiColor')]
+                if len(tup[3]) != 0:
+                    passenger_count_fix = int(tup[3])
+                if len(tup[5]) != 0:
+                    ratecodeid_fix = int(tup[5])
+                if len(tup[6]) != 0:
+                    store_and_fwd_flag_fix = str(tup[6])
+                if len(tup[9]) != 0:
+                    payment_type_fix = int(tup[9])
+                if len(tup[17]) != 0:
+                    congestion_surcharge_fix = float(tup[17])
+
+                output_tup = (vendor_fix,
+                              pickup_time,
+                              datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
+                              passenger_count_fix,
+                              float(tup[4]),
+                              ratecodeid_fix,
+                              store_and_fwd_flag_fix,
+                              int(tup[7]),
+                              int(tup[8]),
+                              payment_type_fix,
+                              float(tup[10]),
+                              float(tup[11]),
+                              float(tup[12]),
+                              float(tup[13]),
+                              float(tup[14]),
+                              float(tup[15]),
+                              float(tup[16]),
+                              congestion_surcharge_fix,
+                              str('yellow'))
             else:
-                output_tup1 = [str(output_tup1[0]),
-                               str(output_tup1[1])[5:],
-                               str(output_tup1[2])[5:],
-                               str(output_tup1[7]),
-                               str(output_tup1[8]),
-                               str(output_tup1[4]),
-                               str(output_tup1[3]),
-                               str(output_tup1[5]),
-                               str(output_tup1[6]),
-                               str(output_tup1[17]),
-                               str(output_tup1[9]),
-                               str(output_tup1[10]),
-                               str(output_tup1[11]),
-                               str(output_tup1[12]),
-                               str(output_tup1[13]),
-                               str(output_tup1[15]),
-                               str(output_tup1[16]),
-                               str(output_tup1[19]),
-                               str('TaxiColor')]
-            self.header: List[str, str, str, str, str, str, str, str, str, str, str, str,
-                              str, str, str, str, str, str, str] = output_tup1
-            for n in list(output_tup):
-                t_list.append(type(n))
-            for i in range(len(self.header)):
-                dtype.append((self.header[i], t_list[i]))
+                if len(tup[7]) != 0:
+                    passenger_count_fix = int(tup[7])
+                if len(tup[4]) != 0:
+                    ratecodeid_fix = int(tup[4])
+                if len(tup[3]) != 0:
+                    store_and_fwd_flag_fix = str(tup[3])
+                if len(tup[17]) != 0:
+                    payment_type_fix = int(tup[17])
+                if len(tup[19]) != 0:
+                    congestion_surcharge_fix = float(tup[19])
 
-            # list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float,
-            #                                       float, float, float, float, float, float, float, str]] = []
-
-            for tup in csv_reader:
-                pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
-                if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
-                    continue
-
-                vendor_fix: int = 0
-                passenger_count_fix: int = 0
-                ratecodeid_fix: int = 0
-                store_and_fwd_flag_fix: str = '?'
-                payment_type_fix: int = 0
-                congestion_surcharge_fix: float = 0
-                if len(tup[0]) != 0:
-                    vendor_fix = int(tup[0])
-                if taxi_color_request == 'yellow':
-                    if len(tup[3]) != 0:
-                        passenger_count_fix = int(tup[3])
-                    if len(tup[5]) != 0:
-                        ratecodeid_fix = int(tup[5])
-                    if len(tup[6]) != 0:
-                        store_and_fwd_flag_fix = str(tup[6])
-                    if len(tup[9]) != 0:
-                        payment_type_fix = int(tup[9])
-                    if len(tup[17]) != 0:
-                        congestion_surcharge_fix = float(tup[17])
-
-                    output_tup = (vendor_fix,
-                                  pickup_time,
-                                  datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
-                                  passenger_count_fix,
-                                  float(tup[4]),
-                                  ratecodeid_fix,
-                                  store_and_fwd_flag_fix,
-                                  int(tup[7]),
-                                  int(tup[8]),
-                                  payment_type_fix,
-                                  float(tup[10]),
-                                  float(tup[11]),
-                                  float(tup[12]),
-                                  float(tup[13]),
-                                  float(tup[14]),
-                                  float(tup[15]),
-                                  float(tup[16]),
-                                  congestion_surcharge_fix,
-                                  str('yellow'))
-                else:
-                    if len(tup[7]) != 0:
-                        passenger_count_fix = int(tup[7])
-                    if len(tup[4]) != 0:
-                        ratecodeid_fix = int(tup[4])
-                    if len(tup[3]) != 0:
-                        store_and_fwd_flag_fix = str(tup[3])
-                    if len(tup[17]) != 0:
-                        payment_type_fix = int(tup[17])
-                    if len(tup[19]) != 0:
-                        congestion_surcharge_fix = float(tup[19])
-
-                    output_tup = (vendor_fix,
-                                  pickup_time,
-                                  datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
-                                  passenger_count_fix,
-                                  float(tup[8]),
-                                  ratecodeid_fix,
-                                  store_and_fwd_flag_fix,
-                                  int(tup[5]),
-                                  int(tup[6]),
-                                  payment_type_fix,
-                                  float(tup[9]),
-                                  float(tup[10]),
-                                  float(tup[11]),
-                                  float(tup[12]),
-                                  float(tup[13]),
-                                  float(tup[15]),
-                                  float(tup[16]),
-                                  congestion_surcharge_fix,
-                                  str('green'))
-                data.append(output_tup)
+                output_tup = (vendor_fix,
+                              pickup_time,
+                              datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
+                              passenger_count_fix,
+                              float(tup[8]),
+                              ratecodeid_fix,
+                              store_and_fwd_flag_fix,
+                              int(tup[5]),
+                              int(tup[6]),
+                              payment_type_fix,
+                              float(tup[9]),
+                              float(tup[10]),
+                              float(tup[11]),
+                              float(tup[12]),
+                              float(tup[13]),
+                              float(tup[15]),
+                              float(tup[16]),
+                              congestion_surcharge_fix,
+                              str('green'))
+            data.append(output_tup)
 
     def load_add_available(self, available: Dict[str, List[datetime]], l_tmp=None) -> bool:
         if l_tmp is None:
             l_tmp = Manager().list()
-        l_tmp.extend(self.data)
 
         for taxi_color_request, times_request in available.items():
             if taxi_color_request in self.taxi_color_types_times.keys():
@@ -267,13 +261,16 @@ class TaxiData:
                                 break
                             else:
                                 time.sleep(0.1)
-
-                        self.threadlist.append(Process(target=self.__load_csv_multithread,
-                                                       args=(build_file_name, taxi_color_request, l_tmp)))
-                        self.threadlist[-1].start()
-                        if not (taxi_color_request in self.already_loaded.keys()):
-                            self.already_loaded[taxi_color_request] = []
-                        self.already_loaded[taxi_color_request].append(times)
+                        with open(build_file_name, 'r') as read_obj:
+                            # pass the file object to reader() to get the reader object
+                            csv_reader = reader(read_obj)
+                            self.threadlist.append(Process(target=self.__load_csv_multithread,
+                                                           args=(build_file_name, taxi_color_request, l_tmp,
+                                                                 csv_reader)))
+                            self.threadlist[-1].start()
+                            if not (taxi_color_request in self.already_loaded.keys()):
+                                self.already_loaded[taxi_color_request] = []
+                            self.already_loaded[taxi_color_request].append(times)
                 else:
                     return False
             else:
@@ -433,8 +430,6 @@ class TaxiData:
     def __init__(self, base: str):
         self.min_is_loaded = None
         self.max_is_loaded = None
-        # self.datamutex: Lock() = Lock()
-        self.iomutex: Lock() = Lock()
         self.threadlist: List[Process] = []
         self.header = None
         self.base_folder: str = base
