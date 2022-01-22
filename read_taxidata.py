@@ -84,8 +84,10 @@ class TaxiData:
             tName = []
             dtype = []
 
-            output_tup1: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
-                               str, str, str, str, str, str, str] = map(tuple, csv_reader[0])
+            output_tup1 = []
+            for row in csv_reader:
+                output_tup1 = row
+                break
             if taxi_color_request == 'yellow':
                 """
                 VendorID
@@ -108,7 +110,7 @@ class TaxiData:
                 congestion_surcharge
                 (taxi color)
                 """
-                output_tup1 = (str(output_tup1[0]),
+                output_tup1 = [str(output_tup1[0]),
                                str(output_tup1[1])[5:],
                                str(output_tup1[2])[5:],
                                str(output_tup1[3]),
@@ -126,9 +128,9 @@ class TaxiData:
                                str(output_tup1[15]),
                                str(output_tup1[16]),
                                str(output_tup1[17]),
-                               str('TaxiColor'))
+                               str('TaxiColor')]
             else:
-                output_tup1 = (str(output_tup1[0]),
+                output_tup1 = [str(output_tup1[0]),
                                str(output_tup1[1])[5:],
                                str(output_tup1[2])[5:],
                                str(output_tup1[7]),
@@ -146,10 +148,10 @@ class TaxiData:
                                str(output_tup1[15]),
                                str(output_tup1[16]),
                                str(output_tup1[19]),
-                               str('TaxiColor'))
-            self.header: Tuple[str, str, str, str, str, str, str, str, str, str, str, str,
-                               str, str, str, str, str, str, str] = output_tup1
-            for n in list(self.header):
+                               str('TaxiColor')]
+            self.header: List[str, str, str, str, str, str, str, str, str, str, str, str,
+                            str, str, str, str, str, str, str] = output_tup1
+            for n in self.header:
                 tName.append(n)
             for n in list(output_tup):
                 tList.append(type(n))
