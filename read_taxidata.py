@@ -409,10 +409,10 @@ class TaxiData:
                     feedback = self.load_add_available(month_to_load, l_tmp)
                     self.data = l_tmp.copy()
 
-            # join all threads
-            for t in self.threadlist:
-                t.join()
-            self.threadlist = []
+        # join all threads
+        for t in self.threadlist:
+            t.join()
+        self.threadlist = []
         # when we now filter with start and end within the first and last month we check if we deleted values
         # on deletion the month is incomplete is does not count to self.already loaded
         month_incomplete: List[datetime] = []
