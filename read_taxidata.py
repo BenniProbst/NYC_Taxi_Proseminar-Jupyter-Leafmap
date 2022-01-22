@@ -331,8 +331,9 @@ class TaxiData:
             t.join()
         self.threadlist = []
         self.datamutex.acquire()
-        min_d = self.data[0, [1]]
-        max_d = self.data[-1, [1]]
+        analysis_list = list(self.data)
+        min_d = analysis_list[0][1]
+        max_d = analysis_list[-1][1]
         self.datamutex.release()
         for tup in self.data:
             if tup[1] < min_d:
