@@ -7,7 +7,8 @@ from datetime import *
 import os
 import os.path
 import multiprocessing
-from threading import Thread, Lock
+from multiprocessing import Process, Lock
+# from threading import Thread, Lock
 import time
 from dateutil import rrule
 import numpy as np
@@ -269,7 +270,7 @@ class TaxiData:
                         # create maximum number of threads with one master and rest workers
                         # don't reserve master thread for more speed
                         while True:
-                            newthreadlist: List[Thread] = []
+                            newthreadlist: List[Process] = []
                             for t in self.threadlist:
                                 if t.is_alive():
                                     newthreadlist.append(t)
@@ -280,10 +281,9 @@ class TaxiData:
                                 time.sleep(0.1)
 
                         # self.__load_csv_multithread(build_file_name, taxi_color_request)
-                        self.threadlist.append(Thread(target=self.__load_csv_multithread,
-                                                      args=(build_file_name, taxi_color_request)))
+                        self.threadlist.append(Process(target=self.__load_csv_multithread,
+                                                       args=(build_file_name, taxi_color_request)))
                         self.threadlist[-1].start()
-
                         if not (taxi_color_request in self.already_loaded.keys()):
                             self.already_loaded[taxi_color_request] = []
                         self.already_loaded[taxi_color_request].append(times)
@@ -446,7 +446,7 @@ class TaxiData:
         self.max_is_loaded = None
         self.datamutex: Lock() = Lock()
         self.iomutex: Lock() = Lock()
-        self.threadlist: List[Thread] = []
+        self.threadlist: List[Process] = []
         self.header = None
         self.base_folder: str = base
         # last tuple entry is taxi color
