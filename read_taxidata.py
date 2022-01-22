@@ -164,88 +164,83 @@ class TaxiData:
                                               float, float, str]] = []
             """
 
-            count: int = 0
             for row in csv_reader:
-                if count == 0:
+                tup = map(tuple, row)
+                pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
+                if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
                     continue
+
+                vendor_fix: int = 0
+                passenger_count_fix: int = 0
+                ratecodeid_fix: int = 0
+                store_and_fwd_flag_fix: str = '?'
+                payment_type_fix: int = 0
+                congestion_surcharge_fix: float = 0
+                if len(tup[0]) != 0:
+                    vendor_fix = int(tup[0])
+                if taxi_color_request == 'yellow':
+                    if len(tup[3]) != 0:
+                        passenger_count_fix = int(tup[3])
+                    if len(tup[5]) != 0:
+                        ratecodeid_fix = int(tup[5])
+                    if len(tup[6]) != 0:
+                        store_and_fwd_flag_fix = str(tup[6])
+                    if len(tup[9]) != 0:
+                        payment_type_fix = int(tup[9])
+                    if len(tup[17]) != 0:
+                        congestion_surcharge_fix = float(tup[17])
+
+                    output_tup = (vendor_fix,
+                                  pickup_time,
+                                  datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
+                                  passenger_count_fix,
+                                  float(tup[4]),
+                                  ratecodeid_fix,
+                                  store_and_fwd_flag_fix,
+                                  int(tup[7]),
+                                  int(tup[8]),
+                                  payment_type_fix,
+                                  float(tup[10]),
+                                  float(tup[11]),
+                                  float(tup[12]),
+                                  float(tup[13]),
+                                  float(tup[14]),
+                                  float(tup[15]),
+                                  float(tup[16]),
+                                  congestion_surcharge_fix,
+                                  str('yellow'))
                 else:
-                    tup = map(tuple, list(row))[0]
-                    pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
-                    if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
-                        continue
+                    if len(tup[7]) != 0:
+                        passenger_count_fix = int(tup[7])
+                    if len(tup[4]) != 0:
+                        ratecodeid_fix = int(tup[4])
+                    if len(tup[3]) != 0:
+                        store_and_fwd_flag_fix = str(tup[3])
+                    if len(tup[17]) != 0:
+                        payment_type_fix = int(tup[17])
+                    if len(tup[19]) != 0:
+                        congestion_surcharge_fix = float(tup[19])
 
-                    vendor_fix: int = 0
-                    passenger_count_fix: int = 0
-                    ratecodeid_fix: int = 0
-                    store_and_fwd_flag_fix: str = '?'
-                    payment_type_fix: int = 0
-                    congestion_surcharge_fix: float = 0
-                    if len(tup[0]) != 0:
-                        vendor_fix = int(tup[0])
-                    if taxi_color_request == 'yellow':
-                        if len(tup[3]) != 0:
-                            passenger_count_fix = int(tup[3])
-                        if len(tup[5]) != 0:
-                            ratecodeid_fix = int(tup[5])
-                        if len(tup[6]) != 0:
-                            store_and_fwd_flag_fix = str(tup[6])
-                        if len(tup[9]) != 0:
-                            payment_type_fix = int(tup[9])
-                        if len(tup[17]) != 0:
-                            congestion_surcharge_fix = float(tup[17])
-
-                        output_tup = (vendor_fix,
-                                      pickup_time,
-                                      datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
-                                      passenger_count_fix,
-                                      float(tup[4]),
-                                      ratecodeid_fix,
-                                      store_and_fwd_flag_fix,
-                                      int(tup[7]),
-                                      int(tup[8]),
-                                      payment_type_fix,
-                                      float(tup[10]),
-                                      float(tup[11]),
-                                      float(tup[12]),
-                                      float(tup[13]),
-                                      float(tup[14]),
-                                      float(tup[15]),
-                                      float(tup[16]),
-                                      congestion_surcharge_fix,
-                                      str('yellow'))
-                    else:
-                        if len(tup[7]) != 0:
-                            passenger_count_fix = int(tup[7])
-                        if len(tup[4]) != 0:
-                            ratecodeid_fix = int(tup[4])
-                        if len(tup[3]) != 0:
-                            store_and_fwd_flag_fix = str(tup[3])
-                        if len(tup[17]) != 0:
-                            payment_type_fix = int(tup[17])
-                        if len(tup[19]) != 0:
-                            congestion_surcharge_fix = float(tup[19])
-
-                        output_tup = (vendor_fix,
-                                      pickup_time,
-                                      datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
-                                      passenger_count_fix,
-                                      float(tup[8]),
-                                      ratecodeid_fix,
-                                      store_and_fwd_flag_fix,
-                                      int(tup[5]),
-                                      int(tup[6]),
-                                      payment_type_fix,
-                                      float(tup[9]),
-                                      float(tup[10]),
-                                      float(tup[11]),
-                                      float(tup[12]),
-                                      float(tup[13]),
-                                      float(tup[15]),
-                                      float(tup[16]),
-                                      congestion_surcharge_fix,
-                                      str('green'))
-                    list_of_tuples_load_typed = np.append(list_of_tuples_load_typed, [output_tup], axis=1)
-                count += 1
+                    output_tup = (vendor_fix,
+                                  pickup_time,
+                                  datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
+                                  passenger_count_fix,
+                                  float(tup[8]),
+                                  ratecodeid_fix,
+                                  store_and_fwd_flag_fix,
+                                  int(tup[5]),
+                                  int(tup[6]),
+                                  payment_type_fix,
+                                  float(tup[9]),
+                                  float(tup[10]),
+                                  float(tup[11]),
+                                  float(tup[12]),
+                                  float(tup[13]),
+                                  float(tup[15]),
+                                  float(tup[16]),
+                                  congestion_surcharge_fix,
+                                  str('green'))
+                list_of_tuples_load_typed = np.append(list_of_tuples_load_typed, [output_tup], axis=1)
 
             # sort to pickup time
             list_of_tuples_load_typed = np.sort(list_of_tuples_load_typed, order=['pickup_datetime', 'dropoff_datetime',
