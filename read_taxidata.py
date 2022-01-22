@@ -293,7 +293,11 @@ class TaxiData:
         self.threadlist = []
         self.data = []
         self.already_loaded = {}
-        return self.load_add_available(available)
+        with Manager() as manager:
+            l_tmp = manager.list()
+            output = self.load_add_available(available, l_tmp)
+            self.data = l_tmp.copy()
+            return output
 
     def get_minmax_available_pickup_time(self, taxi_color: str = '') -> Tuple[datetime, datetime]:
         # get minimum month of available files
