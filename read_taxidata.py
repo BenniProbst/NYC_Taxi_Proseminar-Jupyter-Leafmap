@@ -12,6 +12,7 @@ from multiprocessing import Process, Lock
 import time
 from dateutil import rrule
 import numpy as np
+import operator
 
 
 def list_taxi_files(folder: str) -> List[str]:
@@ -247,10 +248,10 @@ class TaxiData:
                                                                                         'TaxiColor'])
             self.datamutex.acquire()
             if self.data is None:
-                self.data = list_of_tuples_load_typed_np
+                self.data = list(list_of_tuples_load_typed_np)
             else:
-                self.data = np.append(self.data, list_of_tuples_load_typed_np, axis=1)
-                self.data = np.sort(self.data, order=['pickup_datetime', 'dropoff_datetime', 'TaxiColor'])
+                self.data.extend(list(list_of_tuples_load_typed_np))
+                self.data = sorted(self.data, key=operator.itemgetter(1))
             self.datamutex.release()
 
     def load_add_available(self, available: Dict[str, List[datetime]]) -> bool:
