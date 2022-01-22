@@ -157,15 +157,14 @@ class TaxiData:
             for i in range(len(self.header)):
                 dtype.append((self.header[i], tList[i]))
 
-            list_of_tuples_load_typed = np.array([], dtype=dtype)
+            list_of_tuples_load_typed = []
             """
             : List[Tuple[int, datetime, datetime, int, float, int, str, int,
                                               int, int, float, float, float, float, float, float,
                                               float, float, str]] = []
             """
 
-            for row in csv_reader:
-                tup = map(tuple, row)
+            for tup in csv_reader:
                 pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
                 if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
                     continue
@@ -240,16 +239,20 @@ class TaxiData:
                                   float(tup[16]),
                                   congestion_surcharge_fix,
                                   str('green'))
-                list_of_tuples_load_typed = np.append(list_of_tuples_load_typed, [output_tup], axis=1)
+                list_of_tuples_load_typed.append(output_tup)
+                # np.append(list_of_tuples_load_typed, [output_tup], axis=1)
 
             # sort to pickup time
-            list_of_tuples_load_typed = np.sort(list_of_tuples_load_typed, order=['pickup_datetime', 'dropoff_datetime',
-                                                                                  'TaxiColor'])
+            list_of_tuples_load_typed_np = np.array(list_of_tuples_load_typed, dtype=dtype)
+            list_of_tuples_load_typed_np = np.sort(list_of_tuples_load_typed_np, order=['pickup_datetime',
+                                                                                        'dropoff_datetime',
+                                                                                        'TaxiColor'])
             # self.datamutex.acquire()
             if self.data is None:
-                self.data = list_of_tuples_load_typed
+                self.data = list_of_tuples_load_typed_np
             else:
-                self.data = np.append(self.data, list_of_tuples_load_typed, axis=1)
+                self.data = np.append(self.data, list_of_tuples_load_typed_np, axis=1)
+                self.data = np.sort(self.data, order=['pickup_datetime', 'dropoff_datetime', 'TaxiColor'])
             # list(merge(self.data, list_of_tuples_load_typed, key=operator.itemgetter(1)))
             # self.datamutex.release()
 
