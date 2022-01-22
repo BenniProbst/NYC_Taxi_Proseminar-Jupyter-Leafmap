@@ -63,14 +63,14 @@ class TaxiData:
         return taxi_color_types_filter
 
     def __load_csv_multithread(self, build_file_name: str, taxi_color_request: str) -> None:
-        self.iomutex.acquire()
+        # self.iomutex.acquire()
         with open(build_file_name, 'r') as read_obj:
             time_csv: str = os.path.basename(build_file_name).split('_')[2]
             time_string: str = time_csv.split('.')[0]
             time_month: datetime = datetime.strptime(time_string, "%Y-%m")
             # pass the file object to reader() to get the reader object
             csv_reader = reader(read_obj)
-            self.iomutex.release()
+            # self.iomutex.release()
             # Get all rows of csv from csv_reader object as list of tuples
             list_of_tuples_load = list(map(tuple, csv_reader))
 
@@ -227,9 +227,9 @@ class TaxiData:
                 count += 1
             # sort to pickup time
             list_of_tuples_load_typed = sorted(list_of_tuples_load_typed, key=operator.itemgetter(1))
-            self.datamutex.acquire()
+            # self.datamutex.acquire()
             self.data = list(merge(self.data, list_of_tuples_load_typed, key=operator.itemgetter(1)))
-            self.datamutex.release()
+            # self.datamutex.release()
 
     def load_add_available(self, available: Dict[str, List[datetime]]) -> bool:
         for taxi_color_request, times_request in available.items():
@@ -305,9 +305,9 @@ class TaxiData:
                     min_d = time_taxi
         # load all minimum month files and get minimum time
         self.load_add_available(self.get_date_files(min_d.year, min_d.month))
-        self.datamutex.acquire()
+        # self.datamutex.acquire()
         min_d = self.data[0][1]
-        self.datamutex.release()
+        # self.datamutex.release()
         for tup in self.data:
             if tup[1] < min_d:
                 min_d = tup[1]
@@ -332,9 +332,9 @@ class TaxiData:
                     max_d = time_taxi
         # load all minimum month files and get minimum time
         self.load_add_available(self.get_date_files(max_d.year, max_d.month))
-        self.datamutex.acquire()
+        # self.datamutex.acquire()
         max_d = self.data[0][1]
-        self.datamutex.release()
+        # self.datamutex.release()
         for tup in self.data:
             if tup[1] > max_d:
                 max_d = tup[1]
@@ -428,8 +428,8 @@ class TaxiData:
     def __init__(self, base: str):
         self.min_is_loaded = None
         self.max_is_loaded = None
-        self.datamutex: Lock() = Lock()
-        self.iomutex: Lock() = Lock()
+        # self.datamutex: Lock() = Lock()
+        # self.iomutex: Lock() = Lock()
         # self.threadlist: List[Thread] = []
         self.header = None
         self.base_folder: str = base
