@@ -28,7 +28,7 @@ if __name__ == '__main__':
     print(tt.min_is_loaded)
     print(tt.max_is_loaded)
 
-    # speed range resize
+    # speed range resize to smaller subset of current load
     start = datetime(2020, 4, 10)
     end = datetime(2020, 6, 24)
     tt.load_range(start, end)
