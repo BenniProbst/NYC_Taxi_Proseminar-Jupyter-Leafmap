@@ -315,17 +315,12 @@ class TaxiData:
                 for time_taxi in times:
                     if time_taxi < min_d:
                         min_d = time_taxi
-        else:
-            for time_taxi in self.taxi_color_types_times[taxi_color]:
-                if time_taxi < min_d:
-                    min_d = time_taxi
-        if taxi_color == '':
-            for times in self.taxi_color_types_times.values():
-                for time_taxi in times:
                     if time_taxi > max_d:
                         max_d = time_taxi
         else:
             for time_taxi in self.taxi_color_types_times[taxi_color]:
+                if time_taxi < min_d:
+                    min_d = time_taxi
                 if time_taxi > max_d:
                     max_d = time_taxi
         # load all minimum month files and get minimum time
