@@ -7,11 +7,10 @@ from datetime import *
 import os
 import os.path
 import multiprocessing
-from multiprocessing import Process, Lock
-# from threading import Thread, Lock
+from threading import Thread, Lock
 import time
 from dateutil import rrule
-import numpy as np
+# import numpy as np
 import operator
 
 
@@ -82,7 +81,7 @@ class TaxiData:
                                                     0.0, 0.0, '')
 
             # get type list of header
-            tList = []
+            t_list = []
             dtype = []
 
             output_tup1 = []
@@ -153,9 +152,9 @@ class TaxiData:
             self.header: List[str, str, str, str, str, str, str, str, str, str, str, str,
                               str, str, str, str, str, str, str] = output_tup1
             for n in list(output_tup):
-                tList.append(type(n))
+                t_list.append(type(n))
             for i in range(len(self.header)):
-                dtype.append((self.header[i], tList[i]))
+                dtype.append((self.header[i], t_list[i]))
 
             list_of_tuples_load_typed = []
             """
@@ -267,7 +266,7 @@ class TaxiData:
                         # create maximum number of threads with one master and rest workers
                         # don't reserve master thread for more speed
                         while True:
-                            newthreadlist: List[Process] = []
+                            newthreadlist: List[Thread] = []
                             for t in self.threadlist:
                                 if t.is_alive():
                                     newthreadlist.append(t)
@@ -278,8 +277,8 @@ class TaxiData:
                                 time.sleep(0.1)
 
                         # self.__load_csv_multithread(build_file_name, taxi_color_request)
-                        self.threadlist.append(Process(target=self.__load_csv_multithread,
-                                                       args=(build_file_name, taxi_color_request)))
+                        self.threadlist.append(Thread(target=self.__load_csv_multithread,
+                                                      args=(build_file_name, taxi_color_request)))
                         self.threadlist[-1].start()
                         if not (taxi_color_request in self.already_loaded.keys()):
                             self.already_loaded[taxi_color_request] = []
@@ -432,7 +431,7 @@ class TaxiData:
         self.max_is_loaded = None
         self.datamutex: Lock() = Lock()
         self.iomutex: Lock() = Lock()
-        self.threadlist: List[Process] = []
+        self.threadlist: List[Thread] = []
         self.header = None
         self.base_folder: str = base
         # last tuple entry is taxi color
