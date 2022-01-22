@@ -397,7 +397,7 @@ class TaxiData:
                         min_month = min(time_list_al)
                         max_month = end_of_month(max(time_list_al))
                         for entry in self.data:
-                            if not (entry[18] == color_al) and not (entry[1] < min_month or entry[1] > max_month):
+                            if (entry[18] != color_al) or not (entry[1] < min_month or entry[1] > max_month):
                                 new_data.append(entry)
                     self.data = new_data
 
