@@ -19,7 +19,7 @@ CONGESTION_SURCHARGE = 17
 
 
 # give a FeatureCollection with LineStrings and their properties to build a Heatmap with the method as data to show
-# and a reference if that should be projected into the pickup location or dropoff location
+# and a reference if that should be projected into the pickup location or drop off location
 class Heatmapper:
     def __init__(self, path_in_geojson_con, path_csv_out, method=PICKUP, reference=PICKUP):
         self.loaded_connections = None
