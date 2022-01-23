@@ -1,5 +1,4 @@
 import json
-
 from geojson import Polygon, MultiPolygon, Point, Feature, FeatureCollection, dump
 from typing import List
 from typing import Tuple

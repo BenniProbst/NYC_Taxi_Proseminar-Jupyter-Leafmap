@@ -4,6 +4,7 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 from get_drives_by_time import TaxiTime
+from con_geiojson_to_heatmap import Heatmapper
 from datetime import datetime
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -30,14 +31,15 @@ if __name__ == '__main__':
 
     # speed range resize to smaller subset of current load
     start = datetime(2020, 4, 10)
-    end = datetime(2020, 6, 24)
+    end = datetime(2020, 4, 11)
     tt.load_range(start, end)
-    print('Analyze time between 10-04-2020 and 24-06-2020')
+    print('Analyze time between 10-04-2020 and 11-04-2020')
     print(tt.min_is_loaded)
     print(tt.max_is_loaded)
 
     # taxi drive connections and neighborhood central points on map
     con = tt.interconnections(start, end, '/home/benjamin-elias/PycharmProjects/Proseminar Jupyter-Leafmap/rides.geojson')
     points = tt.zone_neighborhoods.neighbourhood_points('/home/benjamin-elias/PycharmProjects/Proseminar Jupyter-Leafmap/neighborhood_centers.geojson')
+    h = Heatmapper('/home/benjamin-elias/PycharmProjects/Proseminar Jupyter-Leafmap/rides.geojson')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
