@@ -15,8 +15,11 @@ if __name__ == '__main__':
     start = datetime(2020, 3, 10, 1, 1)
     end = datetime(2020, 3, 12, 1, 2)
     tt.load_range(start, end)
-    print('Analyze time between 10-02-2020 and 25-05-2020')
+    print('Analyze time between 10-02-2020 01:01 and 25-05-2020 01:02')
     print(tt.min_is_loaded)
     print(tt.max_is_loaded)
+
+    print('Filter daytime:')
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
