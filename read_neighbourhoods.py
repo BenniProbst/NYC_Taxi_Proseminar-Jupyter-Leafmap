@@ -239,11 +239,13 @@ class NeighbourhoodTaxiData:
             start_point: tuple = (f['properties']['center'][0], f['properties']['center'][1])
             features.append(Feature(id=line_count, geometry=Point(start_point), properties=prop))
             line_count += 1
+        self.central_points_features = FeatureCollection(features)
         with open(path_out, 'w') as outfile:
-            dump(features, outfile)
-        return FeatureCollection(features)
+            dump(self.central_points_features, outfile)
+        return self.central_points_features
 
     def __init__(self, path):
+        self.central_points_features = None
         self.feature_collection = None
         self.taxizone_geojson = None
         self.datamutex: Lock() = Lock()
