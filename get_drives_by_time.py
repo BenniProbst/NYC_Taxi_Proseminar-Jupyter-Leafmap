@@ -30,6 +30,7 @@ class TaxiTime(TaxiData):
         self.connections = FeatureCollection(features)
         with open(path_out, 'w') as outfile:
             dump(self.connections, outfile)
+        outfile.close()
         return self.connections
 
     def __init__(self, base: str, zone_output: str):

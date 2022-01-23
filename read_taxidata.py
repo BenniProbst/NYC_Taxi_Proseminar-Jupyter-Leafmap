@@ -238,6 +238,7 @@ class TaxiData:
             self.datamutex.acquire()
             self.data.extend(list_of_tuples_load_typed)
             self.datamutex.release()
+        read_obj.close()
 
     def load_add_available(self, available: Dict[str, List[datetime]]) -> None:
         for taxi_color_request, times_request in available.items():

@@ -194,6 +194,7 @@ class NeighbourhoodTaxiData:
         self.feature_collection = FeatureCollection(features)
         with open(path_out, 'w') as outfile:
             dump(self.feature_collection, outfile)
+        outfile.close()
 
     def central_points(self) -> List[Tuple[float, float]]:
         if len(self.centrals):
@@ -242,6 +243,7 @@ class NeighbourhoodTaxiData:
         self.central_points_features = FeatureCollection(features)
         with open(path_out, 'w') as outfile:
             dump(self.central_points_features, outfile)
+        outfile.close()
         return self.central_points_features
 
     def __init__(self, path):
@@ -256,7 +258,9 @@ class NeighbourhoodTaxiData:
         self.neighbourhoodTuples: List[Tuple[int, str, str, str]] = []
         # multiple neighborhood polynoms for every taxi zone
         self.neighbourhoodPolynoms: List[List[List[Tuple[float, float]]]] = []
-        tmp_list = json.loads(open(path, 'r').read())
+        in_file = open(path, 'r')
+        tmp_list = json.loads(in_file.read())
+        in_file.close()
         self.input_geojson = tmp_list
         for features in tmp_list['features']:
             data_tuple: Tuple[int, str, str, str] = \
