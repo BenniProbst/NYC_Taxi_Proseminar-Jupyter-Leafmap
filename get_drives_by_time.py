@@ -19,10 +19,12 @@ class TaxiTime(TaxiData):
             end_point: tuple = (end_feature['properties']['center'][0], end_feature['properties']['center'][1])
             features.append(Feature(id=line_count, geometry=LineString([start_point, end_point]), properties=prop))
             line_count += 1
+        self.connections = FeatureCollection(features)
         with open(path_out, 'w') as outfile:
-            dump(features, outfile)
-        return FeatureCollection(features)
+            dump(self.connections, outfile)
+        return self.connections
 
     def __init__(self, base: str, zone_output: str):
+        self.connections = None
         super().__init__(base)
         self.zone_neighborhoods = NeighbourhoodTaxiData(zone_output)
