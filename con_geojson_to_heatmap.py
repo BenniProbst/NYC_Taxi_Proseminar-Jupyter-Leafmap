@@ -1,5 +1,6 @@
 import geojson
 import csv
+import read_taxizone
 
 PASSENGER = 3
 TRIP = 4
@@ -59,6 +60,10 @@ class Heatmapper:
             # from the data_dict we get Zone, Borough, latitude, longitude and add the it_val to the end
             self.to_csv.append([data_dict['Zone'], data_dict['Borough'], data_dict['center'][0], data_dict['center'][1],
                                 it_val])
+
+        tz = read_taxizone.TaxiZone('/home/benjamin-elias/PycharmProjects/Proseminar '
+                                    'Jupyter-Leafmap/taxi_data/taxi+_zone_lookup.csv')
+        pass
 
         with open(path_csv_out, 'w') as outfile:
             writer = csv.writer(outfile)
