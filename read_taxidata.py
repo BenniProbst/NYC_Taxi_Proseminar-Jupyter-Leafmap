@@ -7,8 +7,7 @@ from datetime import *
 import os
 import os.path
 import multiprocessing
-from multiprocessing import Process, Manager
-# from threading import Thread, Lock
+from threading import Thread, Lock
 import time
 from dateutil import rrule
 # import numpy as np
@@ -63,229 +62,229 @@ class TaxiData:
 
         return taxi_color_types_filter
 
-    def __load_csv_multithread(self, build_file_name: str, taxi_color_request: str, data, csv_reader):
-        time_csv: str = os.path.basename(build_file_name).split('_')[2]
-        time_string: str = time_csv.split('.')[0]
-        time_month: datetime = datetime.strptime(time_string, "%Y-%m")
-        # Get all rows of csv from csv_reader object as list of tuples
-        # list_of_tuples_load = list(map(tuple, csv_reader))
+    def __load_csv_multithread(self, build_file_name: str, taxi_color_request: str) -> None:
+        self.io_mutex.acquire()
+        with open(build_file_name, 'r') as read_obj:
+            # pass the file object to reader() to get the reader object
+            csv_reader = reader(read_obj)
+            self.io_mutex.release()
+            time_csv: str = os.path.basename(build_file_name).split('_')[2]
+            time_string: str = time_csv.split('.')[0]
+            time_month: datetime = datetime.strptime(time_string, "%Y-%m")
+            # Get all rows of csv from csv_reader object as list of tuples
+            # list_of_tuples_load = list(map(tuple, csv_reader))
 
-        output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
-                          int, int, float, float, float, float, float, float,
-                          float, float, str] = (0, datetime(1, 1, 1), datetime(1, 1, 1), 0, 0.0, 0, '', 0,
-                                                0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                                0.0, 0.0, '')
+            output_tup: Tuple[int, datetime, datetime, int, float, int, str, int,
+                              int, int, float, float, float, float, float, float,
+                              float, float, str] = (0, datetime(1, 1, 1), datetime(1, 1, 1), 0, 0.0, 0, '', 0,
+                                                    0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                                    0.0, 0.0, '')
 
-        # get type list of header
-        t_list = []
-        dtype = []
+            # get type list of header
+            t_list = []
+            dtype = []
 
-        output_tup1 = []
-        for row in csv_reader:
-            output_tup1 = row
-            break
-        if taxi_color_request == 'yellow':
-            """
-            VendorID
-            tpep_pickup_datetime
-            tpep_dropoff_datetime
-            passenger_count
-            trip_distance
-            RatecodeID
-            store_and_fwd_flag
-            PULocation
-            DOLocation
-            payment_type
-            fare_amount
-            extra
-            mta_tax
-            tip_amount
-            tolls_amount
-            improvement_surcharge
-            total_amount
-            congestion_surcharge
-            (taxi color)
-            """
-            output_tup1 = [str(output_tup1[0]),
-                           str(output_tup1[1])[5:],
-                           str(output_tup1[2])[5:],
-                           str(output_tup1[3]),
-                           str(output_tup1[4]),
-                           str(output_tup1[5]),
-                           str(output_tup1[6]),
-                           str(output_tup1[7]),
-                           str(output_tup1[8]),
-                           str(output_tup1[9]),
-                           str(output_tup1[10]),
-                           str(output_tup1[11]),
-                           str(output_tup1[12]),
-                           str(output_tup1[13]),
-                           str(output_tup1[14]),
-                           str(output_tup1[15]),
-                           str(output_tup1[16]),
-                           str(output_tup1[17]),
-                           str('TaxiColor')]
-        else:
-            output_tup1 = [str(output_tup1[0]),
-                           str(output_tup1[1])[5:],
-                           str(output_tup1[2])[5:],
-                           str(output_tup1[7]),
-                           str(output_tup1[8]),
-                           str(output_tup1[4]),
-                           str(output_tup1[3]),
-                           str(output_tup1[5]),
-                           str(output_tup1[6]),
-                           str(output_tup1[17]),
-                           str(output_tup1[9]),
-                           str(output_tup1[10]),
-                           str(output_tup1[11]),
-                           str(output_tup1[12]),
-                           str(output_tup1[13]),
-                           str(output_tup1[15]),
-                           str(output_tup1[16]),
-                           str(output_tup1[19]),
-                           str('TaxiColor')]
-        self.header: List[str, str, str, str, str, str, str, str, str, str, str, str,
-                          str, str, str, str, str, str, str] = output_tup1
-        for n in list(output_tup):
-            t_list.append(type(n))
-        for i in range(len(self.header)):
-            dtype.append((self.header[i], t_list[i]))
-
-        # list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float,
-        #                                       float, float, float, float, float, float, float, str]] = []
-
-        for tup in csv_reader:
-            pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
-            if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
-                continue
-
-            vendor_fix: int = 0
-            passenger_count_fix: int = 0
-            ratecodeid_fix: int = 0
-            store_and_fwd_flag_fix: str = '?'
-            payment_type_fix: int = 0
-            congestion_surcharge_fix: float = 0
-            if len(tup[0]) != 0:
-                vendor_fix = int(tup[0])
+            output_tup1 = []
+            for row in csv_reader:
+                output_tup1 = row
+                break
             if taxi_color_request == 'yellow':
-                if len(tup[3]) != 0:
-                    passenger_count_fix = int(tup[3])
-                if len(tup[5]) != 0:
-                    ratecodeid_fix = int(tup[5])
-                if len(tup[6]) != 0:
-                    store_and_fwd_flag_fix = str(tup[6])
-                if len(tup[9]) != 0:
-                    payment_type_fix = int(tup[9])
-                if len(tup[17]) != 0:
-                    congestion_surcharge_fix = float(tup[17])
-
-                output_tup = (vendor_fix,
-                              pickup_time,
-                              datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
-                              passenger_count_fix,
-                              float(tup[4]),
-                              ratecodeid_fix,
-                              store_and_fwd_flag_fix,
-                              int(tup[7]),
-                              int(tup[8]),
-                              payment_type_fix,
-                              float(tup[10]),
-                              float(tup[11]),
-                              float(tup[12]),
-                              float(tup[13]),
-                              float(tup[14]),
-                              float(tup[15]),
-                              float(tup[16]),
-                              congestion_surcharge_fix,
-                              str('yellow'))
+                """
+                VendorID
+                tpep_pickup_datetime
+                tpep_dropoff_datetime
+                passenger_count
+                trip_distance
+                RatecodeID
+                store_and_fwd_flag
+                PULocation
+                DOLocation
+                payment_type
+                fare_amount
+                extra
+                mta_tax
+                tip_amount
+                tolls_amount
+                improvement_surcharge
+                total_amount
+                congestion_surcharge
+                (taxi color)
+                """
+                output_tup1 = [str(output_tup1[0]),
+                               str(output_tup1[1])[5:],
+                               str(output_tup1[2])[5:],
+                               str(output_tup1[3]),
+                               str(output_tup1[4]),
+                               str(output_tup1[5]),
+                               str(output_tup1[6]),
+                               str(output_tup1[7]),
+                               str(output_tup1[8]),
+                               str(output_tup1[9]),
+                               str(output_tup1[10]),
+                               str(output_tup1[11]),
+                               str(output_tup1[12]),
+                               str(output_tup1[13]),
+                               str(output_tup1[14]),
+                               str(output_tup1[15]),
+                               str(output_tup1[16]),
+                               str(output_tup1[17]),
+                               str('TaxiColor')]
             else:
-                if len(tup[7]) != 0:
-                    passenger_count_fix = int(tup[7])
-                if len(tup[4]) != 0:
-                    ratecodeid_fix = int(tup[4])
-                if len(tup[3]) != 0:
-                    store_and_fwd_flag_fix = str(tup[3])
-                if len(tup[17]) != 0:
-                    payment_type_fix = int(tup[17])
-                if len(tup[19]) != 0:
-                    congestion_surcharge_fix = float(tup[19])
+                output_tup1 = [str(output_tup1[0]),
+                               str(output_tup1[1])[5:],
+                               str(output_tup1[2])[5:],
+                               str(output_tup1[7]),
+                               str(output_tup1[8]),
+                               str(output_tup1[4]),
+                               str(output_tup1[3]),
+                               str(output_tup1[5]),
+                               str(output_tup1[6]),
+                               str(output_tup1[17]),
+                               str(output_tup1[9]),
+                               str(output_tup1[10]),
+                               str(output_tup1[11]),
+                               str(output_tup1[12]),
+                               str(output_tup1[13]),
+                               str(output_tup1[15]),
+                               str(output_tup1[16]),
+                               str(output_tup1[19]),
+                               str('TaxiColor')]
+            self.header: List[str, str, str, str, str, str, str, str, str, str, str, str,
+                              str, str, str, str, str, str, str] = output_tup1
+            for n in list(output_tup):
+                t_list.append(type(n))
+            for i in range(len(self.header)):
+                dtype.append((self.header[i], t_list[i]))
 
-                output_tup = (vendor_fix,
-                              pickup_time,
-                              datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
-                              passenger_count_fix,
-                              float(tup[8]),
-                              ratecodeid_fix,
-                              store_and_fwd_flag_fix,
-                              int(tup[5]),
-                              int(tup[6]),
-                              payment_type_fix,
-                              float(tup[9]),
-                              float(tup[10]),
-                              float(tup[11]),
-                              float(tup[12]),
-                              float(tup[13]),
-                              float(tup[15]),
-                              float(tup[16]),
-                              congestion_surcharge_fix,
-                              str('green'))
-            data.append(output_tup)
+            list_of_tuples_load_typed: List[Tuple[int, datetime, datetime, int, float, int, str, int, int, int, float,
+                                                  float, float, float, float, float, float, float, str]] = []
 
-    def load_add_available(self, available: Dict[str, List[datetime]]) -> List[Tuple[int, datetime, datetime, int,
-                                                                                     float, int, str, int, int, int,
-                                                                                     float, float, float, float, float,
-                                                                                     float, float, float, str]]:
-        with Manager() as manager:
-            l_tmp = manager.list()
-            for taxi_color_request, times_request in available.items():
-                if taxi_color_request in self.taxi_color_types_times.keys():
-                    if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
-                        for times in times_request:
-                            if (taxi_color_request in self.already_loaded.keys()) and \
-                                    (times in self.already_loaded[taxi_color_request]):
-                                continue
-                            build_month: str = str(times.month)
-                            while len(build_month) <= 1:
-                                build_month = str(0) + build_month
-                            build_file_name: str = self.base_folder + taxi_color_request + '_tripdata_' + str(
-                                times.year) + str('-') + build_month + '.csv'
+            for tup in csv_reader:
+                pickup_time: datetime = datetime.strptime(str(tup[1]), "%Y-%m-%d %H:%M:%S")
+                if not (pickup_time.year == time_month.year and pickup_time.month == time_month.month):
+                    continue
 
-                            # create maximum number of threads with one master and rest workers
-                            # don't reserve master thread for more speed
-                            while True:
-                                newthreadlist: List[Process] = []
-                                for t in self.threadlist:
-                                    if t.is_alive():
-                                        newthreadlist.append(t)
-                                self.threadlist = newthreadlist
-                                if len(self.threadlist) < multiprocessing.cpu_count():
-                                    break
-                                else:
-                                    time.sleep(0.1)
-                            with open(build_file_name, 'r') as read_obj:
-                                # pass the file object to reader() to get the reader object
-                                csv_reader = reader(read_obj)
-                                self.threadlist.append(Process(target=self.__load_csv_multithread,
-                                                               args=(build_file_name, taxi_color_request, l_tmp,
-                                                                     csv_reader)))
-                                self.threadlist[-1].start()
-                                if not (taxi_color_request in self.already_loaded.keys()):
-                                    self.already_loaded[taxi_color_request] = []
-                                self.already_loaded[taxi_color_request].append(times)
-                    else:
-                        raise ValueError("Requested month was out of range!")
+                vendor_fix: int = 0
+                passenger_count_fix: int = 0
+                ratecodeid_fix: int = 0
+                store_and_fwd_flag_fix: str = '?'
+                payment_type_fix: int = 0
+                congestion_surcharge_fix: float = 0
+                if len(tup[0]) != 0:
+                    vendor_fix = int(tup[0])
+                if taxi_color_request == 'yellow':
+                    if len(tup[3]) != 0:
+                        passenger_count_fix = int(tup[3])
+                    if len(tup[5]) != 0:
+                        ratecodeid_fix = int(tup[5])
+                    if len(tup[6]) != 0:
+                        store_and_fwd_flag_fix = str(tup[6])
+                    if len(tup[9]) != 0:
+                        payment_type_fix = int(tup[9])
+                    if len(tup[17]) != 0:
+                        congestion_surcharge_fix = float(tup[17])
+
+                    output_tup = (vendor_fix,
+                                  pickup_time,
+                                  datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
+                                  passenger_count_fix,
+                                  float(tup[4]),
+                                  ratecodeid_fix,
+                                  store_and_fwd_flag_fix,
+                                  int(tup[7]),
+                                  int(tup[8]),
+                                  payment_type_fix,
+                                  float(tup[10]),
+                                  float(tup[11]),
+                                  float(tup[12]),
+                                  float(tup[13]),
+                                  float(tup[14]),
+                                  float(tup[15]),
+                                  float(tup[16]),
+                                  congestion_surcharge_fix,
+                                  str('yellow'))
                 else:
-                    raise ValueError("Requested taxi color does not exist.")
-            # join all threads
-            for t in self.threadlist:
-                t.join()
-            self.threadlist = []
-            return list(l_tmp)
+                    if len(tup[7]) != 0:
+                        passenger_count_fix = int(tup[7])
+                    if len(tup[4]) != 0:
+                        ratecodeid_fix = int(tup[4])
+                    if len(tup[3]) != 0:
+                        store_and_fwd_flag_fix = str(tup[3])
+                    if len(tup[17]) != 0:
+                        payment_type_fix = int(tup[17])
+                    if len(tup[19]) != 0:
+                        congestion_surcharge_fix = float(tup[19])
+
+                    output_tup = (vendor_fix,
+                                  pickup_time,
+                                  datetime.strptime(str(tup[2]), "%Y-%m-%d %H:%M:%S"),
+                                  passenger_count_fix,
+                                  float(tup[8]),
+                                  ratecodeid_fix,
+                                  store_and_fwd_flag_fix,
+                                  int(tup[5]),
+                                  int(tup[6]),
+                                  payment_type_fix,
+                                  float(tup[9]),
+                                  float(tup[10]),
+                                  float(tup[11]),
+                                  float(tup[12]),
+                                  float(tup[13]),
+                                  float(tup[15]),
+                                  float(tup[16]),
+                                  congestion_surcharge_fix,
+                                  str('green'))
+                list_of_tuples_load_typed.append(output_tup)
+            self.datamutex.acquire()
+            self.data.extend(list_of_tuples_load_typed)
+            self.datamutex.release()
+
+    def load_add_available(self, available: Dict[str, List[datetime]]) -> None:
+        for taxi_color_request, times_request in available.items():
+            if taxi_color_request in self.taxi_color_types_times.keys():
+                if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
+                    for times in times_request:
+                        if (taxi_color_request in self.already_loaded.keys()) and \
+                                (times in self.already_loaded[taxi_color_request]):
+                            continue
+                        build_month: str = str(times.month)
+                        while len(build_month) <= 1:
+                            build_month = str(0) + build_month
+                        build_file_name: str = self.base_folder + taxi_color_request + '_tripdata_' + str(
+                            times.year) + str('-') + build_month + '.csv'
+
+                        # create maximum number of threads with one master and rest workers
+                        # don't reserve master thread for more speed
+                        while True:
+                            newthreadlist: List[Thread] = []
+                            for t in self.threadlist:
+                                if t.is_alive():
+                                    newthreadlist.append(t)
+                            self.threadlist = newthreadlist
+                            if len(self.threadlist) < multiprocessing.cpu_count():
+                                break
+                            else:
+                                time.sleep(0.1)
+
+                        self.threadlist.append(Thread(target=self.__load_csv_multithread,
+                                                      args=(build_file_name, taxi_color_request)))
+                        self.threadlist[-1].start()
+                        if not (taxi_color_request in self.already_loaded.keys()):
+                            self.already_loaded[taxi_color_request] = []
+                        self.already_loaded[taxi_color_request].append(times)
+                else:
+                    raise ValueError("Requested month was out of range!")
+            else:
+                raise ValueError("Requested taxi color does not exist.")
+        # join all threads
+        for t in self.threadlist:
+            t.join()
+        self.threadlist = []
 
     def load_available(self, available: Dict[str, List[datetime]]) -> None:
         self.already_loaded = {}
-        self.data = self.load_add_available(available)
+        self.data = []
+        self.load_add_available(available)
 
     def get_minmax_available_pickup_time(self, taxi_color: str = '') -> Tuple[datetime, datetime]:
         # get minimum month of available files
@@ -309,8 +308,8 @@ class TaxiData:
                 if time_taxi > max_d:
                     max_d = time_taxi
         # load all minimum month files and get minimum time
-        self.data.extend(self.load_add_available(self.get_date_files(min_d.year, min_d.month)))
-        self.data.extend(self.load_add_available(self.get_date_files(max_d.year, max_d.month)))
+        self.load_add_available(self.get_date_files(min_d.year, min_d.month))
+        self.load_add_available(self.get_date_files(max_d.year, max_d.month))
         self.data.sort(key=operator.itemgetter(1))
         # self.datamutex.acquire()
         min_d = self.data[0][1]
@@ -385,7 +384,7 @@ class TaxiData:
                     self.data = new_data
 
                 # load missing months
-                self.data.extend(self.load_add_available(month_to_load))
+                self.load_add_available(month_to_load)
 
         self.data.sort(key=operator.itemgetter(1))
         # when we now filter with start and end within the first and last month we check if we deleted values
@@ -413,7 +412,9 @@ class TaxiData:
     def __init__(self, base: str):
         self.min_is_loaded = None
         self.max_is_loaded = None
-        self.threadlist: List[Process] = []
+        self.threadlist: List[Thread] = []
+        self.datamutex: Lock = Lock()
+        self.io_mutex: Lock = Lock()
         self.header = None
         self.base_folder: str = base
         # last tuple entry is taxi color
