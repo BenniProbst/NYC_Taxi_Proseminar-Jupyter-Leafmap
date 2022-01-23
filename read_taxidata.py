@@ -7,7 +7,7 @@ from datetime import *
 import os
 import os.path
 import multiprocessing
-from multiprocessing import Process, Lock, Manager
+from multiprocessing import Process, Manager
 # from threading import Thread, Lock
 import time
 from dateutil import rrule
@@ -232,63 +232,60 @@ class TaxiData:
                               str('green'))
             data.append(output_tup)
 
-    def load_add_available(self, available: Dict[str, List[datetime]], l_tmp=None) -> bool:
-        if l_tmp is None:
-            l_tmp = Manager().list()
-
-        for taxi_color_request, times_request in available.items():
-            if taxi_color_request in self.taxi_color_types_times.keys():
-                if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
-                    for times in times_request:
-                        if (taxi_color_request in self.already_loaded.keys()) and \
-                                (times in self.already_loaded[taxi_color_request]):
-                            continue
-                        build_month: str = str(times.month)
-                        while len(build_month) <= 1:
-                            build_month = str(0) + build_month
-                        build_file_name: str = self.base_folder + taxi_color_request + '_tripdata_' + str(
-                            times.year) + str('-') + build_month + '.csv'
-
-                        # create maximum number of threads with one master and rest workers
-                        # don't reserve master thread for more speed
-                        while True:
-                            newthreadlist: List[Process] = []
-                            for t in self.threadlist:
-                                if t.is_alive():
-                                    newthreadlist.append(t)
-                            self.threadlist = newthreadlist
-                            if len(self.threadlist) < multiprocessing.cpu_count():
-                                break
-                            else:
-                                time.sleep(0.1)
-                        with open(build_file_name, 'r') as read_obj:
-                            # pass the file object to reader() to get the reader object
-                            csv_reader = reader(read_obj)
-                            self.threadlist.append(Process(target=self.__load_csv_multithread,
-                                                           args=(build_file_name, taxi_color_request, l_tmp,
-                                                                 csv_reader)))
-                            self.threadlist[-1].start()
-                            if not (taxi_color_request in self.already_loaded.keys()):
-                                self.already_loaded[taxi_color_request] = []
-                            self.already_loaded[taxi_color_request].append(times)
-                else:
-                    return False
-            else:
-                return False
-        return True
-
-    def load_available(self, available: Dict[str, List[datetime]]) -> bool:
-        # join all threads
-        for t in self.threadlist:
-            t.join()
-        self.threadlist = []
-        self.data = []
-        self.already_loaded = {}
+    def load_add_available(self, available: Dict[str, List[datetime]]) -> List[Tuple[int, datetime, datetime, int,
+                                                                                     float, int, str, int, int, int,
+                                                                                     float, float, float, float, float,
+                                                                                     float, float, float, str]]:
         with Manager() as manager:
-            l_tmp = manager.list(self.data)
-            output = self.load_add_available(available, l_tmp)
-            self.data = list(l_tmp)
-            return output
+            l_tmp = manager.list()
+            for taxi_color_request, times_request in available.items():
+                if taxi_color_request in self.taxi_color_types_times.keys():
+                    if set(times_request).issubset(self.taxi_color_types_times.get(taxi_color_request)):
+                        for times in times_request:
+                            if (taxi_color_request in self.already_loaded.keys()) and \
+                                    (times in self.already_loaded[taxi_color_request]):
+                                continue
+                            build_month: str = str(times.month)
+                            while len(build_month) <= 1:
+                                build_month = str(0) + build_month
+                            build_file_name: str = self.base_folder + taxi_color_request + '_tripdata_' + str(
+                                times.year) + str('-') + build_month + '.csv'
+
+                            # create maximum number of threads with one master and rest workers
+                            # don't reserve master thread for more speed
+                            while True:
+                                newthreadlist: List[Process] = []
+                                for t in self.threadlist:
+                                    if t.is_alive():
+                                        newthreadlist.append(t)
+                                self.threadlist = newthreadlist
+                                if len(self.threadlist) < multiprocessing.cpu_count():
+                                    break
+                                else:
+                                    time.sleep(0.1)
+                            with open(build_file_name, 'r') as read_obj:
+                                # pass the file object to reader() to get the reader object
+                                csv_reader = reader(read_obj)
+                                self.threadlist.append(Process(target=self.__load_csv_multithread,
+                                                               args=(build_file_name, taxi_color_request, l_tmp,
+                                                                     csv_reader)))
+                                self.threadlist[-1].start()
+                                if not (taxi_color_request in self.already_loaded.keys()):
+                                    self.already_loaded[taxi_color_request] = []
+                                self.already_loaded[taxi_color_request].append(times)
+                    else:
+                        raise ValueError("Requested month was out of range!")
+                else:
+                    raise ValueError("Requested taxi color does not exist.")
+            # join all threads
+            for t in self.threadlist:
+                t.join()
+            self.threadlist = []
+            return list(l_tmp)
+
+    def load_available(self, available: Dict[str, List[datetime]]) -> None:
+        self.already_loaded = {}
+        self.data = self.load_add_available(available)
 
     def get_minmax_available_pickup_time(self, taxi_color: str = '') -> Tuple[datetime, datetime]:
         # get minimum month of available files
@@ -312,15 +309,8 @@ class TaxiData:
                 if time_taxi > max_d:
                     max_d = time_taxi
         # load all minimum month files and get minimum time
-        with Manager() as manager:
-            l_tmp = manager.list(self.data)
-            self.load_add_available(self.get_date_files(min_d.year, min_d.month), l_tmp)
-            self.load_add_available(self.get_date_files(max_d.year, max_d.month), l_tmp)
-            self.data = list(l_tmp)
-        # join all threads
-        for t in self.threadlist:
-            t.join()
-        self.threadlist = []
+        self.data.extend(self.load_add_available(self.get_date_files(min_d.year, min_d.month)))
+        self.data.extend(self.load_add_available(self.get_date_files(max_d.year, max_d.month)))
         self.data.sort(key=operator.itemgetter(1))
         # self.datamutex.acquire()
         min_d = self.data[0][1]
@@ -375,7 +365,7 @@ class TaxiData:
             # of the last month and then load_add_available
 
             if total_reload:
-                feedback = self.load_available(month_to_load)
+                self.load_available(month_to_load)
             else:
                 # filter down everything that is not officially loaded
                 for color_al, time_list_al in self.already_loaded.items():
@@ -395,15 +385,8 @@ class TaxiData:
                     self.data = new_data
 
                 # load missing months
-                with Manager() as manager:
-                    l_tmp = manager.list(self.data)
-                    feedback = self.load_add_available(month_to_load, l_tmp)
-                    self.data = list(l_tmp)
+                self.data.extend(self.load_add_available(month_to_load))
 
-        # join all threads
-        for t in self.threadlist:
-            t.join()
-        self.threadlist = []
         self.data.sort(key=operator.itemgetter(1))
         # when we now filter with start and end within the first and last month we check if we deleted values
         # on deletion the month is incomplete is does not count to self.already loaded
