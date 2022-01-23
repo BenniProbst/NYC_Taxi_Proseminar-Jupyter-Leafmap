@@ -380,7 +380,7 @@ class TaxiData:
                 # load missing months
                 self.load_add_available(month_to_load)
 
-        self.data.sort(key=operator.itemgetter(1))
+            self.data.sort(key=operator.itemgetter(1))
         # when we now filter with start and end within the first and last month we check if we deleted values
         # on deletion the month is incomplete is does not count to self.already loaded
         month_incomplete: List[datetime] = []
