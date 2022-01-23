@@ -14,6 +14,7 @@ class TaxiTime(TaxiData):
         for d in self.data:
             start_feature: Feature = self.zone_neighborhoods.get_feature(d[7])
             end_feature: Feature = self.zone_neighborhoods.get_feature(d[8])
+            output_data = map(str, d)
             prop = {'start': start_feature['properties'], 'end': end_feature['properties'], 'data': d}
             start_point: tuple = (start_feature['properties']['center'][0], start_feature['properties']['center'][1])
             end_point: tuple = (end_feature['properties']['center'][0], end_feature['properties']['center'][1])
