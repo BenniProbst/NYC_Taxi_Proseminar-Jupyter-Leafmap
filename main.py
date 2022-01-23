@@ -12,6 +12,7 @@ if __name__ == '__main__':
     tt = TaxiTime('/home/benjamin-elias/Proseminar/Jupyterlab/taxi_data/', '/home/benjamin-elias/PycharmProjects'
                                                                            '/Proseminar '
                                                                            'Jupyter-Leafmap/nyc-neighborhoods.geojson')
+    """
     # standard range load
     start = datetime(2020, 2, 10)
     end = datetime(2020, 5, 25)
@@ -27,6 +28,7 @@ if __name__ == '__main__':
     print('Analyze time between 10-03-2020 and 25-06-2020')
     print(tt.min_is_loaded)
     print(tt.max_is_loaded)
+    """
 
     # speed range resize to smaller subset of current load
     start = datetime(2020, 4, 10)

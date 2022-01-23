@@ -14,7 +14,14 @@ class TaxiTime(TaxiData):
         for d in self.data:
             start_feature: Feature = self.zone_neighborhoods.get_feature(d[7])
             end_feature: Feature = self.zone_neighborhoods.get_feature(d[8])
-            output_data = map(str, d)
+            output_data = []
+            count: int = 0
+            for item in list(d):
+                if count == 1 or count == 2:
+                    output_data.append(str(item))
+                else:
+                    output_data.append(item)
+                count += 1
             prop = {'start': start_feature['properties'], 'end': end_feature['properties'], 'data': output_data}
             start_point: tuple = (start_feature['properties']['center'][0], start_feature['properties']['center'][1])
             end_point: tuple = (end_feature['properties']['center'][0], end_feature['properties']['center'][1])
