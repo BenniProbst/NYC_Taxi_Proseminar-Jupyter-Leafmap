@@ -39,9 +39,9 @@ if __name__ == '__main__':
     print(tt.max_is_loaded)
 
     # taxi drive connections and neighborhood central points on map
-    con = tt.interconnections(start, end, '/home/benjamin-elias/PycharmProjects/Proseminar'
+    con = tt.interconnections(start, end, '/home/benjamin-elias/PycharmProjects/Proseminar '
                                           'Jupyter-Leafmap/rides.geojson')
-    points = tt.zone_neighborhoods.neighbourhood_points('/home/benjamin-elias/PycharmProjects/ProseminarJupyter'
+    points = tt.zone_neighborhoods.neighbourhood_points('/home/benjamin-elias/PycharmProjects/Proseminar Jupyter'
                                                         '-Leafmap/neighborhood_centers.geojson')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
