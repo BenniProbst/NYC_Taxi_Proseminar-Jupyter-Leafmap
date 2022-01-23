@@ -235,9 +235,9 @@ class NeighbourhoodTaxiData:
     def neighbourhood_points(self, path_out: str):
         features: List[Feature] = []
         line_count: int = 0
-        for f in self.feature_collection:
+        for f in self.feature_collection['features']:
             prop = f['properties']
-            start_point: tuple = (f['properties']['center'][0], f['properties']['center'][1])
+            start_point: tuple = (prop['center'][0], prop['center'][1])
             features.append(Feature(id=line_count, geometry=Point(start_point), properties=prop))
             line_count += 1
         self.central_points_features = FeatureCollection(features)
