@@ -45,7 +45,7 @@ class Heatmapper:
                 out_dict[it_key] = it_val[0] / it_val[1]
 
         # from out_dict we now have the output values for every key that is usually the PICKUP location
-        self.to_csv = [['Zone', 'Borough', 'latitude', 'longitude', 'heat_property_val']]
+        self.to_csv = [['Zone', 'Borough', 'longitude', 'latitude', 'heat_property_val']]
         for it_key, it_val in out_dict.items():
             data_dict = None
             for f in self.loaded_connections['features']:
