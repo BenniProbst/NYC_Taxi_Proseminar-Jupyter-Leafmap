@@ -29,8 +29,11 @@ if __name__ == '__main__':
         '/home/benjamin-elias/PycharmProjects/Proseminar Jupyter-Leafmap/neighborhood_centers.geojson')
 
     print("Daytime filter:")
+    # limit to main work time
     tt.daytime_filter(time(8), time(17))
+    # limit trip distance
     tt.value_filter(0, 20)
+    # limit Pickup to Bloomingdale
     tt.flag_filter('Bloomingdale/Upper West Side North', method=get_drives_by_time.PICKUP_LOCATION,
                    zone_checker=read_taxizone.ZONE)
 
