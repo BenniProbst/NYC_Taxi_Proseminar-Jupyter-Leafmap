@@ -1,9 +1,12 @@
 from read_taxidata import TaxiData
 from read_neighbourhoods import NeighbourhoodTaxiData
-import datetime
+from datetime import datetime, time
+import time
 from geojson import Feature, FeatureCollection, LineString, dump
 from typing import List
 
+PICKUP_TIME = 1
+DROPOFF_TIME = 2
 
 class TaxiTime(TaxiData):
 
@@ -32,6 +35,14 @@ class TaxiTime(TaxiData):
             dump(self.connections, outfile)
         outfile.close()
         return self.connections
+
+    def daytime_filter(self, start: time, end: time, method=PICKUP_TIME):
+        new_data = []
+        for d in self.data:
+            t = d[method].time()
+            if start <= t <= end:
+                new_data.append(d)
+        self.data = new_data
 
     def __init__(self, base: str, zone_output: str):
         self.connections = None

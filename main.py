@@ -4,7 +4,7 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 from get_drives_by_time import TaxiTime
-from datetime import datetime
+from datetime import datetime, time
 import leafmap
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -28,5 +28,6 @@ if __name__ == '__main__':
         '/home/benjamin-elias/PycharmProjects/Proseminar Jupyter-Leafmap/neighborhood_centers.geojson')
 
     print("Daytime filter:")
+    tt.daytime_filter(time(8), time(17))
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
