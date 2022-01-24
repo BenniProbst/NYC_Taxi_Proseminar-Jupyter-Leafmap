@@ -252,7 +252,7 @@ class NeighbourhoodTaxiData:
         self.datamutex: Lock() = Lock()
         self.centrals: List[Tuple[float, float]] = []
         self.borderline_sizes: List[float] = []
-        tz = read_taxizone.TaxiZone('/home/benjamin-elias/PycharmProjects/Proseminar '
+        self.taxi_zone = read_taxizone.TaxiZone('/home/benjamin-elias/PycharmProjects/Proseminar '
                                     'Jupyter-Leafmap/taxi_data/taxi+_zone_lookup.csv')
         self.neighbourhoodTuples: List[Tuple[int, str, str, str]] = []
         # multiple neighborhood polynoms for every taxi zone
@@ -263,7 +263,7 @@ class NeighbourhoodTaxiData:
         self.input_geojson = tmp_list
         for features in tmp_list['features']:
             data_tuple: Tuple[int, str, str, str] = \
-                tz.get_alike_from_neighborhood_name(features['properties']['NTAName'])
+                self.taxi_zone.get_alike_from_neighborhood_name(features['properties']['NTAName'])
             polygon_list: List[Tuple[float, float]] = []
             if features['geometry']['type'] == 'MultiPolygon':
                 for point in features['geometry']['coordinates'][0][0]:
@@ -280,7 +280,7 @@ class NeighbourhoodTaxiData:
                 self.neighbourhoodPolynoms.append([polygon_list])
 
         # double join and look for fitting neighborhoods for each taxi zone
-        for zone_tup in tz.zones:
+        for zone_tup in self.taxi_zone.zones:
             # filter unknown and set them anywhere
             if zone_tup[0] == 264 or zone_tup[0] == 265:
                 self.neighbourhoodTuples.append(zone_tup)

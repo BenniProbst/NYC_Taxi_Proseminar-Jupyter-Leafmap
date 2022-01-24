@@ -5,6 +5,11 @@ from csv import reader
 import operator
 from Levenshtein import distance
 
+LOCATION_ID = 0
+BOROUGH = 1
+ZONE = 2
+SERVICE_ZONE = 3
+
 
 def filter_brackets(input_string: str) -> str:
     return input_string.replace('(', '').replace(')', '')
@@ -12,16 +17,17 @@ def filter_brackets(input_string: str) -> str:
 
 class TaxiZone:
 
-    def get_from_location_id(self, loc_id: int) -> Union[Tuple[int, str, str, str], None]:
-        for tup in self.zones:
-            if tup[0] == loc_id:
-                return tup
-        return None
-
-    def get_from_neighborhood_name(self, n_name: str) -> Union[Tuple[int, str, str, str], None]:
-        for tup in self.zones:
-            if tup[2] == n_name:
-                return tup
+    def get_from_csv_val(self, val: int, method=LOCATION_ID) -> Union[List[Tuple[int, str, str, str]], None]:
+        if method == LOCATION_ID:
+            for tup in self.zones:
+                if tup[method] == val:
+                    return [tup]
+        else:
+            output = []
+            for tup in self.zones:
+                if tup[method] == val:
+                    output.append(tup)
+            return output
         return None
 
     def get_alike_from_neighborhood_name(self, n_name: str) -> Tuple[int, str, str, str]:
