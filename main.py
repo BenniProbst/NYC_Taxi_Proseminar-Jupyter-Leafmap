@@ -21,5 +21,12 @@ if __name__ == '__main__':
 
     print('Filter daytime:')
 
+    # taxi drive connections and neighborhood central points on map
+    con = tt.interconnections(start, end,
+                              '/home/benjamin-elias/PycharmProjects/Proseminar Jupyter-Leafmap/rides.geojson')
+    points = tt.zone_neighborhoods.neighbourhood_points(
+        '/home/benjamin-elias/PycharmProjects/Proseminar Jupyter-Leafmap/neighborhood_centers.geojson')
+
+    print("Daytime filter:")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
