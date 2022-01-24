@@ -64,8 +64,8 @@ class TaxiTime(TaxiData):
                 new_data.append(d)
         self.data = new_data
 
-    # VENDOR_ID, PASSENGER_COUNT, TRIP_DISTANCE, RATECODE_ID, FARE_AMOUNT, EXTRA, MTA_TAX, TIP_AMOUNT, TOLLS_AMOUNT,
-    # IMPROVEMENT_SURCHARGE, TOTAL_AMOUNT, CONGESTION_SURCHARGE
+    # methods: VENDOR_ID, PASSENGER_COUNT, TRIP_DISTANCE, RATECODE_ID, FARE_AMOUNT, EXTRA, MTA_TAX, TIP_AMOUNT
+    # TOLLS_AMOUNT, IMPROVEMENT_SURCHARGE, TOTAL_AMOUNT, CONGESTION_SURCHARGE
     def value_filter(self, val_min, val_max, method=TRIP_DISTANCE):
         new_data = []
         for d in self.data:
@@ -74,8 +74,11 @@ class TaxiTime(TaxiData):
                 new_data.append(d)
         self.data = new_data
 
+    # methods: STORE_AND_FORWARD
     def flag_filter(self, flag, method=PICKUP_LOCATION, zone_checker=read_taxizone.ZONE):
         if not (method == PICKUP_LOCATION or method == DROPOFF_LOCATION):
+            # for PICKUP_LOCATION and DROPOFF_LOCATION there can also be checked the taxi_zone line to be checked
+            # using the zone_checker argument, that usually checks the name of the taxi zone to find the LocationID
             # here the flag is text that may fit a name in the taxi_zone csv
             flag_tuple_translation_list = self.zone_neighborhoods.taxi_zone.get_from_csv_val(flag, zone_checker)
             flag_list = []

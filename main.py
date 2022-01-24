@@ -2,7 +2,8 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
+import get_drives_by_time
+import read_taxizone
 from get_drives_by_time import TaxiTime
 from datetime import datetime, time
 import leafmap
@@ -29,5 +30,8 @@ if __name__ == '__main__':
 
     print("Daytime filter:")
     tt.daytime_filter(time(8), time(17))
+    tt.value_filter(0, 20)
+    tt.flag_filter('Bloomingdale/Upper West Side North', method=get_drives_by_time.PICKUP_LOCATION,
+                   zone_checker=read_taxizone.ZONE)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
