@@ -29,8 +29,7 @@ TAXI_COLOR = 18
 
 class TaxiTime(TaxiData):
 
-    def interconnections(self, start: datetime, end: datetime, path_out: str) -> FeatureCollection:
-        self.load_range(start, end)
+    def interconnections(self, path_out: str) -> FeatureCollection:
         features: List[Feature] = []
         line_count: int = 0
         for d in self.data:
