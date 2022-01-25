@@ -69,8 +69,7 @@ class TaxiTime(TaxiData):
     def value_filter(self, val_min, val_max, method=TRIP_DISTANCE):
         new_data = []
         for d in self.data:
-            t = d[method].time()
-            if val_min <= t <= val_max:
+            if val_min <= d[method] <= val_max:
                 new_data.append(d)
         self.data = new_data
 
