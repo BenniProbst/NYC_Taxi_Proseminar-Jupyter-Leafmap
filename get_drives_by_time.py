@@ -75,7 +75,7 @@ class TaxiTime(TaxiData):
 
     # methods: STORE_AND_FORWARD
     def flag_filter(self, flag, method=PICKUP_LOCATION, zone_checker=read_taxizone.ZONE):
-        if not (method == PICKUP_LOCATION or method == DROPOFF_LOCATION):
+        if method == PICKUP_LOCATION or method == DROPOFF_LOCATION:
             # for PICKUP_LOCATION and DROPOFF_LOCATION there can also be checked the taxi_zone line to be checked
             # using the zone_checker argument, that usually checks the name of the taxi zone to find the LocationID
             # here the flag is text that may fit a name in the taxi_zone csv
